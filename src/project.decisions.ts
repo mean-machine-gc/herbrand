@@ -30,23 +30,26 @@ type Contexts = 'ordering' | 'procurement'
 type Modules = 'order_management' | 'purchasing'
 type Aggregates = 'order-processing' | 'procurement-processing'
 
+/// outcome decision rejects — only these can trigger reactive intent decisions
+type OutcomeRejects = 'payment_failed' | 'stock_unavailable'
+
 /// project decision helpers — narrow framework helpers with this domain's unions
 
 type HumanIntentDecision<
-    Trigger extends Outcomes | Rejection,
+    Trigger extends Outcomes | Rejection<OutcomeRejects>,
     Rejects extends string,
     Choice extends Intents
 > = IntentDecision<Human, Trigger, Info, Rejects, Choice>
 
 type MachineIntentDecision<
-    Trigger extends Outcomes | Rejection,
+    Trigger extends Outcomes | Rejection<OutcomeRejects>,
     Rejects extends string,
     Choice extends Intents
 > = IntentDecision<Machine, Trigger, Info, Rejects, Choice>
 
 type MachineOutcomeDecision<
     Trigger extends Intents,
-    Rejects extends string,
+    Rejects extends OutcomeRejects,
     Choice extends Outcomes
 > = OutcomeDecision<Trigger, Info, Rejects, Choice>
 

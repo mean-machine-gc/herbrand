@@ -54,7 +54,7 @@ With new `shouldFailWith` entry:
 ```typescript
 account_suspended: {
     description: 'The customer account is suspended and cannot place orders',
-    examples: [
+    scenarios: [
         { description: 'A customer whose account was flagged for payment issues tries to create an order' }
     ]
 }
@@ -65,7 +65,7 @@ And new example added to existing reject:
 ```typescript
 missing_customer_info: {
     description: 'The customer has not provided required contact or shipping information',
-    examples: [
+    scenarios: [
         { description: 'Customer submits order without a shipping address' },
         { description: 'Customer has no email on file' },
         { description: 'Customer shipping address is outside the delivery zone' }

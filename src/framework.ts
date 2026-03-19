@@ -20,7 +20,7 @@ type Agent =
 
 /// streams
 
-type Rejection = `rejected:${string}`
+type Rejection<OutcomeRejects extends string> = `rejected:${OutcomeRejects}`
 
 /// decision (internal, use helpers below)
 
@@ -60,6 +60,7 @@ type IntentDecisionSpec<D extends AnyDecision, Contexts extends string, Modules 
     context: Contexts
     module: Modules
     aggregate: Aggregates
+    businessGoal: string
     description: string
     trigger:
         | { type: 'success', outcome: D['input'] }
@@ -67,13 +68,13 @@ type IntentDecisionSpec<D extends AnyDecision, Contexts extends string, Modules 
     shouldFailWith: Record<D['rejects'], {
         description: string
         requiredInfo: Array<D['info']>
-        examples?: Array<{ description: string }>
+        scenarios?: Array<{ description: string }>
     }>
     shouldSucceedWith: Record<D['choices'], {
         condition: string
         description: string
         requiredInfo: Array<D['info']>
-        examples?: Array<{ description: string }>
+        scenarios?: Array<{ description: string }>
     }>
 }
 
@@ -88,13 +89,13 @@ type OutcomeDecisionSpec<D extends AnyDecision, Contexts extends string, Modules
     shouldFailWith: Record<D['rejects'], {
         description: string
         requiredInfo: Array<D['info']>
-        examples?: Array<{ description: string }>
+        scenarios?: Array<{ description: string }>
     }>
     shouldSucceedWith: Record<D['choices'], {
         condition: string
         description: string
         requiredInfo: Array<D['info']>
-        examples?: Array<{ description: string }>
+        scenarios?: Array<{ description: string }>
     }>
     shouldAssert: Record<D['choices'], Array<{
         tag: string

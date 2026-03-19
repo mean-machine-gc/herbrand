@@ -71,15 +71,28 @@ Use the decision helpers from `project.decisions.ts`:
 
 **d. Update the scratchpad** — mark the observation as formalized, note any remaining open questions.
 
-### 4. Validate
+### 4. Validate — Loop 1 (spec-level)
 
-After creating or updating a spec, check:
-- Does the input reference an outcome/intent that exists in the unions?
-- Are there orphaned outcomes that no decision listens to?
-- Are there intents with no machine outcome decision to fulfill them?
-- Run typecheck: `npx tsc --noEmit --strict src/framework.ts src/project.decisions.ts src/specs/*.spec.ts`
+After creating or updating a spec, run `npm run specs`. This typechecks, parses, and lints individual specs.
 
-### 5. Clarify
+Fix any **errors** before proceeding — they indicate structural problems (missing trigger, missing choices). **Warnings** (missing scenarios, missing context) are acceptable — note them in the scratchpad to address later.
+
+Stay in this loop: create/edit spec → run specs → fix errors → repeat until clean.
+
+### 5. Validate — Loop 2 (behavior-level)
+
+Once spec-lint is clean, run `npm run graph`. This builds the decision graph and runs behavior-lint.
+
+Behavior-lint catches system-level issues that no single spec can reveal:
+- Orphaned outcomes nobody reacts to
+- Intents nobody consumes
+- Unhandled outcome rejections
+- Info read but never written (or written but never read)
+- Dead-end outcomes
+
+Address these by **modifying specs** (adding missing decisions, connecting flows, filling info gaps). Every spec change sends you back to Loop 1 before re-running Loop 2.
+
+### 6. Clarify
 
 When you have open questions in the scratchpad, surface them naturally in conversation:
 - "You mentioned X — does that happen before or after Y?"

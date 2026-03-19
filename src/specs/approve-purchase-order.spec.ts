@@ -10,13 +10,14 @@ const approvePurchaseOrder: IntentDecisionSpec<ApprovePurchaseOrder, Contexts, M
     context: 'procurement',
     module: 'purchasing',
     aggregate: 'procurement-processing',
+    businessGoal: 'authorize spending and ensure procurement compliance',
     description: 'A department manager approves a purchase order for fulfillment',
     trigger: { type: 'success', outcome: 'purchase_order_created' },
     shouldFailWith: {
         not_authorized: {
             description: 'The approver does not have authority over this department or amount',
             requiredInfo: ['approver_authority'],
-            examples: [
+            scenarios: [
                 { description: 'A manager from a different department tries to approve the PO' }
             ]
         },

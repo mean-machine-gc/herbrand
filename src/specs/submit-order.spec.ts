@@ -10,20 +10,21 @@ const submitOrder: IntentDecisionSpec<SubmitOrder, Contexts, Modules, Aggregates
     context: 'ordering',
     module: 'order_management',
     aggregate: 'order-processing',
+    businessGoal: 'proceed with the purchase and receive the goods',
     description: 'A customer submits a draft order for processing',
     trigger: { type: 'success', outcome: 'order_created' },
     shouldFailWith: {
         order_empty: {
             description: 'The order has no line items',
             requiredInfo: ['order_line_items'],
-            examples: [
+            scenarios: [
                 { description: 'Customer tries to submit an order after removing all products' }
             ]
         },
         order_already_submitted: {
             description: 'The order has already been submitted',
             requiredInfo: ['order_status'],
-            examples: [
+            scenarios: [
                 { description: 'Customer double-clicks the submit button' }
             ]
         }

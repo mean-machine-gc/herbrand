@@ -10,13 +10,14 @@ const rejectPurchaseOrder: IntentDecisionSpec<RejectPurchaseOrder, Contexts, Mod
     context: 'procurement',
     module: 'purchasing',
     aggregate: 'procurement-processing',
+    businessGoal: 'prevent unauthorized or unnecessary spending',
     description: 'A department manager rejects a purchase order',
     trigger: { type: 'success', outcome: 'purchase_order_created' },
     shouldFailWith: {
         not_authorized: {
             description: 'The rejector does not have authority over this department',
             requiredInfo: ['approver_authority'],
-            examples: [
+            scenarios: [
                 { description: 'A manager from a different department tries to reject the PO' }
             ]
         },

@@ -1,0 +1,20 @@
+[
+  {
+    "level": "warning",
+    "rule": "missing_scenarios",
+    "message": "Reject 'purchase_order_already_approved' has no scenarios",
+    "spec": "approve-purchase-order"
+  },
+  {
+    "level": "warning",
+    "rule": "missing_scenarios",
+    "message": "Reject 'order_already_cancelled' has no scenarios",
+    "spec": "cancel-order"
+  },
+  {
+    "level": "warning",
+    "rule": "missing_scenarios",
+    "message": "Reject 'purchase_order_already_rejected' has no scenarios",
+    "spec": "reject-purchase-order"
+  }
+]

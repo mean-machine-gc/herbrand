@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "tsc --noEmit --strict",
+    "parse-specs": "node scripts/parse-specs.js",
+    "spec-lint": "node scripts/spec-lint.js",
+    "render-specs-view": "node scripts/render-specs-view.js",
+    "build-decision-graph": "node scripts/build-graph.js",
+    "behavior-lint": "node scripts/lint.js",
+    "render-graph-view": "node scripts/render.js",
+    "render-business-view": "node scripts/render-business-view.js",
+    "specs": "npm run typecheck && npm run parse-specs && npm run spec-lint && npm run render-specs-view",
+    "graph": "npm run build-decision-graph && npm run behavior-lint && npm run render-graph-view && npm run render-business-view",
+    "herbert": "npm run specs && npm run graph"
   },
   "keywords": [],
   "author": "",

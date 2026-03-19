@@ -15,7 +15,7 @@ You have access to:
 Refinement happens when the conversation reveals new detail about an already-formalized decision:
 - A new way things can go wrong ("oh, and what if the supplier is blacklisted?")
 - A more precise description of an existing reject or choice
-- New examples that illustrate edge cases
+- New scenarios that illustrate edge cases
 - A correction ("actually, only managers can do that, not any employee")
 - New assertions that must hold after a successful choice (outcome decisions only)
 - A change in who makes the decision or what triggers it
@@ -38,7 +38,7 @@ Apply the refinement:
 
 **Adding a new reject:**
 - Add the new reject literal to the decision type's `Rejects` union
-- Add the corresponding entry in `shouldFailWith` with description, `requiredInfo`, and examples
+- Add the corresponding entry in `shouldFailWith` with description, `requiredInfo`, and scenarios
 - Identify what info is needed to detect this failure — add to the `Info` union in `project.decisions.ts` if new
 
 **Adding a new choice:**
@@ -48,7 +48,7 @@ Apply the refinement:
 - Update the `Outcomes`, `Intents`, or `Info` unions in `project.decisions.ts` if needed
 
 **Enriching an existing entry:**
-- Add examples to `shouldFailWith` or `shouldSucceedWith`
+- Add scenarios to `shouldFailWith` or `shouldSucceedWith`
 - Sharpen descriptions to be more precise
 - For outcome decisions: add new assertion tags to `shouldAssert` with their `affectedInfo`
 - Add or refine `requiredInfo` on rejects and success conditions
@@ -71,9 +71,13 @@ Check related specs and update them if needed.
 
 ### 5. Validate
 
-After every refinement:
-- Run typecheck: `npx tsc --noEmit --strict src/framework.ts src/project.decisions.ts src/specs/*.spec.ts`
-- Verify the spec file reads coherently as a whole — not just the changed part
+After every refinement, run the two validation loops:
+
+**Loop 1:** Run `npm run specs`. Fix any spec-lint errors before proceeding. Repeat until clean.
+
+**Loop 2:** Run `npm run graph`. Check behavior-lint for new issues introduced by the refinement — the change may have created orphans, broken info flows, or disconnected decisions. Address by further spec changes, then back to Loop 1.
+
+A refinement is complete when both loops are clean (no errors; warnings acceptable).
 
 ## Rules
 
@@ -81,5 +85,6 @@ After every refinement:
 - Speak in the domain language of the expert
 - Always read the existing spec before modifying it
 - Capture the context of the refinement in the scratchpad before applying it
+- Loop 1 before Loop 2 — always validate specs before checking behavior
 - One change at a time — don't batch unrelated refinements
 - If a refinement fundamentally changes what the decision is, consider whether it's actually a new decision instead

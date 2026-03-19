@@ -21,13 +21,19 @@ The review serves as a checkpoint in the discovery process. It allows the BA and
 
 ### 1. Read the full model
 
-Read all spec files and the scratchpad. Build a mental picture of:
+Run `npm run herbert` to ensure everything is up to date. Then read:
+- `decision-graph.json` — the system behavior graph
+- `lint-results.json` — behavior-level findings (orphans, dead ends, info gaps)
+- `spec-lint-results.json` — spec-level findings (missing scenarios, incomplete specs)
+- The scratchpad — open questions and observations
+
+Build a mental picture of:
 - The decision flow: what triggers what, who's involved
 - The information context: what information each decision needs and what it changes
 - The failure modes: what can go wrong at each step
 - The assertions: what must be true after each successful decision
+- What lint findings are still open
 - What's still in the scratchpad (captured but not formalized)
-- What open questions remain
 
 ### 2. Organize by process flow
 

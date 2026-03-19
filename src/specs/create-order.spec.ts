@@ -10,13 +10,14 @@ const createOrder: IntentDecisionSpec<CreateOrder, Contexts, Modules, Aggregates
     context: 'ordering',
     module: 'order_management',
     aggregate: 'order-processing',
+    businessGoal: 'purchase desired products',
     description: 'A customer creates a new order by selecting products',
     trigger: { type: 'success', outcome: 'order_created' },
     shouldFailWith: {
         missing_customer_info: {
             description: 'The customer has not provided required contact or shipping information',
             requiredInfo: ['customer_info'],
-            examples: [
+            scenarios: [
                 { description: 'Customer submits order without a shipping address' },
                 { description: 'Customer has no email on file' }
             ]
@@ -24,7 +25,7 @@ const createOrder: IntentDecisionSpec<CreateOrder, Contexts, Modules, Aggregates
         invalid_product: {
             description: 'One or more selected products do not exist or are not available for sale',
             requiredInfo: ['available_products'],
-            examples: [
+            scenarios: [
                 { description: 'Customer selects a discontinued product' }
             ]
         }
@@ -34,7 +35,7 @@ const createOrder: IntentDecisionSpec<CreateOrder, Contexts, Modules, Aggregates
             condition: 'Customer info is valid and all products exist',
             description: 'A new order is created in draft state with the selected products',
             requiredInfo: ['customer_info', 'available_products'],
-            examples: [
+            scenarios: [
                 { description: 'Customer with complete profile selects two available products' }
             ]
         }

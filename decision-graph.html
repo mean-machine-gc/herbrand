@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Herbert Decision Graph</title>
+<style>
+  body { margin:0; padding:0; background:#fff; font-family:Helvetica,Arial,sans-serif; }
+  .container { display:flex; height:100vh; }
+  .graph-panel { flex:1; overflow:auto; padding:20px; }
+  .lint-panel { width:360px; border-left:1px solid #E0E0E0; overflow-y:auto; background:#FAFAFA; flex-shrink:0; }
+  .lint-header { padding:12px 16px; border-bottom:1px solid #E0E0E0; display:flex; align-items:center; gap:8px; position:sticky; top:0; background:#FAFAFA; z-index:1; }
+  .lint-header h3 { margin:0; font-size:14px; color:#333; }
+  .lint-badge { padding:2px 8px; border-radius:10px; font-size:11px; color:#fff; }
+  .lint-body { padding:12px 16px; }
+  .lint-category { margin-bottom:14px; }
+  .lint-category-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+  .lint-item { margin-bottom:6px; padding:6px 10px; background:#fff; border-left:3px solid #ccc; border-radius:2px; font-size:11px; color:#333; }
+  .lint-item .spec-tag { color:#999; font-size:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="graph-panel">
+    <svg width="1120" height="1040" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M 0 0 L 8 3 L 0 6 Z" fill="#666"/></marker>
+        <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M 0 0 L 8 3 L 0 6 Z" fill="#D94A4A"/></marker>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M 0 0 L 8 3 L 0 6 Z" fill="#7CB342"/></marker>
+      </defs>
+      <rect x="0" y="0" width="1120" height="380" fill="#FAFAFA" stroke="#BDBDBD" stroke-width="1"/>
+<line x1="60" y1="0" x2="60" y2="380" stroke="#BDBDBD" stroke-width="1"/>
+<text x="14" y="190" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#37474F" transform="rotate(-90,14,190)" text-anchor="middle" dominant-baseline="middle">Views</text>
+<rect x="0" y="380" width="1120" height="220" fill="#FAFAFA" stroke="#BDBDBD" stroke-width="1"/>
+<line x1="60" y1="380" x2="60" y2="600" stroke="#BDBDBD" stroke-width="1"/>
+<text x="14" y="490" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#37474F" transform="rotate(-90,14,490)" text-anchor="middle" dominant-baseline="middle">department_manager</text>
+<rect x="0" y="600" width="1120" height="300" fill="#FAFAFA" stroke="#BDBDBD" stroke-width="1"/>
+<line x1="60" y1="600" x2="60" y2="900" stroke="#BDBDBD" stroke-width="1"/>
+<text x="14" y="750" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#37474F" transform="rotate(-90,14,750)" text-anchor="middle" dominant-baseline="middle">customer</text>
+<rect x="0" y="900" width="1120" height="140" fill="#FAFAFA" stroke="#BDBDBD" stroke-width="1"/>
+<line x1="60" y1="900" x2="60" y2="1040" stroke="#BDBDBD" stroke-width="1"/>
+<text x="14" y="970" font-family="Helvetica,Arial,sans-serif" font-size="13" fill="#37474F" transform="rotate(-90,14,970)" text-anchor="middle" dominant-baseline="middle">procurement_officer</text>
+<path d="M 230 453.3333333333333 C 260 453.3333333333333, 260 453.3333333333333, 290 453.3333333333333" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="260" y="448.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">not_authorized, purchase_order_already_approved</text>
+<path d="M 230 526.6666666666666 C 560 526.6666666666666, 560 700, 890 700" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="560" y="521.6666666666666" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">order_already_confirmed, order_already_cancelled</text>
+<path d="M 1030 800 C 760 800, 760 675, 490 675" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<path d="M 1030 800 C 760 800, 760 750, 490 750" fill="none" stroke="#D94A4A" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowRed)"/>
+<path d="M 1030 800 C 760 800, 760 825, 490 825" fill="none" stroke="#D94A4A" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowRed)"/>
+<path d="M 230 526.6666666666666 C 260 526.6666666666666, 260 750, 290 750" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="260" y="521.6666666666666" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">missing_customer_info, invalid_product</text>
+<path d="M 230 453.3333333333333 C 260 453.3333333333333, 260 970, 290 970" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="260" y="448.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">missing_supplier, budget_exceeded</text>
+<path d="M 230 453.3333333333333 C 260 453.3333333333333, 260 526.6666666666666, 290 526.6666666666666" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="260" y="448.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">not_authorized, purchase_order_already_rejected</text>
+<path d="M 230 526.6666666666666 C 560 526.6666666666666, 560 800, 890 800" fill="none" stroke="#666" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="560" y="521.6666666666666" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#D94A4A" text-anchor="middle">order_empty, order_already_submitted</text>
+<path d="M 230 76 C 260 76, 260 453.3333333333333, 290 453.3333333333333" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 830 126.66666666666667 C 860 126.66666666666667, 860 700, 890 700" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 230 152 C 260 152, 260 750, 290 750" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 230 228 C 260 228, 260 970, 290 970" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 230 304 C 260 304, 260 526.6666666666666, 290 526.6666666666666" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 830 253.33333333333334 C 860 253.33333333333334, 860 800, 890 800" fill="none" stroke="#7CB342" stroke-width="1.2"  marker-end="url(#arrowGreen)"/>
+<path d="M 630 675 C 660 675, 660 126.66666666666667, 690 126.66666666666667" fill="none" stroke="#7CB342" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowGreen)"/>
+<path d="M 630 675 C 660 675, 660 253.33333333333334, 690 253.33333333333334" fill="none" stroke="#7CB342" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowGreen)"/>
+<rect x="290" y="433.3333333333333" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="360" y="453.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">approve_purchase_order</text>
+<rect x="890" y="680" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="960" y="700" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">cancel_order</text>
+<rect x="890" y="780" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="960" y="800" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">submit_order</text>
+<rect x="290" y="730" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="360" y="750" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">create_order</text>
+<rect x="290" y="950" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="360" y="970" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">create_purchase_order</text>
+<rect x="290" y="506.66666666666663" width="140" height="40" rx="6" fill="#4A90D9" stroke="none"/>
+<text x="360" y="526.6666666666666" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">reject_purchase_order</text>
+<rect x="90" y="433.3333333333333" width="140" height="40" rx="6" fill="#E8944A" stroke="none"/>
+<text x="160" y="453.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">purchase_order_created</text>
+<rect x="90" y="506.66666666666663" width="140" height="40" rx="6" fill="#E8944A" stroke="none"/>
+<text x="160" y="526.6666666666666" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">order_created</text>
+<rect x="490" y="655" width="140" height="40" rx="6" fill="#E8944A" stroke="none"/>
+<text x="560" y="675" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">order_confirmed</text>
+<rect x="490" y="730" width="140" height="40" rx="6" fill="#D94A4A" stroke="none"/>
+<text x="560" y="750" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">rejected:payment_failed</text>
+<rect x="490" y="805" width="140" height="40" rx="6" fill="#D94A4A" stroke="none"/>
+<text x="560" y="825" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">rejected:stock_unavailable</text>
+<rect x="90" y="56" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="160" y="70" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">approver_authority</text>
+<text x="160" y="82" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">purchase_order_status</text>
+<rect x="690" y="106.66666666666667" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="760" y="126.66666666666667" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">order_status</text>
+<rect x="90" y="132" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="160" y="146" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">customer_info</text>
+<text x="160" y="158" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">available_products</text>
+<rect x="90" y="208" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="160" y="222" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">supplier_status</text>
+<text x="160" y="234" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">department_budget</text>
+<rect x="90" y="284" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="160" y="298" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">approver_authority</text>
+<text x="160" y="310" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">purchase_order_status</text>
+<rect x="690" y="233.33333333333334" width="140" height="40" rx="2" fill="#7CB342" stroke="none"/>
+<text x="760" y="247.33333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">order_line_items</text>
+<text x="760" y="259.33333333333337" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#fff" text-anchor="middle" dominant-baseline="middle">order_status</text>
+
+    </svg>
+  </div>
+  <div class="lint-panel">
+    <div class="lint-header"><h3>Lint</h3><span class="lint-badge" style="background:#FF9800">26 warnings</span></div><div class="lint-body"><div class="lint-category"><div class="lint-category-label" style="color:#E65100">Orphans (9)</div><div class="lint-item" style="border-left-color:#E65100">⚠ Outcome 'purchase_order_created' is used as a trigger but no outcome decision produces it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Outcome 'order_created' is used as a trigger but no outcome decision produces it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Intent 'approve_purchase_order' is produced but no outcome decision is triggered by it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Intent 'cancel_order' is produced but no outcome decision is triggered by it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Intent 'create_order' is produced but no outcome decision is triggered by it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Intent 'create_purchase_order' is produced but no outcome decision is triggered by it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Intent 'reject_purchase_order' is produced but no outcome decision is triggered by it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Outcome rejection 'rejected:payment_failed' has no intent decision reacting to it</div><div class="lint-item" style="border-left-color:#E65100">⚠ Outcome rejection 'rejected:stock_unavailable' has no intent decision reacting to it</div></div><div class="lint-category"><div class="lint-category-label" style="color:#BF360C">Dead Ends (1)</div><div class="lint-item" style="border-left-color:#BF360C">⚠ Outcome 'order_confirmed' is produced but no intent decision is triggered by it</div></div><div class="lint-category"><div class="lint-category-label" style="color:#1565C0">Info Flow (7)</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'approver_authority' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'purchase_order_status' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'customer_info' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'available_products' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'supplier_status' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'department_budget' is required by decisions but never affected by any outcome decision — where does it come from?</div><div class="lint-item" style="border-left-color:#1565C0">⚠ Info 'order_line_items' is required by decisions but never affected by any outcome decision — where does it come from?</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">Other (3)</div><div class="lint-item" style="border-left-color:#333">⚠ Reject 'purchase_order_already_approved' has no scenarios <span class="spec-tag">— approve-purchase-order</span></div><div class="lint-item" style="border-left-color:#333">⚠ Reject 'order_already_cancelled' has no scenarios <span class="spec-tag">— cancel-order</span></div><div class="lint-item" style="border-left-color:#333">⚠ Reject 'purchase_order_already_rejected' has no scenarios <span class="spec-tag">— reject-purchase-order</span></div></div><div class="lint-category"><div class="lint-category-label" style="color:#6A1B9A">Structural (1)</div><div class="lint-item" style="border-left-color:#6A1B9A">⚠ Same info set [approver_authority,purchase_order_status] — could be the same view: approve-purchase-order, reject-purchase-order</div></div><div class="lint-category"><div class="lint-category-label" style="color:#2E7D32">Boundaries (5)</div><div class="lint-item" style="border-left-color:#2E7D32">⚠ 'approve-purchase-order' and 'create-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?</div><div class="lint-item" style="border-left-color:#2E7D32">⚠ 'create-purchase-order' and 'reject-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?</div><div class="lint-item" style="border-left-color:#2E7D32">⚠ 'cancel-order' and 'create-order' in aggregate 'order-processing' share no info — do they belong together?</div><div class="lint-item" style="border-left-color:#2E7D32">⚠ 'confirm-order' and 'create-order' in aggregate 'order-processing' share no info — do they belong together?</div><div class="lint-item" style="border-left-color:#2E7D32">⚠ 'create-order' and 'submit-order' in aggregate 'order-processing' share no info — do they belong together?</div></div></div>
+  </div>
+</div>
+</body>
+</html>

@@ -16,7 +16,7 @@ const confirmOrder: OutcomeDecisionSpec<ConfirmOrder, Contexts, Modules, Aggrega
         payment_failed: {
             description: 'Payment could not be processed',
             requiredInfo: ['payment_status'],
-            examples: [
+            scenarios: [
                 { description: 'Credit card is declined' },
                 { description: 'Payment gateway timeout' }
             ]
@@ -24,7 +24,7 @@ const confirmOrder: OutcomeDecisionSpec<ConfirmOrder, Contexts, Modules, Aggrega
         stock_unavailable: {
             description: 'One or more products are out of stock',
             requiredInfo: ['stock_levels'],
-            examples: [
+            scenarios: [
                 { description: 'Last unit was purchased by another customer moments before' }
             ]
         }

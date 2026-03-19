@@ -1,0 +1,663 @@
+{
+  "nodes": [
+    {
+      "id": "approve_purchase_order",
+      "type": "intent",
+      "role": "department_manager"
+    },
+    {
+      "id": "cancel_order",
+      "type": "intent",
+      "role": "customer"
+    },
+    {
+      "id": "submit_order",
+      "type": "intent",
+      "role": "customer"
+    },
+    {
+      "id": "create_order",
+      "type": "intent",
+      "role": "customer"
+    },
+    {
+      "id": "create_purchase_order",
+      "type": "intent",
+      "role": "procurement_officer"
+    },
+    {
+      "id": "reject_purchase_order",
+      "type": "intent",
+      "role": "department_manager"
+    },
+    {
+      "id": "purchase_order_created",
+      "type": "outcome",
+      "role": null
+    },
+    {
+      "id": "order_created",
+      "type": "outcome",
+      "role": null
+    },
+    {
+      "id": "order_confirmed",
+      "type": "outcome",
+      "role": "customer"
+    },
+    {
+      "id": "rejected:payment_failed",
+      "type": "outcome_reject",
+      "role": "customer"
+    },
+    {
+      "id": "rejected:stock_unavailable",
+      "type": "outcome_reject",
+      "role": "customer"
+    },
+    {
+      "id": "view_approve-purchase-order_approve_purchase_order",
+      "type": "view",
+      "role": "department_manager",
+      "infos": [
+        "approver_authority",
+        "purchase_order_status"
+      ]
+    },
+    {
+      "id": "view_cancel-order_cancel_order",
+      "type": "view",
+      "role": "customer",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "id": "view_create-order_create_order",
+      "type": "view",
+      "role": "customer",
+      "infos": [
+        "customer_info",
+        "available_products"
+      ]
+    },
+    {
+      "id": "view_create-purchase-order_create_purchase_order",
+      "type": "view",
+      "role": "procurement_officer",
+      "infos": [
+        "supplier_status",
+        "department_budget"
+      ]
+    },
+    {
+      "id": "view_reject-purchase-order_reject_purchase_order",
+      "type": "view",
+      "role": "department_manager",
+      "infos": [
+        "approver_authority",
+        "purchase_order_status"
+      ]
+    },
+    {
+      "id": "view_submit-order_submit_order",
+      "type": "view",
+      "role": "customer",
+      "infos": [
+        "order_line_items",
+        "order_status"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "purchase_order_created",
+      "to": "approve_purchase_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "not_authorized",
+        "purchase_order_already_approved"
+      ],
+      "spec": "approve-purchase-order"
+    },
+    {
+      "from": "order_created",
+      "to": "cancel_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_already_confirmed",
+        "order_already_cancelled"
+      ],
+      "spec": "cancel-order"
+    },
+    {
+      "from": "submit_order",
+      "to": "order_confirmed",
+      "type": "outcome_flow",
+      "spec": "confirm-order"
+    },
+    {
+      "from": "submit_order",
+      "to": "rejected:payment_failed",
+      "type": "reject_flow",
+      "spec": "confirm-order"
+    },
+    {
+      "from": "submit_order",
+      "to": "rejected:stock_unavailable",
+      "type": "reject_flow",
+      "spec": "confirm-order"
+    },
+    {
+      "from": "order_created",
+      "to": "create_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "missing_customer_info",
+        "invalid_product"
+      ],
+      "spec": "create-order"
+    },
+    {
+      "from": "purchase_order_created",
+      "to": "create_purchase_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "missing_supplier",
+        "budget_exceeded"
+      ],
+      "spec": "create-purchase-order"
+    },
+    {
+      "from": "purchase_order_created",
+      "to": "reject_purchase_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "not_authorized",
+        "purchase_order_already_rejected"
+      ],
+      "spec": "reject-purchase-order"
+    },
+    {
+      "from": "order_created",
+      "to": "submit_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_empty",
+        "order_already_submitted"
+      ],
+      "spec": "submit-order"
+    },
+    {
+      "from": "view_approve-purchase-order_approve_purchase_order",
+      "to": "approve_purchase_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_cancel-order_cancel_order",
+      "to": "cancel_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_create-order_create_order",
+      "to": "create_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_create-purchase-order_create_purchase_order",
+      "to": "create_purchase_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_reject-purchase-order_reject_purchase_order",
+      "to": "reject_purchase_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_submit-order_submit_order",
+      "to": "submit_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    }
+  ],
+  "specs": {
+    "approve-purchase-order": {
+      "type": "intent",
+      "description": "A department manager approves a purchase order for fulfillment",
+      "businessGoal": "authorize spending and ensure procurement compliance",
+      "trigger": "purchase_order_created",
+      "triggerType": "success",
+      "choices": [
+        "approve_purchase_order"
+      ],
+      "choiceDetails": {
+        "approve_purchase_order": {
+          "condition": "Approver has authority and PO is in pending approval state",
+          "description": "The purchase order is approved and sent to the supplier",
+          "requiredInfo": [
+            "approver_authority",
+            "purchase_order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "not_authorized",
+        "purchase_order_already_approved"
+      ],
+      "rejectDetails": {
+        "not_authorized": {
+          "description": "The approver does not have authority over this department or amount",
+          "requiredInfo": [
+            "approver_authority"
+          ],
+          "scenarios": [
+            "A manager from a different department tries to approve the PO"
+          ]
+        },
+        "purchase_order_already_approved": {
+          "description": "The purchase order has already been approved",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "approver_authority",
+        "purchase_order_status"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [
+        "purchase_order_already_approved"
+      ],
+      "role": "department_manager",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "cancel-order": {
+      "type": "intent",
+      "description": "A customer cancels an order that has not yet been confirmed",
+      "businessGoal": "avoid being charged for unwanted products",
+      "trigger": "order_created",
+      "triggerType": "success",
+      "choices": [
+        "cancel_order"
+      ],
+      "choiceDetails": {
+        "cancel_order": {
+          "condition": "Order is in draft or submitted state",
+          "description": "The order is cancelled and any held resources are released",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_already_confirmed",
+        "order_already_cancelled"
+      ],
+      "rejectDetails": {
+        "order_already_confirmed": {
+          "description": "The order has already been confirmed and cannot be cancelled through this flow",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "Customer tries to cancel after receiving confirmation email"
+          ]
+        },
+        "order_already_cancelled": {
+          "description": "The order was already cancelled",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_status"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [
+        "order_already_cancelled"
+      ],
+      "role": "customer",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "confirm-order": {
+      "type": "outcome",
+      "description": "The system confirms a submitted order after verifying payment and stock",
+      "businessGoal": null,
+      "trigger": "submit_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_confirmed"
+      ],
+      "choiceDetails": {
+        "order_confirmed": {
+          "condition": "Payment is successful and all items are in stock",
+          "description": "The order is confirmed and ready for fulfillment",
+          "requiredInfo": [
+            "payment_status",
+            "stock_levels"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "payment_failed",
+        "stock_unavailable"
+      ],
+      "rejectDetails": {
+        "payment_failed": {
+          "description": "Payment could not be processed",
+          "requiredInfo": [
+            "payment_status"
+          ],
+          "scenarios": [
+            "Credit card is declined",
+            "Payment gateway timeout"
+          ]
+        },
+        "stock_unavailable": {
+          "description": "One or more products are out of stock",
+          "requiredInfo": [
+            "stock_levels"
+          ],
+          "scenarios": [
+            "Last unit was purchased by another customer moments before"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_confirmed": [
+          {
+            "tag": "order_status_confirmed",
+            "description": "The order status transitions to confirmed",
+            "affectedInfo": [
+              "order_status"
+            ]
+          },
+          {
+            "tag": "payment_captured",
+            "description": "Payment has been charged to the customer",
+            "affectedInfo": [
+              "payment_status"
+            ]
+          },
+          {
+            "tag": "stock_reserved",
+            "description": "Inventory is decremented for the ordered items",
+            "affectedInfo": [
+              "stock_levels"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "payment_status",
+        "stock_levels"
+      ],
+      "affectedInfo": [
+        "order_status",
+        "payment_status",
+        "stock_levels"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "create-order": {
+      "type": "intent",
+      "description": "A customer creates a new order by selecting products",
+      "businessGoal": "purchase desired products",
+      "trigger": "order_created",
+      "triggerType": "success",
+      "choices": [
+        "create_order"
+      ],
+      "choiceDetails": {
+        "create_order": {
+          "condition": "Customer info is valid and all products exist",
+          "description": "A new order is created in draft state with the selected products",
+          "requiredInfo": [
+            "customer_info",
+            "available_products"
+          ],
+          "scenarios": [
+            "Customer with complete profile selects two available products"
+          ]
+        }
+      },
+      "rejects": [
+        "missing_customer_info",
+        "invalid_product"
+      ],
+      "rejectDetails": {
+        "missing_customer_info": {
+          "description": "The customer has not provided required contact or shipping information",
+          "requiredInfo": [
+            "customer_info"
+          ],
+          "scenarios": [
+            "Customer submits order without a shipping address",
+            "Customer has no email on file"
+          ]
+        },
+        "invalid_product": {
+          "description": "One or more selected products do not exist or are not available for sale",
+          "requiredInfo": [
+            "available_products"
+          ],
+          "scenarios": [
+            "Customer selects a discontinued product"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "customer_info",
+        "available_products"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "customer",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "create-purchase-order": {
+      "type": "intent",
+      "description": "A procurement officer creates a purchase order to request goods from a supplier",
+      "businessGoal": "acquire necessary materials from approved suppliers within budget",
+      "trigger": "purchase_order_created",
+      "triggerType": "success",
+      "choices": [
+        "create_purchase_order"
+      ],
+      "choiceDetails": {
+        "create_purchase_order": {
+          "condition": "Supplier is valid and budget is available",
+          "description": "A new purchase order is created in pending approval state",
+          "requiredInfo": [
+            "supplier_status",
+            "department_budget"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "missing_supplier",
+        "budget_exceeded"
+      ],
+      "rejectDetails": {
+        "missing_supplier": {
+          "description": "No supplier has been selected or the supplier is inactive",
+          "requiredInfo": [
+            "supplier_status"
+          ],
+          "scenarios": [
+            "Officer tries to create a PO without selecting a supplier"
+          ]
+        },
+        "budget_exceeded": {
+          "description": "The purchase order total exceeds the available budget for the department",
+          "requiredInfo": [
+            "department_budget"
+          ],
+          "scenarios": [
+            "Officer requests materials that would push the quarterly budget over limit"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "supplier_status",
+        "department_budget"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "procurement_officer",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "reject-purchase-order": {
+      "type": "intent",
+      "description": "A department manager rejects a purchase order",
+      "businessGoal": "prevent unauthorized or unnecessary spending",
+      "trigger": "purchase_order_created",
+      "triggerType": "success",
+      "choices": [
+        "reject_purchase_order"
+      ],
+      "choiceDetails": {
+        "reject_purchase_order": {
+          "condition": "Rejector has authority and PO is in pending approval state",
+          "description": "The purchase order is rejected and the budget reservation is released",
+          "requiredInfo": [
+            "approver_authority",
+            "purchase_order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "not_authorized",
+        "purchase_order_already_rejected"
+      ],
+      "rejectDetails": {
+        "not_authorized": {
+          "description": "The rejector does not have authority over this department",
+          "requiredInfo": [
+            "approver_authority"
+          ],
+          "scenarios": [
+            "A manager from a different department tries to reject the PO"
+          ]
+        },
+        "purchase_order_already_rejected": {
+          "description": "The purchase order has already been rejected",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "approver_authority",
+        "purchase_order_status"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [
+        "purchase_order_already_rejected"
+      ],
+      "role": "department_manager",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "submit-order": {
+      "type": "intent",
+      "description": "A customer submits a draft order for processing",
+      "businessGoal": "proceed with the purchase and receive the goods",
+      "trigger": "order_created",
+      "triggerType": "success",
+      "choices": [
+        "submit_order"
+      ],
+      "choiceDetails": {
+        "submit_order": {
+          "condition": "Order has at least one line item and is in draft state",
+          "description": "The order transitions from draft to submitted and is queued for confirmation",
+          "requiredInfo": [
+            "order_status",
+            "order_line_items"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_empty",
+        "order_already_submitted"
+      ],
+      "rejectDetails": {
+        "order_empty": {
+          "description": "The order has no line items",
+          "requiredInfo": [
+            "order_line_items"
+          ],
+          "scenarios": [
+            "Customer tries to submit an order after removing all products"
+          ]
+        },
+        "order_already_submitted": {
+          "description": "The order has already been submitted",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "Customer double-clicks the submit button"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_line_items",
+        "order_status"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "customer",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    }
+  },
+  "declaredInfos": []
+}

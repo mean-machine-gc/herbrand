@@ -1,0 +1,93 @@
+digraph herbert {
+    rankdir=LR;
+    node [fontname="Helvetica" fontsize=10 style=filled];
+    edge [fontname="Helvetica" fontsize=8];
+    compound=true;
+    newrank=true;
+
+    subgraph cluster_views {
+        label="";
+        style="";
+        color="#BDBDBD";
+        penwidth=1;
+
+        subgraph cluster_views_label {
+            label="";
+            style=invis;
+            "views_label" [shape=plaintext label="views" fontname="Helvetica" fontsize=12 fontcolor="#558B2F" fillcolor=transparent style=""];
+        }
+        "view_approve-purchase-order_approve_purchase_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="approver_authority\npurchase_order_status"];
+        "view_cancel-order_cancel_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="order_status"];
+        "view_create-order_create_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="customer_info\navailable_products"];
+        "view_create-purchase-order_create_purchase_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="supplier_status\ndepartment_budget"];
+        "view_reject-purchase-order_reject_purchase_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="approver_authority\npurchase_order_status"];
+        "view_submit-order_submit_order" [shape=note fillcolor="#5CB85C" fontcolor=white label="order_line_items\norder_status"];
+    }
+
+    subgraph cluster_department_manager {
+        label="";
+        style="";
+        color="#BDBDBD";
+        penwidth=1;
+
+        subgraph cluster_department_manager_label {
+            label="";
+            style=invis;
+            "department_manager_label" [shape=plaintext label="department_manager" fontname="Helvetica" fontsize=12 fontcolor="#37474F" fillcolor=transparent style=""];
+        }
+        "approve_purchase_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="approve_purchase_order" style="filled,rounded"];
+        "reject_purchase_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="reject_purchase_order" style="filled,rounded"];
+    }
+
+    subgraph cluster_customer {
+        label="";
+        style="";
+        color="#BDBDBD";
+        penwidth=1;
+
+        subgraph cluster_customer_label {
+            label="";
+            style=invis;
+            "customer_label" [shape=plaintext label="customer" fontname="Helvetica" fontsize=12 fontcolor="#37474F" fillcolor=transparent style=""];
+        }
+        "cancel_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="cancel_order" style="filled,rounded"];
+        "create_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="create_order" style="filled,rounded"];
+        "submit_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="submit_order" style="filled,rounded"];
+        "order_confirmed" [shape=box fillcolor="#E8944A" fontcolor=white label="order_confirmed" style="filled,rounded"];
+        "rejected:payment_failed" [shape=box fillcolor="#D94A4A" fontcolor=white label="rejected:payment_failed" style="filled,rounded"];
+        "rejected:stock_unavailable" [shape=box fillcolor="#D94A4A" fontcolor=white label="rejected:stock_unavailable" style="filled,rounded"];
+    }
+
+    subgraph cluster_procurement_officer {
+        label="";
+        style="";
+        color="#BDBDBD";
+        penwidth=1;
+
+        subgraph cluster_procurement_officer_label {
+            label="";
+            style=invis;
+            "procurement_officer_label" [shape=plaintext label="procurement_officer" fontname="Helvetica" fontsize=12 fontcolor="#37474F" fillcolor=transparent style=""];
+        }
+        "create_purchase_order" [shape=box fillcolor="#4A90D9" fontcolor=white label="create_purchase_order" style="filled,rounded"];
+    }
+
+    // Edges
+    "view_approve-purchase-order_approve_purchase_order" -> "approve_purchase_order";
+    "view_cancel-order_cancel_order" -> "cancel_order";
+    "view_create-order_create_order" -> "create_order";
+    "view_create-purchase-order_create_purchase_order" -> "create_purchase_order";
+    "view_reject-purchase-order_reject_purchase_order" -> "reject_purchase_order";
+    "view_submit-order_submit_order" -> "submit_order";
+    "purchase_order_created" -> "approve_purchase_order" [style=solid label="not_authorized\npurchase_order_already_approved" fontcolor="#D94A4A"];
+    "order_created" -> "cancel_order" [style=solid label="order_already_confirmed\norder_already_cancelled" fontcolor="#D94A4A"];
+    "submit_order" -> "order_confirmed" [style=solid];
+    "submit_order" -> "rejected:payment_failed" [style=dashed];
+    "submit_order" -> "rejected:stock_unavailable" [style=dashed];
+    "order_created" -> "create_order" [style=solid label="missing_customer_info\ninvalid_product" fontcolor="#D94A4A"];
+    "purchase_order_created" -> "create_purchase_order" [style=solid label="missing_supplier\nbudget_exceeded" fontcolor="#D94A4A"];
+    "purchase_order_created" -> "reject_purchase_order" [style=solid label="not_authorized\npurchase_order_already_rejected" fontcolor="#D94A4A"];
+    "order_created" -> "submit_order" [style=solid label="order_empty\norder_already_submitted" fontcolor="#D94A4A"];
+    "order_confirmed" -> "view_cancel-order_cancel_order" [style=dotted label="order_status"];
+    "order_confirmed" -> "view_submit-order_submit_order" [style=dotted label="order_status"];
+}

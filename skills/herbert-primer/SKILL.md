@@ -79,14 +79,59 @@ src/
     {topic-or-session}.md   # Freeform notes, observations, open questions
 ```
 
-## The session cycle
+## The two validation loops
 
-Herbert work follows a natural rhythm:
+Herbert uses two intertwined feedback loops. Each loop validates at a different level and feeds corrections back to the specs.
 
-1. **Discover** — listen to the conversation, capture observations in the scratchpad, formalize decisions when they're ready
-2. **Refine** — deepen existing decisions as new detail emerges (new rejects, better descriptions, more examples)
-3. **Review** — present the current understanding back to stakeholders in plain language, listen for corrections
-4. **Challenge** — stress-test the model by finding gaps, dead ends, missing failure modes, and implicit assumptions
+### Loop 1: Spec validation (per-decision completeness)
+
+```
+conversation → scratchpad → spec → npm run specs → spec-lint → fix spec → repeat
+```
+
+After creating or modifying a spec, run `npm run specs`. This:
+1. Typechecks all specs (`tsc`)
+2. Parses specs into a structured format
+3. Runs spec-lint — checks individual spec completeness (missing descriptions, missing scenarios, missing info, missing context/module/aggregate)
+4. Renders the specs view with lint results
+
+**Stay in this loop until spec-lint reports zero errors.** Warnings are acceptable — they indicate areas to revisit but don't block progress. Errors must be fixed before proceeding.
+
+### Loop 2: Behavioral validation (system-level coherence)
+
+```
+specs (clean) → npm run graph → behavior-lint → adjust specs → back to Loop 1
+```
+
+Once specs are clean, run `npm run graph`. This:
+1. Builds the decision graph from all specs combined
+2. Runs behavior-lint — detects orphans, dead ends, info flow gaps, unhandled rejections, boundary issues
+3. Renders the graph view with lint results
+
+Behavior-lint findings are addressed by **modifying specs** — adding missing decisions, connecting orphaned outcomes, filling info gaps. Every spec change sends you back to Loop 1 (spec validation) before re-running Loop 2.
+
+### The full cycle
+
+```
+                    ┌─────────────────────────────┐
+                    │                             │
+conversation → spec ──→ Loop 1 (spec-lint) ──→ clean? ──→ Loop 2 (behavior-lint)
+                ↑         │ no                              │
+                │         └── fix spec ─────────────────────┘
+                │                                           │
+                └── address behavior findings ──────────────┘
+```
+
+The pipeline command `npm run herbert` runs both loops in sequence. Use `npm run specs` to iterate on Loop 1 alone, `npm run graph` to run Loop 2 once specs are clean.
+
+## The session rhythm
+
+Within the validation loops, the BA work follows a natural rhythm:
+
+1. **Discover** — listen to the conversation, capture observations in the scratchpad, formalize decisions when ready, run Loop 1 to validate
+2. **Refine** — deepen existing decisions as new detail emerges, run Loop 1 after each change
+3. **Review** — run Loop 2 to see the full picture, present the graph view to stakeholders in plain language, listen for corrections
+4. **Challenge** — use behavior-lint findings to stress-test the model, surface "what if" questions based on orphans, dead ends, and info gaps
 
 Then repeat. The model grows iteratively, never in one pass.
 
@@ -97,10 +142,17 @@ Then repeat. The model grows iteratively, never in one pass.
 - **review-model** — present the model in plain language for stakeholder feedback
 - **challenge-model** — find gaps and surface "what if" questions
 
+## Pipeline commands
+
+- `npm run specs` — Loop 1: typecheck → parse → spec-lint → specs view
+- `npm run graph` — Loop 2: build graph → behavior-lint → graph view (blocked by spec-lint errors)
+- `npm run herbert` — both loops in sequence
+
 ## Golden rules
 
-- **Never expose the framework to the business analyst.** No TypeScript, no types, no file names, no "specs" or "aggregates." Speak in the domain language.
+- **Never expose the framework to the business analyst.** No TypeScript, no types, no file names, no pipeline commands. Speak in the domain language.
 - **Scratchpad before specs.** Capture freeform first, formalize only when ready.
+- **Loop 1 before Loop 2.** Always validate specs before building the graph.
 - **Process first, data later.** Decisions reveal structure. Entities don't.
 - **One decision, one file.** Always.
 - **Exhaustive by design.** Every reject must be described. Every choice must have conditions. Outcome decisions must have assertions. The framework enforces this through types — the agent enforces it through conversation.

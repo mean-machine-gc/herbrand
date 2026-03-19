@@ -59,14 +59,14 @@ const createOrder: DecisionSpec<CreateOrder, Contexts, Modules, Aggregates> = {
     shouldFailWith: {
         missing_customer_info: {
             description: 'The customer has not provided required contact or shipping information',
-            examples: [
+            scenarios: [
                 { description: 'Customer submits order without a shipping address' },
                 { description: 'Customer has no email on file' }
             ]
         },
         invalid_product: {
             description: 'One or more selected products do not exist or are not available for sale',
-            examples: [
+            scenarios: [
                 { description: 'Customer selects a discontinued product' }
             ]
         }
@@ -75,7 +75,7 @@ const createOrder: DecisionSpec<CreateOrder, Contexts, Modules, Aggregates> = {
         create_order: {
             condition: 'Customer info is valid and all products exist',
             description: 'A new order is created in draft state with the selected products',
-            examples: [
+            scenarios: [
                 { description: 'Customer with complete profile selects two available products' }
             ]
         }
