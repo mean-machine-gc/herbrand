@@ -17,3 +17,6 @@ export {
   buildDecisionGraph,
   behaviorLint,
 } from "./functions.js"
+
+export { toReactFlowGraph } from "./to-reactflow-graph.js"
+export type { ReactFlowGraph, RFNode, RFEdge, RFNodeData, RFLaneData, Lane } from "./to-reactflow-graph.js"

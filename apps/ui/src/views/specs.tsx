@@ -362,7 +362,7 @@ export function SpecsView({ store }: { store: HerbrandStore }) {
       {/* Spec detail */}
       <Box style={{ flex: 1 }}>
         <ScrollArea h="100%">
-          <Box p="lg" maw={700}>
+          <Box p="lg">
             {selected && specs[selected] ? (
               <SpecDetail name={selected} spec={specs[selected]} />
             ) : (
@@ -373,7 +373,11 @@ export function SpecsView({ store }: { store: HerbrandStore }) {
       </Box>
 
       {/* Lint panel */}
-      <Box w={500} style={{ borderLeft: "1px solid var(--mantine-color-default-border)", flexShrink: 0 }}>
+      <Box
+        w={lintResults.length > 0 ? 360 : undefined}
+        miw={lintResults.length > 0 ? 360 : undefined}
+        style={{ borderLeft: "1px solid var(--mantine-color-default-border)", flexShrink: 0 }}
+      >
         <ScrollArea h="100%">
           <LintPanel results={lintResults} />
         </ScrollArea>

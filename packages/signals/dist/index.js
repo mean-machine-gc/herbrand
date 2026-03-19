@@ -1,7 +1,7 @@
 import { signal, computed } from "@preact/signals-core";
 import fs from "node:fs";
 import path from "node:path";
-import { parseSpecs, specLint, buildDecisionGraph, behaviorLint, } from "@herbrand/core";
+import { parseSpecs, specLint, buildDecisionGraph, behaviorLint, toReactFlowGraph, } from "@herbrand/core";
 export class HerbrandStore {
     /// Root signal — set by filesystem watcher, vite plugin, or manually
     _specFiles = signal([]);
@@ -35,6 +35,12 @@ export class HerbrandStore {
         if (!graph)
             return [];
         return behaviorLint(graph);
+    });
+    _reactFlowGraph = computed(() => {
+        const graph = this._decisionGraph.value;
+        if (!graph)
+            return null;
+        return toReactFlowGraph(graph);
     });
     /// Setters
     setSpecFiles(files) {
@@ -103,6 +109,9 @@ export class HerbrandStore {
     get behaviorLintResults() {
         return this._behaviorLintResults.value;
     }
+    get reactFlowGraph() {
+        return this._reactFlowGraph.value;
+    }
     get hasSpecErrors() {
         return this._specLintResults.value.some((r) => r.level === "error");
     }
@@ -123,6 +132,7 @@ export class HerbrandStore {
             specLintResults: this._specLintResults,
             decisionGraph: this._decisionGraph,
             behaviorLintResults: this._behaviorLintResults,
+            reactFlowGraph: this._reactFlowGraph,
         };
     }
 }

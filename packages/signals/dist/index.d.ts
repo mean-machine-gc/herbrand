@@ -1,4 +1,4 @@
-import type { SpecFile, ParsedSpecs, DecisionGraph, LintResult } from "@herbrand/core";
+import type { SpecFile, ParsedSpecs, DecisionGraph, LintResult, ReactFlowGraph } from "@herbrand/core";
 export declare class HerbrandStore {
     private _specFiles;
     private _watcher;
@@ -8,6 +8,7 @@ export declare class HerbrandStore {
     private _specLintResults;
     private _decisionGraph;
     private _behaviorLintResults;
+    private _reactFlowGraph;
     setSpecFiles(files: SpecFile[]): void;
     private _readSpecsFromDisk;
     private _refresh;
@@ -19,6 +20,7 @@ export declare class HerbrandStore {
     get specLintResults(): LintResult[];
     get decisionGraph(): DecisionGraph | null;
     get behaviorLintResults(): LintResult[];
+    get reactFlowGraph(): ReactFlowGraph | null;
     get hasSpecErrors(): boolean;
     get hasGraphErrors(): boolean;
     get specCount(): number;
@@ -29,5 +31,6 @@ export declare class HerbrandStore {
         specLintResults: import("@preact/signals-core").ReadonlySignal<LintResult[]>;
         decisionGraph: import("@preact/signals-core").ReadonlySignal<DecisionGraph | null>;
         behaviorLintResults: import("@preact/signals-core").ReadonlySignal<LintResult[]>;
+        reactFlowGraph: import("@preact/signals-core").ReadonlySignal<ReactFlowGraph | null>;
     };
 }
