@@ -72,6 +72,16 @@ function extractUserStories(graph) {
             }
         }
 
+        // Views: extract from graph — view nodes that point to this intent
+        const views = graph.nodes
+            .filter(n => n.type === 'view')
+            .filter(n => graph.edges.some(e => e.from === n.id && e.to === intent && e.type === 'view_to_intent'))
+            .map(n => ({
+                id: n.id,
+                infos: n.infos || [],
+                role: n.role || null,
+            }));
+
         stories.push({
             name,
             role,
@@ -84,6 +94,7 @@ function extractUserStories(graph) {
             given,
             then,
             shouldFailIf,
+            views,
             hasOutcome: !!outcomeEntry,
         });
     }
@@ -217,6 +228,31 @@ function renderScenarios(story) {
             ${scenariosHTML}
         </div>`;
     }
+
+    return html;
+}
+
+function renderViews(story) {
+    if (story.views.length === 0) {
+        return `<div class="tab-empty">No views — this decision has no required info.</div>`;
+    }
+
+    const multiple = story.views.length > 1;
+    let html = '';
+    story.views.forEach((view, i) => {
+        const label = multiple ? `<div class="view-label">View ${i + 1} of ${story.views.length}</div>` : '';
+        html += `<div class="view-card">`;
+        html += label;
+        if (view.role) {
+            html += `<div class="view-role">${view.role}</div>`;
+        }
+        html += `<div class="view-infos">`;
+        for (const info of view.infos) {
+            html += `<span class="ac-effect-tag">${info}</span>`;
+        }
+        html += `</div>`;
+        html += `</div>`;
+    });
 
     return html;
 }
@@ -388,6 +424,7 @@ function render(stories) {
                 <button class="tab active" onclick="switchTab('${id}', 'ac')">Acceptance Criteria</button>
                 <button class="tab" onclick="switchTab('${id}', 'dt')">Decision Table</button>
                 <button class="tab" onclick="switchTab('${id}', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('${id}', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-${id}-ac">
                 ${acHTML}
@@ -397,6 +434,9 @@ function render(stories) {
             </div>
             <div class="tab-content" id="tab-${id}-sc" style="display:none">
                 ${renderScenarios(story)}
+            </div>
+            <div class="tab-content" id="tab-${id}-vw" style="display:none">
+                ${renderViews(story)}
             </div>
         </div>`;
     }
@@ -575,6 +615,20 @@ function render(stories) {
         border-left: 2px solid #E0E0E0; margin-bottom: 3px;
     }
     .sc-no-scenarios { font-size: 11px; color: #CCC; font-style: italic; }
+
+    /* Views */
+    .view-card {
+        padding: 12px 16px; margin-bottom: 8px;
+        background: #FAFAFA; border-radius: 4px; border: 1px solid #F0F0F0;
+    }
+    .view-role {
+        font-size: 10px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #999; margin-bottom: 6px;
+    }
+    .view-label {
+        font-size: 10px; color: #BBB; margin-bottom: 4px;
+    }
+    .view-infos { display: flex; flex-wrap: wrap; gap: 4px; }
 </style>
 </head>
 <body>
@@ -624,7 +678,7 @@ function updateOptions(select, available, label) {
 }
 function switchTab(id, tab) {
     // Hide all tab contents for this story
-    ['ac', 'dt', 'sc'].forEach(t => {
+    ['ac', 'dt', 'sc', 'vw'].forEach(t => {
         const el = document.getElementById('tab-' + id + '-' + t);
         if (el) el.style.display = 'none';
     });

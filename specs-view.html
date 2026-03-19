@@ -169,21 +169,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">purchase_order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">not_authorized</span></div>
-            <div class="item-description">The approver does not have authority over this department or amount</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">approver_authorized</span></div>
+            <div class="item-description">The approver has authority over this department and amount</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">approver_authority</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: A manager from a different department tries to approve the PO</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_already_approved</span></div>
-            <div class="item-description">The purchase order has already been approved</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_pending_approval</span></div>
+            <div class="item-description">The purchase order is in pending approval state</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
             
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">approve_purchase_order</span></div>
             <div class="item-description">The purchase order is approved and sent to the supplier</div>
@@ -204,21 +204,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_already_confirmed</span></div>
-            <div class="item-description">The order has already been confirmed and cannot be cancelled through this flow</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_not_yet_confirmed</span></div>
+            <div class="item-description">The order has not been confirmed yet</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer tries to cancel after receiving confirmation email</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_already_cancelled</span></div>
-            <div class="item-description">The order was already cancelled</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_not_yet_cancelled</span></div>
+            <div class="item-description">The order has not already been cancelled</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
             
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">cancel_order</span></div>
             <div class="item-description">The order is cancelled and any held resources are released</div>
@@ -289,21 +289,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">missing_customer_info</span></div>
-            <div class="item-description">The customer has not provided required contact or shipping information</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">customer_info_provided</span></div>
+            <div class="item-description">The customer has provided required contact and shipping information</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_info</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer submits order without a shipping address</div><div class="scenario-item">scenario: Customer has no email on file</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">invalid_product</span></div>
-            <div class="item-description">One or more selected products do not exist or are not available for sale</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">products_available</span></div>
+            <div class="item-description">All selected products exist and are available for sale</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">available_products</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer selects a discontinued product</div></div>
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">create_order</span></div>
             <div class="item-description">A new order is created in draft state with the selected products</div>
@@ -324,21 +324,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">purchase_order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">missing_supplier</span></div>
-            <div class="item-description">No supplier has been selected or the supplier is inactive</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">supplier_selected</span></div>
+            <div class="item-description">A valid and active supplier has been selected</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">supplier_status</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Officer tries to create a PO without selecting a supplier</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">budget_exceeded</span></div>
-            <div class="item-description">The purchase order total exceeds the available budget for the department</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">budget_available</span></div>
+            <div class="item-description">The department budget can accommodate the purchase order total</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">department_budget</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Officer requests materials that would push the quarterly budget over limit</div></div>
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">create_purchase_order</span></div>
             <div class="item-description">A new purchase order is created in pending approval state</div>
@@ -359,21 +359,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">purchase_order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">not_authorized</span></div>
-            <div class="item-description">The rejector does not have authority over this department</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">rejector_authorized</span></div>
+            <div class="item-description">The rejector has authority over this department</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">approver_authority</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: A manager from a different department tries to reject the PO</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_already_rejected</span></div>
-            <div class="item-description">The purchase order has already been rejected</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_not_yet_rejected</span></div>
+            <div class="item-description">The purchase order has not already been rejected</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
             
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">reject_purchase_order</span></div>
             <div class="item-description">The purchase order is rejected and the budget reservation is released</div>
@@ -394,21 +394,21 @@
         <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
         <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_created</span> <span class="trigger-type">success</span></div>
         <div class="section">
-            <div class="section-title">Should Fail With</div>
+            <div class="section-title">Preconditions</div>
             <div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_empty</span></div>
-            <div class="item-description">The order has no line items</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_has_items</span></div>
+            <div class="item-description">The order contains at least one line item</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_line_items</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer tries to submit an order after removing all products</div></div>
         </div><div class="reject-item">
-            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_already_submitted</span></div>
-            <div class="item-description">The order has already been submitted</div>
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_in_draft</span></div>
+            <div class="item-description">The order is in draft state and has not been submitted yet</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer double-clicks the submit button</div></div>
         </div>
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">Produces Intent</div>
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">submit_order</span></div>
             <div class="item-description">The order transitions from draft to submitted and is queued for confirmation</div>
@@ -422,7 +422,7 @@
         </div>
     </div>
     <div class="lint-panel">
-        <div class="lint-header"><h3>Spec Lint</h3><span class="lint-badge warning">3 warnings</span></div><div class="lint-body"><div class="lint-category"><div class="lint-category-label" style="color:#333">approve-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_already_approved' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">cancel-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'order_already_cancelled' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">reject-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_already_rejected' has no scenarios</div></div></div>
+        <div class="lint-header"><h3>Spec Lint</h3><span class="lint-badge warning">3 warnings</span></div><div class="lint-body"><div class="lint-category"><div class="lint-category-label" style="color:#333">approve-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_pending_approval' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">cancel-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'order_not_yet_cancelled' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">reject-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_not_yet_rejected' has no scenarios</div></div></div>
     </div>
 </div>
 <script>

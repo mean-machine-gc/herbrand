@@ -124,11 +124,11 @@ function renderSpecDetail(name, spec) {
         ${contextHTML}
         ${triggerHTML}
         <div class="section">
-            <div class="section-title">Should Fail With</div>
-            ${rejectsHTML || '<div class="empty">No rejects defined</div>'}
+            <div class="section-title">${isOutcome ? 'Should Fail With' : 'Preconditions'}</div>
+            ${rejectsHTML || `<div class="empty">No ${isOutcome ? 'rejects' : 'preconditions'} defined</div>`}
         </div>
         <div class="section">
-            <div class="section-title">Should Succeed With</div>
+            <div class="section-title">${isOutcome ? 'Should Succeed With' : 'Produces Intent'}</div>
             ${choicesHTML || '<div class="empty">No choices defined</div>'}
         </div>
         ${assertionsHTML}

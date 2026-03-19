@@ -1,6 +1,6 @@
 type RejectPurchaseOrder = HumanIntentDecision<
     'purchase_order_created',
-    'not_authorized' | 'purchase_order_already_rejected',
+    'rejector_authorized' | 'purchase_order_not_yet_rejected',
     'reject_purchase_order'
 >
 
@@ -13,24 +13,23 @@ const rejectPurchaseOrder: IntentDecisionSpec<RejectPurchaseOrder, Contexts, Mod
     businessGoal: 'prevent unauthorized or unnecessary spending',
     description: 'A department manager rejects a purchase order',
     trigger: { type: 'success', outcome: 'purchase_order_created' },
-    shouldFailWith: {
-        not_authorized: {
-            description: 'The rejector does not have authority over this department',
+    preconditions: {
+        rejector_authorized: {
+            description: 'The rejector has authority over this department',
             requiredInfo: ['approver_authority'],
             scenarios: [
                 { description: 'A manager from a different department tries to reject the PO' }
             ]
         },
-        purchase_order_already_rejected: {
-            description: 'The purchase order has already been rejected',
+        purchase_order_not_yet_rejected: {
+            description: 'The purchase order has not already been rejected',
             requiredInfo: ['purchase_order_status'],
         }
     },
-    shouldSucceedWith: {
-        reject_purchase_order: {
-            condition: 'Rejector has authority and PO is in pending approval state',
-            description: 'The purchase order is rejected and the budget reservation is released',
-            requiredInfo: ['approver_authority', 'purchase_order_status'],
-        }
+    producesIntent: {
+        intent: 'reject_purchase_order',
+        condition: 'Rejector has authority and PO is in pending approval state',
+        description: 'The purchase order is rejected and the budget reservation is released',
+        requiredInfo: ['approver_authority', 'purchase_order_status'],
     },
 }

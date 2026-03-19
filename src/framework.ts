@@ -65,17 +65,18 @@ type IntentDecisionSpec<D extends AnyDecision, Contexts extends string, Modules 
     trigger:
         | { type: 'success', outcome: D['input'] }
         | { type: 'reject', rejection: D['input'] }
-    shouldFailWith: Record<D['rejects'], {
+    preconditions: Record<D['rejects'], {
         description: string
         requiredInfo: Array<D['info']>
         scenarios?: Array<{ description: string }>
     }>
-    shouldSucceedWith: Record<D['choices'], {
+    producesIntent: {
+        intent: D['choices']
         condition: string
         description: string
         requiredInfo: Array<D['info']>
         scenarios?: Array<{ description: string }>
-    }>
+    }
 }
 
 type OutcomeDecisionSpec<D extends AnyDecision, Contexts extends string, Modules extends string, Aggregates extends string> = {

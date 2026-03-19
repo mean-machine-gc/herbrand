@@ -34,10 +34,10 @@ function parseSpec(content) {
         }
     }
 
-    // Parse shouldFailWith entries with full detail
+    // Parse preconditions (intent specs) or shouldFailWith (outcome specs)
     spec.rejectDetails = {};
     spec.rejects = [];
-    const failBlock = content.match(/shouldFailWith:\s*\{([\s\S]*?)\n    \}/);
+    const failBlock = content.match(/(?:preconditions|shouldFailWith):\s*\{([\s\S]*?)\n    \}/);
     if (failBlock) {
         for (const m of failBlock[1].matchAll(/^\s{8}(\w+):\s*\{([\s\S]*?)^\s{8}\}/gm)) {
             const key = m[1];
@@ -48,7 +48,6 @@ function parseSpec(content) {
             const reqInfoMatch = body.match(/requiredInfo:\s*\[([^\]]*)\]/);
             const reqInfos = reqInfoMatch ? [...reqInfoMatch[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : [];
             const scenarios = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map(x => x[1]);
-            // Remove the main description from scenarios list
             const scenarioDescriptions = scenarios.filter(e => e !== (descMatch ? descMatch[1] : ''));
 
             spec.rejectDetails[key] = {
@@ -59,16 +58,16 @@ function parseSpec(content) {
         }
     }
 
-    // Parse shouldSucceedWith entries with full detail
+    // Parse producesIntent (intent specs) or shouldSucceedWith (outcome specs)
     spec.choiceDetails = {};
     spec.choices = [];
-    const succeedBlock = content.match(/shouldSucceedWith:\s*\{([\s\S]*?)\n    \}/);
-    if (succeedBlock) {
-        for (const m of succeedBlock[1].matchAll(/^\s{8}(\w+):\s*\{([\s\S]*?)^\s{8}\}/gm)) {
-            const key = m[1];
-            const body = m[2];
-            spec.choices.push(key);
 
+    if (spec.isIntent) {
+        // Intent specs: producesIntent is a single object with an intent field
+        const producesBlock = content.match(/producesIntent:\s*\{([\s\S]*?)\n    \}/);
+        if (producesBlock) {
+            const body = producesBlock[1];
+            const intentMatch = body.match(/intent:\s*'([^']+)'/);
             const condMatch = body.match(/condition:\s*'([^']+)'/);
             const descMatch = body.match(/description:\s*'([^']+)'/);
             const reqInfoMatch = body.match(/requiredInfo:\s*\[([^\]]*)\]/);
@@ -76,12 +75,38 @@ function parseSpec(content) {
             const scenarios = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map(x => x[1]);
             const scenarioDescriptions = scenarios.filter(e => e !== (descMatch ? descMatch[1] : '') && e !== (condMatch ? condMatch[1] : ''));
 
+            const key = intentMatch ? intentMatch[1] : 'unknown';
+            spec.choices.push(key);
             spec.choiceDetails[key] = {
                 condition: condMatch ? condMatch[1] : null,
                 description: descMatch ? descMatch[1] : null,
                 requiredInfo: reqInfos,
                 scenarios: scenarioDescriptions,
             };
+        }
+    } else {
+        // Outcome specs: shouldSucceedWith is a Record
+        const succeedBlock = content.match(/shouldSucceedWith:\s*\{([\s\S]*?)\n    \}/);
+        if (succeedBlock) {
+            for (const m of succeedBlock[1].matchAll(/^\s{8}(\w+):\s*\{([\s\S]*?)^\s{8}\}/gm)) {
+                const key = m[1];
+                const body = m[2];
+                spec.choices.push(key);
+
+                const condMatch = body.match(/condition:\s*'([^']+)'/);
+                const descMatch = body.match(/description:\s*'([^']+)'/);
+                const reqInfoMatch = body.match(/requiredInfo:\s*\[([^\]]*)\]/);
+                const reqInfos = reqInfoMatch ? [...reqInfoMatch[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : [];
+                const scenarios = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map(x => x[1]);
+                const scenarioDescriptions = scenarios.filter(e => e !== (descMatch ? descMatch[1] : '') && e !== (condMatch ? condMatch[1] : ''));
+
+                spec.choiceDetails[key] = {
+                    condition: condMatch ? condMatch[1] : null,
+                    description: descMatch ? descMatch[1] : null,
+                    requiredInfo: reqInfos,
+                    scenarios: scenarioDescriptions,
+                };
+            }
         }
     }
 
