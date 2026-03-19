@@ -107,6 +107,25 @@ function lint(graph) {
         for (const reject of (spec.rejectsWithoutScenarios || [])) {
             warn('missing_scenarios', `Reject '${reject}' has no scenarios`, name);
         }
+
+        // Outcome decision condition rules
+        if (spec.type === 'outcome' && spec.choices.length > 0) {
+            for (const choice of spec.choices) {
+                const det = (spec.choiceDetails || {})[choice];
+                if (spec.choices.length === 1 && (!det || det.condition !== 'always')) {
+                    warn('single_outcome_not_always', `Outcome '${choice}' is the only success path — should have condition 'always'`, name);
+                }
+            }
+            if (spec.choices.length > 1) {
+                const hasAlways = spec.choices.some(choice => {
+                    const det = (spec.choiceDetails || {})[choice];
+                    return det && det.condition === 'always';
+                });
+                if (!hasAlways) {
+                    warn('missing_default_condition', `Outcome decision has ${spec.choices.length} success outcomes but none has condition 'always'`, name);
+                }
+            }
+        }
     }
 
     // === STRUCTURAL ===

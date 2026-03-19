@@ -72,6 +72,27 @@ function lint(parsed) {
             warn('missing_business_goal', `Intent decision has no business goal — why does the actor want this?`, name);
         }
 
+        // Outcome decision condition rules:
+        // - Single outcome must have condition: 'always'
+        // - Multiple outcomes must have at least one condition: 'always'
+        if (spec.type === 'outcome' && spec.choices.length > 0) {
+            for (const choice of spec.choices) {
+                const det = (spec.choiceDetails || {})[choice];
+                if (spec.choices.length === 1 && (!det || det.condition !== 'always')) {
+                    error('single_outcome_not_always', `Outcome decision has one success outcome '${choice}' — it must have condition 'always'`, name);
+                }
+            }
+            if (spec.choices.length > 1) {
+                const hasAlways = spec.choices.some(choice => {
+                    const det = (spec.choiceDetails || {})[choice];
+                    return det && det.condition === 'always';
+                });
+                if (!hasAlways) {
+                    error('missing_default_condition', `Outcome decision has ${spec.choices.length} success outcomes but none has condition 'always'`, name);
+                }
+            }
+        }
+
         // Intent decisions without requiredInfo
         if (spec.type === 'intent' && spec.requiredInfo.length === 0) {
             warn('missing_required_info', `Intent decision has no requiredInfo — how is it deciding?`, name);

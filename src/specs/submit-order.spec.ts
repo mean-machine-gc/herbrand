@@ -31,7 +31,6 @@ const submitOrder: IntentDecisionSpec<SubmitOrder, Contexts, Modules, Aggregates
     },
     producesIntent: {
         intent: 'submit_order',
-        condition: 'Order has at least one line item and is in draft state',
         description: 'The order transitions from draft to submitted and is queued for confirmation',
         requiredInfo: ['order_status', 'order_line_items'],
     },

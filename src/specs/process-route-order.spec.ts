@@ -1,0 +1,71 @@
+type ProcessRouteOrder = MachineOutcomeDecision<
+    'route_order',
+    'routing_failed',
+    'order_routed_express' | 'order_routed_standard'
+>
+
+const processRouteOrder: OutcomeDecisionSpec<ProcessRouteOrder, Contexts, Modules, Aggregates> = {
+    type: 'outcome',
+    agent: { kind: 'machine' },
+    context: 'ordering',
+    module: 'order_management',
+    aggregate: 'order-processing',
+    description: 'The system routes the order to express or standard fulfillment based on shipping preference',
+    trigger: 'route_order',
+    shouldFailWith: {
+        routing_failed: {
+            description: 'The order could not be routed to any fulfillment channel',
+            requiredInfo: ['shipping_preference', 'order_line_items'],
+            scenarios: [
+                { description: 'Shipping destination is not serviceable by any carrier' },
+                { description: 'All fulfillment centers are at capacity' }
+            ]
+        }
+    },
+    shouldSucceedWith: {
+        order_routed_express: {
+            condition: 'customer selected express shipping',
+            description: 'The order is routed to the express fulfillment channel',
+            requiredInfo: ['shipping_preference'],
+            scenarios: [
+                { description: 'Customer chose next-day delivery' },
+                { description: 'Customer chose 2-day shipping' }
+            ]
+        },
+        order_routed_standard: {
+            condition: 'always',
+            description: 'The order is routed to the standard fulfillment channel',
+            requiredInfo: ['shipping_preference'],
+            scenarios: [
+                { description: 'Customer chose free standard shipping' },
+                { description: 'No shipping preference specified — defaults to standard' }
+            ]
+        }
+    },
+    shouldAssert: {
+        order_routed_express: [
+            {
+                tag: 'order_route_set_express',
+                description: 'The order route is set to express fulfillment',
+                affectedInfo: ['order_route']
+            },
+            {
+                tag: 'order_status_routed',
+                description: 'The order status transitions to routed',
+                affectedInfo: ['order_status']
+            }
+        ],
+        order_routed_standard: [
+            {
+                tag: 'order_route_set_standard',
+                description: 'The order route is set to standard fulfillment',
+                affectedInfo: ['order_route']
+            },
+            {
+                tag: 'order_status_routed',
+                description: 'The order status transitions to routed',
+                affectedInfo: ['order_status']
+            }
+        ]
+    }
+}

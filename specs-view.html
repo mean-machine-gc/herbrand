@@ -121,7 +121,7 @@
 <body>
 <div class="container">
     <div class="list-panel">
-        <div class="list-header">Specs (7)</div>
+        <div class="list-header">Specs (21)</div>
         <div class="filters">
         <select id="filter-context" class="filter-select" onchange="applyFilters()"><option value="">All contexts</option><option value="ordering">ordering</option><option value="procurement">procurement</option></select>
         <select id="filter-module" class="filter-select" onchange="applyFilters()"><option value="">All modules</option><option value="order_management">order_management</option><option value="purchasing">purchasing</option></select>
@@ -130,11 +130,15 @@
         <div id="spec-list"><div class="spec-list-item" data-spec="approve-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('approve-purchase-order')">
             <span class="spec-dot" style="background:#4A90D9"></span>
             <span class="spec-name">approve-purchase-order</span>
-            <span class="lint-dot warning">1</span>
+            
+        </div><div class="spec-list-item" data-spec="auto-approve-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('auto-approve-purchase-order')">
+            <span class="spec-dot" style="background:#4A90D9"></span>
+            <span class="spec-name">auto-approve-purchase-order</span>
+            
         </div><div class="spec-list-item" data-spec="cancel-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('cancel-order')">
             <span class="spec-dot" style="background:#4A90D9"></span>
             <span class="spec-name">cancel-order</span>
-            <span class="lint-dot warning">1</span>
+            
         </div><div class="spec-list-item" data-spec="confirm-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('confirm-order')">
             <span class="spec-dot" style="background:#E8944A"></span>
             <span class="spec-name">confirm-order</span>
@@ -147,10 +151,62 @@
             <span class="spec-dot" style="background:#4A90D9"></span>
             <span class="spec-name">create-purchase-order</span>
             
+        </div><div class="spec-list-item" data-spec="fulfill-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('fulfill-order')">
+            <span class="spec-dot" style="background:#4A90D9"></span>
+            <span class="spec-name">fulfill-order</span>
+            
+        </div><div class="spec-list-item" data-spec="initiate-confirmation" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('initiate-confirmation')">
+            <span class="spec-dot" style="background:#4A90D9"></span>
+            <span class="spec-name">initiate-confirmation</span>
+            
+        </div><div class="spec-list-item" data-spec="notify-order-confirmed" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('notify-order-confirmed')">
+            <span class="spec-dot" style="background:#4A90D9"></span>
+            <span class="spec-name">notify-order-confirmed</span>
+            
+        </div><div class="spec-list-item" data-spec="process-approve-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('process-approve-purchase-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-approve-purchase-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-cancel-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-cancel-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-cancel-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-create-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-create-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-create-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-create-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('process-create-purchase-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-create-purchase-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-fulfill-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-fulfill-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-fulfill-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-order-notification" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-order-notification')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-order-notification</span>
+            
+        </div><div class="spec-list-item" data-spec="process-reject-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('process-reject-purchase-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-reject-purchase-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-route-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-route-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-route-order</span>
+            
+        </div><div class="spec-list-item" data-spec="process-submit-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('process-submit-order')">
+            <span class="spec-dot" style="background:#E8944A"></span>
+            <span class="spec-name">process-submit-order</span>
+            
         </div><div class="spec-list-item" data-spec="reject-purchase-order" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing" onclick="showSpec('reject-purchase-order')">
             <span class="spec-dot" style="background:#4A90D9"></span>
             <span class="spec-name">reject-purchase-order</span>
-            <span class="lint-dot warning">1</span>
+            
+        </div><div class="spec-list-item" data-spec="route-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('route-order')">
+            <span class="spec-dot" style="background:#4A90D9"></span>
+            <span class="spec-name">route-order</span>
+            
         </div><div class="spec-list-item" data-spec="submit-order" data-context="ordering" data-module="order_management" data-aggregate="order-processing" onclick="showSpec('submit-order')">
             <span class="spec-dot" style="background:#4A90D9"></span>
             <span class="spec-name">submit-order</span>
@@ -179,7 +235,7 @@
             <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_pending_approval</span></div>
             <div class="item-description">The purchase order is in pending approval state</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
-            
+            <div class="item-scenarios"><div class="scenario-item">scenario: Manager tries to approve an already approved PO</div></div>
         </div>
         </div>
         <div class="section">
@@ -187,8 +243,38 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">approve_purchase_order</span></div>
             <div class="item-description">The purchase order is approved and sent to the supplier</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Approver has authority and PO is in pending approval state</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">approver_authority</span> <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            
+        </div>
+        </div>
+        
+    
+        </div><div class="spec-detail" id="spec-auto-approve-purchase-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>auto-approve-purchase-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#4A90D9">intent decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system automatically approves purchase orders below the auto-approval threshold</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">purchase_order_created</span> <span class="trigger-type">success</span></div>
+        <div class="section">
+            <div class="section-title">Preconditions</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">amount_below_threshold</span></div>
+            <div class="item-description">The purchase order amount is below the auto-approval threshold</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_amount</span> <span class="badge" style="background:#7CB342">auto_approval_threshold</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: PO for $500 when threshold is $1000 — auto-approved</div><div class="scenario-item">scenario: PO for $5000 when threshold is $1000 — skipped, requires manual approval</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Produces Intent</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#4A90D9">approve_purchase_order</span></div>
+            <div class="item-description">The purchase order is automatically approved without manager intervention</div>
+            
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_amount</span> <span class="badge" style="background:#7CB342">auto_approval_threshold</span></div>
             
         </div>
         </div>
@@ -214,7 +300,7 @@
             <div class="reject-name"><span class="badge" style="background:#D94A4A">order_not_yet_cancelled</span></div>
             <div class="item-description">The order has not already been cancelled</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
-            
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer tries to cancel an order that was already cancelled</div></div>
         </div>
         </div>
         <div class="section">
@@ -222,7 +308,7 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">cancel_order</span></div>
             <div class="item-description">The order is cancelled and any held resources are released</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Order is in draft or submitted state</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
             
         </div>
@@ -237,7 +323,7 @@
         </div>
         <div class="spec-description">The system confirms a submitted order after verifying payment and stock</div>
         <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
-        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">submit_order</span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">confirm_order</span></div>
         <div class="section">
             <div class="section-title">Should Fail With</div>
             <div class="reject-item">
@@ -257,7 +343,7 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#E8944A">order_confirmed</span></div>
             <div class="item-description">The order is confirmed and ready for fulfillment</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Payment is successful and all items are in stock</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">payment_status</span> <span class="badge" style="background:#7CB342">stock_levels</span></div>
             
         </div>
@@ -307,7 +393,7 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">create_order</span></div>
             <div class="item-description">A new order is created in draft state with the selected products</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Customer info is valid and all products exist</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_info</span> <span class="badge" style="background:#7CB342">available_products</span></div>
             <div class="item-scenarios"><div class="scenario-item">scenario: Customer with complete profile selects two available products</div></div>
         </div>
@@ -342,12 +428,503 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">create_purchase_order</span></div>
             <div class="item-description">A new purchase order is created in pending approval state</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Supplier is valid and budget is available</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">supplier_status</span> <span class="badge" style="background:#7CB342">department_budget</span></div>
             
         </div>
         </div>
         
+    
+        </div><div class="spec-detail" id="spec-fulfill-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>fulfill-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#4A90D9">intent decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system initiates fulfillment for a confirmed order</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_confirmed</span> <span class="trigger-type">success</span></div>
+        <div class="section">
+            <div class="section-title">Preconditions</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_ready_for_fulfillment</span></div>
+            <div class="item-description">The order is in confirmed state and ready to be fulfilled</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: System tries to fulfill an order that was cancelled after confirmation</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Produces Intent</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#4A90D9">fulfill_order</span></div>
+            <div class="item-description">The order is queued for picking, packing and shipping</div>
+            
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            
+        </div>
+        </div>
+        
+    
+        </div><div class="spec-detail" id="spec-initiate-confirmation" style="display:none">
+            
+        <div class="spec-header">
+            <h2>initiate-confirmation</h2>
+            <div class="spec-type"><span class="badge" style="background:#4A90D9">intent decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system automatically initiates confirmation for a submitted order</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_submitted</span> <span class="trigger-type">success</span></div>
+        <div class="section">
+            <div class="section-title">Preconditions</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_is_submitted</span></div>
+            <div class="item-description">The order is in submitted state</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: System receives a duplicate submission event for an already confirmed order</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Produces Intent</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#4A90D9">confirm_order</span></div>
+            <div class="item-description">The system begins payment and stock verification</div>
+            
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            
+        </div>
+        </div>
+        
+    
+        </div><div class="spec-detail" id="spec-notify-order-confirmed" style="display:none">
+            
+        <div class="spec-header">
+            <h2>notify-order-confirmed</h2>
+            <div class="spec-type"><span class="badge" style="background:#4A90D9">intent decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system sends a confirmation notification and logs the event</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_confirmed</span> <span class="trigger-type">success</span></div>
+        <div class="section">
+            <div class="section-title">Preconditions</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_is_confirmed</span></div>
+            <div class="item-description">The order is in confirmed state</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: System receives duplicate confirmation event</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Produces Intent</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#4A90D9">notify_order_confirmed</span></div>
+            <div class="item-description">The system sends customer notification and creates audit log entry</div>
+            
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">customer_email</span></div>
+            
+        </div>
+        </div>
+        
+    
+        </div><div class="spec-detail" id="spec-process-approve-purchase-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-approve-purchase-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the approval and notifies the supplier</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">approve_purchase_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">approval_processing_error</span></div>
+            <div class="item-description">The approval could not be processed due to a system error</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Supplier notification service is unavailable</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">purchase_order_approved</span></div>
+            <div class="item-description">The purchase order is approved and the supplier is notified</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Manager approves a PO and supplier receives notification</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">purchase_order_status_approved</span></div>
+                    <div class="item-description">The purchase order status transitions to approved</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">supplier_notified</span></div>
+                    <div class="item-description">The supplier is notified of the approved purchase order</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">supplier_notification</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-cancel-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-cancel-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the cancel order intent and releases held resources</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">cancel_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_not_cancellable</span></div>
+            <div class="item-description">The order is in a state that does not allow cancellation</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: System receives cancel intent for an order already in fulfillment</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_cancelled</span></div>
+            <div class="item-description">The order is cancelled and all held resources are released</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer cancels a draft order with no payment hold</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_status_cancelled</span></div>
+                    <div class="item-description">The order status transitions to cancelled</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">payment_authorization_voided</span></div>
+                    <div class="item-description">Any pending payment authorization is voided</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">payment_authorization</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">stock_released</span></div>
+                    <div class="item-description">Reserved inventory is released back to available stock</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">reserved_stock</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-create-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-create-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the create order intent and persists a new order</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">create_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">invalid_order_data</span></div>
+            <div class="item-description">The order data is malformed or contains inconsistencies</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_info</span> <span class="badge" style="background:#7CB342">available_products</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Product quantity is negative</div><div class="scenario-item">scenario: Customer reference points to a deleted account</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_created</span></div>
+            <div class="item-description">A new order is persisted in draft state</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_info</span> <span class="badge" style="background:#7CB342">available_products</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer creates an order with two valid products</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_in_draft_state</span></div>
+                    <div class="item-description">The order is persisted with status draft</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_has_line_items</span></div>
+                    <div class="item-description">The order contains the selected products as line items</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_line_items</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_linked_to_customer</span></div>
+                    <div class="item-description">The order is linked to the customer who created it</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_customer_reference</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-create-purchase-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-create-purchase-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the create purchase order intent and persists a new PO</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">create_purchase_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">invalid_purchase_order_data</span></div>
+            <div class="item-description">The purchase order data is malformed or contains inconsistencies</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">supplier_status</span> <span class="badge" style="background:#7CB342">department_budget</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: PO references a supplier that has been deactivated since validation</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">purchase_order_created</span></div>
+            <div class="item-description">A new purchase order is persisted in pending approval state</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">supplier_status</span> <span class="badge" style="background:#7CB342">department_budget</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Officer creates a PO for office supplies within budget</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">purchase_order_pending</span></div>
+                    <div class="item-description">The purchase order is persisted with status pending approval</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">budget_reserved</span></div>
+                    <div class="item-description">The requested amount is reserved against the department budget</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">budget_reservation</span> <span class="badge" style="background:#7CB342">department_budget</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">purchase_order_linked_to_supplier</span></div>
+                    <div class="item-description">The purchase order references the selected supplier</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">purchase_order_supplier_reference</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-fulfill-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-fulfill-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system fulfills the order by picking, packing and shipping</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">fulfill_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">fulfillment_failed</span></div>
+            <div class="item-description">The order could not be fulfilled due to a logistics issue</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">stock_levels</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Warehouse reports damaged goods for an item in the order</div><div class="scenario-item">scenario: Shipping provider rejects the delivery address</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_fulfilled</span></div>
+            <div class="item-description">The order is fulfilled and shipped to the customer</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">stock_levels</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: All items are in stock and successfully shipped</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_status_fulfilled</span></div>
+                    <div class="item-description">The order status transitions to fulfilled</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">stock_decremented</span></div>
+                    <div class="item-description">Physical stock is decremented for shipped items</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">stock_levels</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-order-notification" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-order-notification</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system sends a confirmation email to the customer and logs the order event for audit</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">notify_order_confirmed</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">notification_failed</span></div>
+            <div class="item-description">The notification could not be sent due to a system error</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_email</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Email service is down</div><div class="scenario-item">scenario: Customer email address is invalid</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">customer_email_sent</span></div>
+            <div class="item-description">A confirmation email is sent to the customer</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">customer_email</span> <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer receives order confirmation with tracking details</div></div>
+        </div><div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_audit_logged</span></div>
+            <div class="item-description">The order confirmation is logged for audit purposes</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Audit system records the confirmation timestamp and order details</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">confirmation_email_delivered</span></div>
+                    <div class="item-description">The confirmation email has been sent to the customer</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">customer_email</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">audit_entry_created</span></div>
+                    <div class="item-description">An audit log entry is created for the order confirmation</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">audit_log</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-reject-purchase-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-reject-purchase-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the rejection and releases the budget reservation</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>procurement</strong></span><span class="meta-item">module: <strong>purchasing</strong></span><span class="meta-item">aggregate: <strong>procurement-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">reject_purchase_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">rejection_processing_error</span></div>
+            <div class="item-description">The rejection could not be processed due to a system error</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Budget release service is unavailable</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">purchase_order_rejected</span></div>
+            <div class="item-description">The purchase order is rejected and the budget reservation is released</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Manager rejects a PO and budget is freed up</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">purchase_order_status_rejected</span></div>
+                    <div class="item-description">The purchase order status transitions to rejected</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">budget_reservation_released</span></div>
+                    <div class="item-description">The reserved budget amount is released back to the department</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">budget_reservation</span> <span class="badge" style="background:#7CB342">department_budget</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-route-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-route-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system routes the order to express or standard fulfillment based on shipping preference</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">route_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">routing_failed</span></div>
+            <div class="item-description">The order could not be routed to any fulfillment channel</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">shipping_preference</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Shipping destination is not serviceable by any carrier</div><div class="scenario-item">scenario: All fulfillment centers are at capacity</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_routed_express</span></div>
+            <div class="item-description">The order is routed to the express fulfillment channel</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> customer selected express shipping</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">shipping_preference</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer chose next-day delivery</div><div class="scenario-item">scenario: Customer chose 2-day shipping</div></div>
+        </div><div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_routed_standard</span></div>
+            <div class="item-description">The order is routed to the standard fulfillment channel</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">shipping_preference</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer chose free standard shipping</div><div class="scenario-item">scenario: No shipping preference specified — defaults to standard</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_route_set_express</span></div>
+                    <div class="item-description">The order route is set to express fulfillment</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_route</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_status_routed</span></div>
+                    <div class="item-description">The order status transitions to routed</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_route_set_standard</span></div>
+                    <div class="item-description">The order route is set to standard fulfillment</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_route</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_status_routed</span></div>
+                    <div class="item-description">The order status transitions to routed</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div>
+            </div>
+    
+        </div><div class="spec-detail" id="spec-process-submit-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>process-submit-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#E8944A">outcome decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system processes the submit order intent and transitions the order to submitted</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#4A90D9">submit_order</span></div>
+        <div class="section">
+            <div class="section-title">Should Fail With</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">invalid_order_data</span></div>
+            <div class="item-description">The order data is inconsistent at submission time</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Order was modified concurrently and is now in an invalid state</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Should Succeed With</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#E8944A">order_submitted</span></div>
+            <div class="item-description">The order transitions to submitted and is queued for confirmation</div>
+            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> always</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: Customer submits a valid draft order with two items</div></div>
+        </div>
+        </div>
+        <div class="section">
+                <div class="section-title">Assertions</div>
+                <div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_status_submitted</span></div>
+                    <div class="item-description">The order status transitions to submitted</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_status</span></div>
+                </div><div class="assert-item">
+                    <div class="assert-tag"><span class="badge" style="background:#E0E0E0;color:#555">order_not_editable</span></div>
+                    <div class="item-description">The order can no longer be modified by the customer</div>
+                    <div class="item-infos">affects: <span class="badge" style="background:#7CB342">order_editability</span></div>
+                </div>
+            </div>
     
         </div><div class="spec-detail" id="spec-reject-purchase-order" style="display:none">
             
@@ -369,7 +946,7 @@
             <div class="reject-name"><span class="badge" style="background:#D94A4A">purchase_order_not_yet_rejected</span></div>
             <div class="item-description">The purchase order has not already been rejected</div>
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
-            
+            <div class="item-scenarios"><div class="scenario-item">scenario: Manager tries to reject a PO that was already rejected</div></div>
         </div>
         </div>
         <div class="section">
@@ -377,8 +954,38 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">reject_purchase_order</span></div>
             <div class="item-description">The purchase order is rejected and the budget reservation is released</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Rejector has authority and PO is in pending approval state</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">approver_authority</span> <span class="badge" style="background:#7CB342">purchase_order_status</span></div>
+            
+        </div>
+        </div>
+        
+    
+        </div><div class="spec-detail" id="spec-route-order" style="display:none">
+            
+        <div class="spec-header">
+            <h2>route-order</h2>
+            <div class="spec-type"><span class="badge" style="background:#4A90D9">intent decision</span> <span class="badge" style="background:#FFD600;color:#333">machine</span></div>
+        </div>
+        <div class="spec-description">The system determines the shipping route for a submitted order</div>
+        <div class="meta-row"><span class="meta-item">context: <strong>ordering</strong></span><span class="meta-item">module: <strong>order_management</strong></span><span class="meta-item">aggregate: <strong>order-processing</strong></span></div>
+        <div class="field"><span class="field-label">Trigger</span> <span class="badge" style="background:#E8944A">order_submitted</span> <span class="trigger-type">success</span></div>
+        <div class="section">
+            <div class="section-title">Preconditions</div>
+            <div class="reject-item">
+            <div class="reject-name"><span class="badge" style="background:#D94A4A">order_is_submitted</span></div>
+            <div class="item-description">The order is in submitted state and ready for routing</div>
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span></div>
+            <div class="item-scenarios"><div class="scenario-item">scenario: System receives a routing request for an already routed order</div></div>
+        </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Produces Intent</div>
+            <div class="choice-item">
+            <div class="choice-name"><span class="badge" style="background:#4A90D9">route_order</span></div>
+            <div class="item-description">The order is queued for routing based on shipping preference</div>
+            
+            <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">shipping_preference</span></div>
             
         </div>
         </div>
@@ -412,7 +1019,7 @@
             <div class="choice-item">
             <div class="choice-name"><span class="badge" style="background:#4A90D9">submit_order</span></div>
             <div class="item-description">The order transitions from draft to submitted and is queued for confirmation</div>
-            <div class="item-condition"><span class="badge" style="background:#E0E0E0;color:#555">condition</span> Order has at least one line item and is in draft state</div>
+            
             <div class="item-infos">needs: <span class="badge" style="background:#7CB342">order_status</span> <span class="badge" style="background:#7CB342">order_line_items</span></div>
             
         </div>
@@ -422,7 +1029,7 @@
         </div>
     </div>
     <div class="lint-panel">
-        <div class="lint-header"><h3>Spec Lint</h3><span class="lint-badge warning">3 warnings</span></div><div class="lint-body"><div class="lint-category"><div class="lint-category-label" style="color:#333">approve-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_pending_approval' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">cancel-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'order_not_yet_cancelled' has no scenarios</div></div><div class="lint-category"><div class="lint-category-label" style="color:#333">reject-purchase-order</div><div class="lint-item" style="border-left-color:#F9A825">⚠ Reject 'purchase_order_not_yet_rejected' has no scenarios</div></div></div>
+        <div class="lint-header"><h3>Spec Lint</h3><span class="lint-badge clean">✓ clean</span></div>
     </div>
 </div>
 <script>
@@ -436,7 +1043,7 @@
         activeItem = document.querySelector('[data-spec="' + name + '"]');
         if (activeItem) activeItem.classList.add('active');
     }
-    const specsData = {"approve-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"cancel-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"confirm-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"create-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"create-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"reject-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"submit-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"}};
+    const specsData = {"approve-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"auto-approve-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"cancel-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"confirm-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"create-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"create-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"fulfill-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"initiate-confirmation":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"notify-order-confirmed":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-approve-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"process-cancel-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-create-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-create-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"process-fulfill-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-order-notification":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-reject-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"process-route-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"process-submit-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"reject-purchase-order":{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},"route-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"},"submit-order":{"context":"ordering","module":"order_management","aggregate":"order-processing"}};
 
     function applyFilters() {
         const ctx = document.getElementById('filter-context').value;

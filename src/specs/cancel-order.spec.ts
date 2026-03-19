@@ -24,11 +24,13 @@ const cancelOrder: IntentDecisionSpec<CancelOrder, Contexts, Modules, Aggregates
         order_not_yet_cancelled: {
             description: 'The order has not already been cancelled',
             requiredInfo: ['order_status'],
+            scenarios: [
+                { description: 'Customer tries to cancel an order that was already cancelled' }
+            ]
         }
     },
     producesIntent: {
         intent: 'cancel_order',
-        condition: 'Order is in draft or submitted state',
         description: 'The order is cancelled and any held resources are released',
         requiredInfo: ['order_status'],
     },

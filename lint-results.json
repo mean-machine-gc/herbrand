@@ -1,48 +1,6 @@
 [
   {
     "level": "warning",
-    "rule": "orphan_outcome",
-    "message": "Outcome 'purchase_order_created' is used as a trigger but no outcome decision produces it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "orphan_outcome",
-    "message": "Outcome 'order_created' is used as a trigger but no outcome decision produces it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "unconsumed_intent",
-    "message": "Intent 'approve_purchase_order' is produced but no outcome decision is triggered by it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "unconsumed_intent",
-    "message": "Intent 'cancel_order' is produced but no outcome decision is triggered by it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "unconsumed_intent",
-    "message": "Intent 'create_order' is produced but no outcome decision is triggered by it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "unconsumed_intent",
-    "message": "Intent 'create_purchase_order' is produced but no outcome decision is triggered by it",
-    "spec": null
-  },
-  {
-    "level": "warning",
-    "rule": "unconsumed_intent",
-    "message": "Intent 'reject_purchase_order' is produced but no outcome decision is triggered by it",
-    "spec": null
-  },
-  {
-    "level": "warning",
     "rule": "unhandled_rejection",
     "message": "Outcome rejection 'rejected:payment_failed' has no intent decision reacting to it",
     "spec": null
@@ -55,8 +13,98 @@
   },
   {
     "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:approval_processing_error' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:order_not_cancellable' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:invalid_order_data' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:invalid_purchase_order_data' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:fulfillment_failed' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:notification_failed' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:rejection_processing_error' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "unhandled_rejection",
+    "message": "Outcome rejection 'rejected:routing_failed' has no intent decision reacting to it",
+    "spec": null
+  },
+  {
+    "level": "warning",
     "rule": "dead_end_outcome",
-    "message": "Outcome 'order_confirmed' is produced but no intent decision is triggered by it",
+    "message": "Outcome 'purchase_order_approved' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'order_cancelled' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'order_fulfilled' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'customer_email_sent' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'order_audit_logged' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'purchase_order_rejected' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'order_routed_express' is produced but no intent decision is triggered by it",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "dead_end_outcome",
+    "message": "Outcome 'order_routed_standard' is produced but no intent decision is triggered by it",
     "spec": null
   },
   {
@@ -68,7 +116,13 @@
   {
     "level": "warning",
     "rule": "info_never_written",
-    "message": "Info 'purchase_order_status' is required by decisions but never affected by any outcome decision — where does it come from?",
+    "message": "Info 'purchase_order_amount' is required by decisions but never affected by any outcome decision — where does it come from?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_written",
+    "message": "Info 'auto_approval_threshold' is required by decisions but never affected by any outcome decision — where does it come from?",
     "spec": null
   },
   {
@@ -92,32 +146,68 @@
   {
     "level": "warning",
     "rule": "info_never_written",
-    "message": "Info 'department_budget' is required by decisions but never affected by any outcome decision — where does it come from?",
+    "message": "Info 'shipping_preference' is required by decisions but never affected by any outcome decision — where does it come from?",
     "spec": null
   },
   {
     "level": "warning",
-    "rule": "info_never_written",
-    "message": "Info 'order_line_items' is required by decisions but never affected by any outcome decision — where does it come from?",
+    "rule": "info_never_read",
+    "message": "Info 'supplier_notification' is affected by outcome decisions but never required by any decision — is anyone using it?",
     "spec": null
   },
   {
     "level": "warning",
-    "rule": "missing_scenarios",
-    "message": "Reject 'purchase_order_pending_approval' has no scenarios",
-    "spec": "approve-purchase-order"
+    "rule": "info_never_read",
+    "message": "Info 'payment_authorization' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
   },
   {
     "level": "warning",
-    "rule": "missing_scenarios",
-    "message": "Reject 'order_not_yet_cancelled' has no scenarios",
-    "spec": "cancel-order"
+    "rule": "info_never_read",
+    "message": "Info 'reserved_stock' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
   },
   {
     "level": "warning",
-    "rule": "missing_scenarios",
-    "message": "Reject 'purchase_order_not_yet_rejected' has no scenarios",
-    "spec": "reject-purchase-order"
+    "rule": "info_never_read",
+    "message": "Info 'order_customer_reference' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_read",
+    "message": "Info 'budget_reservation' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_read",
+    "message": "Info 'purchase_order_supplier_reference' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_read",
+    "message": "Info 'audit_log' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_read",
+    "message": "Info 'order_route' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "info_never_read",
+    "message": "Info 'order_editability' is affected by outcome decisions but never required by any decision — is anyone using it?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "duplicate_intent_decision",
+    "message": "Multiple intent decisions with same flow (purchase_order_created→approve_purchase_order): approve-purchase-order, auto-approve-purchase-order",
+    "spec": null
   },
   {
     "level": "warning",
@@ -127,8 +217,62 @@
   },
   {
     "level": "warning",
+    "rule": "duplicate_views",
+    "message": "Same info set [order_status] — could be the same view: cancel-order, initiate-confirmation",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "duplicate_views",
+    "message": "Same info set [order_line_items,order_status] — could be the same view: fulfill-order, submit-order",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'approve-purchase-order' and 'auto-approve-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
     "rule": "aggregate_no_shared_info",
     "message": "'approve-purchase-order' and 'create-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'auto-approve-purchase-order' and 'create-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'auto-approve-purchase-order' and 'process-approve-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'auto-approve-purchase-order' and 'process-create-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'auto-approve-purchase-order' and 'process-reject-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'auto-approve-purchase-order' and 'reject-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-purchase-order' and 'process-approve-purchase-order' in aggregate 'procurement-processing' share no info — do they belong together?",
     "spec": null
   },
   {
@@ -147,6 +291,60 @@
     "level": "warning",
     "rule": "aggregate_no_shared_info",
     "message": "'confirm-order' and 'create-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'fulfill-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'initiate-confirmation' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'notify-order-confirmed' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'process-cancel-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'process-fulfill-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'process-order-notification' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'process-route-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'process-submit-order' in aggregate 'order-processing' share no info — do they belong together?",
+    "spec": null
+  },
+  {
+    "level": "warning",
+    "rule": "aggregate_no_shared_info",
+    "message": "'create-order' and 'route-order' in aggregate 'order-processing' share no info — do they belong together?",
     "spec": null
   },
   {

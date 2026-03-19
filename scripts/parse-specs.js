@@ -68,17 +68,16 @@ function parseSpec(content) {
         if (producesBlock) {
             const body = producesBlock[1];
             const intentMatch = body.match(/intent:\s*'([^']+)'/);
-            const condMatch = body.match(/condition:\s*'([^']+)'/);
             const descMatch = body.match(/description:\s*'([^']+)'/);
             const reqInfoMatch = body.match(/requiredInfo:\s*\[([^\]]*)\]/);
             const reqInfos = reqInfoMatch ? [...reqInfoMatch[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : [];
             const scenarios = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map(x => x[1]);
-            const scenarioDescriptions = scenarios.filter(e => e !== (descMatch ? descMatch[1] : '') && e !== (condMatch ? condMatch[1] : ''));
+            const scenarioDescriptions = scenarios.filter(e => e !== (descMatch ? descMatch[1] : ''));
 
             const key = intentMatch ? intentMatch[1] : 'unknown';
             spec.choices.push(key);
             spec.choiceDetails[key] = {
-                condition: condMatch ? condMatch[1] : null,
+                condition: null,
                 description: descMatch ? descMatch[1] : null,
                 requiredInfo: reqInfos,
                 scenarios: scenarioDescriptions,

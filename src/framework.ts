@@ -72,7 +72,6 @@ type IntentDecisionSpec<D extends AnyDecision, Contexts extends string, Modules 
     }>
     producesIntent: {
         intent: D['choices']
-        condition: string
         description: string
         requiredInfo: Array<D['info']>
         scenarios?: Array<{ description: string }>

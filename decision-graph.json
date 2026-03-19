@@ -3,7 +3,7 @@
     {
       "id": "approve_purchase_order",
       "type": "intent",
-      "role": "department_manager"
+      "role": "machine"
     },
     {
       "id": "cancel_order",
@@ -11,9 +11,9 @@
       "role": "customer"
     },
     {
-      "id": "submit_order",
+      "id": "confirm_order",
       "type": "intent",
-      "role": "customer"
+      "role": "machine"
     },
     {
       "id": "create_order",
@@ -26,34 +26,139 @@
       "role": "procurement_officer"
     },
     {
+      "id": "fulfill_order",
+      "type": "intent",
+      "role": "machine"
+    },
+    {
+      "id": "notify_order_confirmed",
+      "type": "intent",
+      "role": "machine"
+    },
+    {
       "id": "reject_purchase_order",
       "type": "intent",
       "role": "department_manager"
     },
     {
+      "id": "route_order",
+      "type": "intent",
+      "role": "machine"
+    },
+    {
+      "id": "submit_order",
+      "type": "intent",
+      "role": "customer"
+    },
+    {
       "id": "purchase_order_created",
       "type": "outcome",
-      "role": null
+      "role": "procurement_officer"
     },
     {
       "id": "order_created",
       "type": "outcome",
-      "role": null
+      "role": "customer"
     },
     {
       "id": "order_confirmed",
       "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "order_submitted",
+      "type": "outcome",
       "role": "customer"
+    },
+    {
+      "id": "purchase_order_approved",
+      "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "order_cancelled",
+      "type": "outcome",
+      "role": "customer"
+    },
+    {
+      "id": "order_fulfilled",
+      "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "customer_email_sent",
+      "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "order_audit_logged",
+      "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "purchase_order_rejected",
+      "type": "outcome",
+      "role": "department_manager"
+    },
+    {
+      "id": "order_routed_express",
+      "type": "outcome",
+      "role": "machine"
+    },
+    {
+      "id": "order_routed_standard",
+      "type": "outcome",
+      "role": "machine"
     },
     {
       "id": "rejected:payment_failed",
       "type": "outcome_reject",
-      "role": "customer"
+      "role": "machine"
     },
     {
       "id": "rejected:stock_unavailable",
       "type": "outcome_reject",
+      "role": "machine"
+    },
+    {
+      "id": "rejected:approval_processing_error",
+      "type": "outcome_reject",
+      "role": "machine"
+    },
+    {
+      "id": "rejected:order_not_cancellable",
+      "type": "outcome_reject",
       "role": "customer"
+    },
+    {
+      "id": "rejected:invalid_order_data",
+      "type": "outcome_reject",
+      "role": "customer"
+    },
+    {
+      "id": "rejected:invalid_purchase_order_data",
+      "type": "outcome_reject",
+      "role": "procurement_officer"
+    },
+    {
+      "id": "rejected:fulfillment_failed",
+      "type": "outcome_reject",
+      "role": "machine"
+    },
+    {
+      "id": "rejected:notification_failed",
+      "type": "outcome_reject",
+      "role": "machine"
+    },
+    {
+      "id": "rejected:rejection_processing_error",
+      "type": "outcome_reject",
+      "role": "department_manager"
+    },
+    {
+      "id": "rejected:routing_failed",
+      "type": "outcome_reject",
+      "role": "machine"
     },
     {
       "id": "view_approve-purchase-order_approve_purchase_order",
@@ -62,6 +167,15 @@
       "infos": [
         "approver_authority",
         "purchase_order_status"
+      ]
+    },
+    {
+      "id": "view_auto-approve-purchase-order_approve_purchase_order",
+      "type": "view",
+      "role": "machine",
+      "infos": [
+        "purchase_order_amount",
+        "auto_approval_threshold"
       ]
     },
     {
@@ -91,12 +205,47 @@
       ]
     },
     {
+      "id": "view_fulfill-order_fulfill_order",
+      "type": "view",
+      "role": "machine",
+      "infos": [
+        "order_status",
+        "order_line_items"
+      ]
+    },
+    {
+      "id": "view_initiate-confirmation_confirm_order",
+      "type": "view",
+      "role": "machine",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "id": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "view",
+      "role": "machine",
+      "infos": [
+        "order_status",
+        "customer_email"
+      ]
+    },
+    {
       "id": "view_reject-purchase-order_reject_purchase_order",
       "type": "view",
       "role": "department_manager",
       "infos": [
         "approver_authority",
         "purchase_order_status"
+      ]
+    },
+    {
+      "id": "view_route-order_route_order",
+      "type": "view",
+      "role": "machine",
+      "infos": [
+        "order_status",
+        "shipping_preference"
       ]
     },
     {
@@ -121,6 +270,15 @@
       "spec": "approve-purchase-order"
     },
     {
+      "from": "purchase_order_created",
+      "to": "approve_purchase_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "amount_below_threshold"
+      ],
+      "spec": "auto-approve-purchase-order"
+    },
+    {
       "from": "order_created",
       "to": "cancel_order",
       "type": "intent_flow",
@@ -131,19 +289,19 @@
       "spec": "cancel-order"
     },
     {
-      "from": "submit_order",
+      "from": "confirm_order",
       "to": "order_confirmed",
       "type": "outcome_flow",
       "spec": "confirm-order"
     },
     {
-      "from": "submit_order",
+      "from": "confirm_order",
       "to": "rejected:payment_failed",
       "type": "reject_flow",
       "spec": "confirm-order"
     },
     {
-      "from": "submit_order",
+      "from": "confirm_order",
       "to": "rejected:stock_unavailable",
       "type": "reject_flow",
       "spec": "confirm-order"
@@ -169,6 +327,153 @@
       "spec": "create-purchase-order"
     },
     {
+      "from": "order_confirmed",
+      "to": "fulfill_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_ready_for_fulfillment"
+      ],
+      "spec": "fulfill-order"
+    },
+    {
+      "from": "order_submitted",
+      "to": "confirm_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_is_submitted"
+      ],
+      "spec": "initiate-confirmation"
+    },
+    {
+      "from": "order_confirmed",
+      "to": "notify_order_confirmed",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_is_confirmed"
+      ],
+      "spec": "notify-order-confirmed"
+    },
+    {
+      "from": "approve_purchase_order",
+      "to": "purchase_order_approved",
+      "type": "outcome_flow",
+      "spec": "process-approve-purchase-order"
+    },
+    {
+      "from": "approve_purchase_order",
+      "to": "rejected:approval_processing_error",
+      "type": "reject_flow",
+      "spec": "process-approve-purchase-order"
+    },
+    {
+      "from": "cancel_order",
+      "to": "order_cancelled",
+      "type": "outcome_flow",
+      "spec": "process-cancel-order"
+    },
+    {
+      "from": "cancel_order",
+      "to": "rejected:order_not_cancellable",
+      "type": "reject_flow",
+      "spec": "process-cancel-order"
+    },
+    {
+      "from": "create_order",
+      "to": "order_created",
+      "type": "outcome_flow",
+      "spec": "process-create-order"
+    },
+    {
+      "from": "create_order",
+      "to": "rejected:invalid_order_data",
+      "type": "reject_flow",
+      "spec": "process-create-order"
+    },
+    {
+      "from": "create_purchase_order",
+      "to": "purchase_order_created",
+      "type": "outcome_flow",
+      "spec": "process-create-purchase-order"
+    },
+    {
+      "from": "create_purchase_order",
+      "to": "rejected:invalid_purchase_order_data",
+      "type": "reject_flow",
+      "spec": "process-create-purchase-order"
+    },
+    {
+      "from": "fulfill_order",
+      "to": "order_fulfilled",
+      "type": "outcome_flow",
+      "spec": "process-fulfill-order"
+    },
+    {
+      "from": "fulfill_order",
+      "to": "rejected:fulfillment_failed",
+      "type": "reject_flow",
+      "spec": "process-fulfill-order"
+    },
+    {
+      "from": "notify_order_confirmed",
+      "to": "customer_email_sent",
+      "type": "outcome_flow",
+      "spec": "process-order-notification"
+    },
+    {
+      "from": "notify_order_confirmed",
+      "to": "order_audit_logged",
+      "type": "outcome_flow",
+      "spec": "process-order-notification"
+    },
+    {
+      "from": "notify_order_confirmed",
+      "to": "rejected:notification_failed",
+      "type": "reject_flow",
+      "spec": "process-order-notification"
+    },
+    {
+      "from": "reject_purchase_order",
+      "to": "purchase_order_rejected",
+      "type": "outcome_flow",
+      "spec": "process-reject-purchase-order"
+    },
+    {
+      "from": "reject_purchase_order",
+      "to": "rejected:rejection_processing_error",
+      "type": "reject_flow",
+      "spec": "process-reject-purchase-order"
+    },
+    {
+      "from": "route_order",
+      "to": "order_routed_express",
+      "type": "outcome_flow",
+      "spec": "process-route-order"
+    },
+    {
+      "from": "route_order",
+      "to": "order_routed_standard",
+      "type": "outcome_flow",
+      "spec": "process-route-order"
+    },
+    {
+      "from": "route_order",
+      "to": "rejected:routing_failed",
+      "type": "reject_flow",
+      "spec": "process-route-order"
+    },
+    {
+      "from": "submit_order",
+      "to": "order_submitted",
+      "type": "outcome_flow",
+      "spec": "process-submit-order"
+    },
+    {
+      "from": "submit_order",
+      "to": "rejected:invalid_order_data",
+      "type": "reject_flow",
+      "spec": "process-submit-order"
+    },
+    {
       "from": "purchase_order_created",
       "to": "reject_purchase_order",
       "type": "intent_flow",
@@ -177,6 +482,15 @@
         "purchase_order_not_yet_rejected"
       ],
       "spec": "reject-purchase-order"
+    },
+    {
+      "from": "order_submitted",
+      "to": "route_order",
+      "type": "intent_flow",
+      "intentRejects": [
+        "order_is_submitted"
+      ],
+      "spec": "route-order"
     },
     {
       "from": "order_created",
@@ -190,6 +504,11 @@
     },
     {
       "from": "view_approve-purchase-order_approve_purchase_order",
+      "to": "approve_purchase_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_auto-approve-purchase-order_approve_purchase_order",
       "to": "approve_purchase_order",
       "type": "view_to_intent"
     },
@@ -209,8 +528,28 @@
       "type": "view_to_intent"
     },
     {
+      "from": "view_fulfill-order_fulfill_order",
+      "to": "fulfill_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_initiate-confirmation_confirm_order",
+      "to": "confirm_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_notify-order-confirmed_notify_order_confirmed",
+      "to": "notify_order_confirmed",
+      "type": "view_to_intent"
+    },
+    {
       "from": "view_reject-purchase-order_reject_purchase_order",
       "to": "reject_purchase_order",
+      "type": "view_to_intent"
+    },
+    {
+      "from": "view_route-order_route_order",
+      "to": "route_order",
       "type": "view_to_intent"
     },
     {
@@ -228,6 +567,408 @@
     },
     {
       "from": "order_confirmed",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_confirmed",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "purchase_order_approved",
+      "to": "view_approve-purchase-order_approve_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "purchase_order_approved",
+      "to": "view_reject-purchase-order_reject_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_cancelled",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status",
+        "order_line_items"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_created",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_line_items",
+        "order_status"
+      ]
+    },
+    {
+      "from": "purchase_order_created",
+      "to": "view_approve-purchase-order_approve_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "purchase_order_created",
+      "to": "view_create-purchase-order_create_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "department_budget"
+      ]
+    },
+    {
+      "from": "purchase_order_created",
+      "to": "view_reject-purchase-order_reject_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_fulfilled",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "customer_email_sent",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "customer_email"
+      ]
+    },
+    {
+      "from": "order_audit_logged",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "customer_email"
+      ]
+    },
+    {
+      "from": "purchase_order_rejected",
+      "to": "view_approve-purchase-order_approve_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "purchase_order_rejected",
+      "to": "view_create-purchase-order_create_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "department_budget"
+      ]
+    },
+    {
+      "from": "purchase_order_rejected",
+      "to": "view_reject-purchase-order_reject_purchase_order",
+      "type": "info_flow",
+      "infos": [
+        "purchase_order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_express",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_routed_standard",
+      "to": "view_submit-order_submit_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
+      "to": "view_cancel-order_cancel_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
+      "to": "view_fulfill-order_fulfill_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
+      "to": "view_initiate-confirmation_confirm_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
+      "to": "view_notify-order-confirmed_notify_order_confirmed",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
+      "to": "view_route-order_route_order",
+      "type": "info_flow",
+      "infos": [
+        "order_status"
+      ]
+    },
+    {
+      "from": "order_submitted",
       "to": "view_submit-order_submit_order",
       "type": "info_flow",
       "infos": [
@@ -247,7 +988,7 @@
       ],
       "choiceDetails": {
         "approve_purchase_order": {
-          "condition": "Approver has authority and PO is in pending approval state",
+          "condition": null,
           "description": "The purchase order is approved and sent to the supplier",
           "requiredInfo": [
             "approver_authority",
@@ -275,7 +1016,9 @@
           "requiredInfo": [
             "purchase_order_status"
           ],
-          "scenarios": []
+          "scenarios": [
+            "Manager tries to approve an already approved PO"
+          ]
         }
       },
       "assertionDetails": {},
@@ -284,10 +1027,56 @@
         "purchase_order_status"
       ],
       "affectedInfo": [],
-      "rejectsWithoutScenarios": [
-        "purchase_order_pending_approval"
-      ],
+      "rejectsWithoutScenarios": [],
       "role": "department_manager",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "auto-approve-purchase-order": {
+      "type": "intent",
+      "description": "The system automatically approves purchase orders below the auto-approval threshold",
+      "businessGoal": "streamline low-value purchases by auto-approving below threshold",
+      "trigger": "purchase_order_created",
+      "triggerType": "success",
+      "choices": [
+        "approve_purchase_order"
+      ],
+      "choiceDetails": {
+        "approve_purchase_order": {
+          "condition": null,
+          "description": "The purchase order is automatically approved without manager intervention",
+          "requiredInfo": [
+            "purchase_order_amount",
+            "auto_approval_threshold"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "amount_below_threshold"
+      ],
+      "rejectDetails": {
+        "amount_below_threshold": {
+          "description": "The purchase order amount is below the auto-approval threshold",
+          "requiredInfo": [
+            "purchase_order_amount",
+            "auto_approval_threshold"
+          ],
+          "scenarios": [
+            "PO for $500 when threshold is $1000 — auto-approved",
+            "PO for $5000 when threshold is $1000 — skipped, requires manual approval"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "purchase_order_amount",
+        "auto_approval_threshold"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
       "context": "procurement",
       "module": "purchasing",
       "aggregate": "procurement-processing"
@@ -303,7 +1092,7 @@
       ],
       "choiceDetails": {
         "cancel_order": {
-          "condition": "Order is in draft or submitted state",
+          "condition": null,
           "description": "The order is cancelled and any held resources are released",
           "requiredInfo": [
             "order_status"
@@ -330,7 +1119,9 @@
           "requiredInfo": [
             "order_status"
           ],
-          "scenarios": []
+          "scenarios": [
+            "Customer tries to cancel an order that was already cancelled"
+          ]
         }
       },
       "assertionDetails": {},
@@ -338,9 +1129,7 @@
         "order_status"
       ],
       "affectedInfo": [],
-      "rejectsWithoutScenarios": [
-        "order_not_yet_cancelled"
-      ],
+      "rejectsWithoutScenarios": [],
       "role": "customer",
       "context": "ordering",
       "module": "order_management",
@@ -350,14 +1139,14 @@
       "type": "outcome",
       "description": "The system confirms a submitted order after verifying payment and stock",
       "businessGoal": null,
-      "trigger": "submit_order",
+      "trigger": "confirm_order",
       "triggerType": "intent",
       "choices": [
         "order_confirmed"
       ],
       "choiceDetails": {
         "order_confirmed": {
-          "condition": "Payment is successful and all items are in stock",
+          "condition": "always",
           "description": "The order is confirmed and ready for fulfillment",
           "requiredInfo": [
             "payment_status",
@@ -442,7 +1231,7 @@
       ],
       "choiceDetails": {
         "create_order": {
-          "condition": "Customer info is valid and all products exist",
+          "condition": null,
           "description": "A new order is created in draft state with the selected products",
           "requiredInfo": [
             "customer_info",
@@ -501,7 +1290,7 @@
       ],
       "choiceDetails": {
         "create_purchase_order": {
-          "condition": "Supplier is valid and budget is available",
+          "condition": null,
           "description": "A new purchase order is created in pending approval state",
           "requiredInfo": [
             "supplier_status",
@@ -546,6 +1335,826 @@
       "module": "purchasing",
       "aggregate": "procurement-processing"
     },
+    "fulfill-order": {
+      "type": "intent",
+      "description": "The system initiates fulfillment for a confirmed order",
+      "businessGoal": "deliver confirmed orders to customers",
+      "trigger": "order_confirmed",
+      "triggerType": "success",
+      "choices": [
+        "fulfill_order"
+      ],
+      "choiceDetails": {
+        "fulfill_order": {
+          "condition": null,
+          "description": "The order is queued for picking, packing and shipping",
+          "requiredInfo": [
+            "order_status",
+            "order_line_items"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_ready_for_fulfillment"
+      ],
+      "rejectDetails": {
+        "order_ready_for_fulfillment": {
+          "description": "The order is in confirmed state and ready to be fulfilled",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "System tries to fulfill an order that was cancelled after confirmation"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_status",
+        "order_line_items"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "initiate-confirmation": {
+      "type": "intent",
+      "description": "The system automatically initiates confirmation for a submitted order",
+      "businessGoal": "automatically process submitted orders for payment and stock verification",
+      "trigger": "order_submitted",
+      "triggerType": "success",
+      "choices": [
+        "confirm_order"
+      ],
+      "choiceDetails": {
+        "confirm_order": {
+          "condition": null,
+          "description": "The system begins payment and stock verification",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_is_submitted"
+      ],
+      "rejectDetails": {
+        "order_is_submitted": {
+          "description": "The order is in submitted state",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "System receives a duplicate submission event for an already confirmed order"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_status"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "notify-order-confirmed": {
+      "type": "intent",
+      "description": "The system sends a confirmation notification and logs the event",
+      "businessGoal": "keep customers informed and maintain audit trail for confirmed orders",
+      "trigger": "order_confirmed",
+      "triggerType": "success",
+      "choices": [
+        "notify_order_confirmed"
+      ],
+      "choiceDetails": {
+        "notify_order_confirmed": {
+          "condition": null,
+          "description": "The system sends customer notification and creates audit log entry",
+          "requiredInfo": [
+            "order_status",
+            "customer_email"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_is_confirmed"
+      ],
+      "rejectDetails": {
+        "order_is_confirmed": {
+          "description": "The order is in confirmed state",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "System receives duplicate confirmation event"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_status",
+        "customer_email"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-approve-purchase-order": {
+      "type": "outcome",
+      "description": "The system processes the approval and notifies the supplier",
+      "businessGoal": null,
+      "trigger": "approve_purchase_order",
+      "triggerType": "intent",
+      "choices": [
+        "purchase_order_approved"
+      ],
+      "choiceDetails": {
+        "purchase_order_approved": {
+          "condition": "always",
+          "description": "The purchase order is approved and the supplier is notified",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": [
+            "Manager approves a PO and supplier receives notification"
+          ]
+        }
+      },
+      "rejects": [
+        "approval_processing_error"
+      ],
+      "rejectDetails": {
+        "approval_processing_error": {
+          "description": "The approval could not be processed due to a system error",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": [
+            "Supplier notification service is unavailable"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "purchase_order_approved": [
+          {
+            "tag": "purchase_order_status_approved",
+            "description": "The purchase order status transitions to approved",
+            "affectedInfo": [
+              "purchase_order_status"
+            ]
+          },
+          {
+            "tag": "supplier_notified",
+            "description": "The supplier is notified of the approved purchase order",
+            "affectedInfo": [
+              "supplier_notification"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "purchase_order_status"
+      ],
+      "affectedInfo": [
+        "purchase_order_status",
+        "supplier_notification"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "process-cancel-order": {
+      "type": "outcome",
+      "description": "The system processes the cancel order intent and releases held resources",
+      "businessGoal": null,
+      "trigger": "cancel_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_cancelled"
+      ],
+      "choiceDetails": {
+        "order_cancelled": {
+          "condition": "always",
+          "description": "The order is cancelled and all held resources are released",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "Customer cancels a draft order with no payment hold"
+          ]
+        }
+      },
+      "rejects": [
+        "order_not_cancellable"
+      ],
+      "rejectDetails": {
+        "order_not_cancellable": {
+          "description": "The order is in a state that does not allow cancellation",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "System receives cancel intent for an order already in fulfillment"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_cancelled": [
+          {
+            "tag": "order_status_cancelled",
+            "description": "The order status transitions to cancelled",
+            "affectedInfo": [
+              "order_status"
+            ]
+          },
+          {
+            "tag": "payment_authorization_voided",
+            "description": "Any pending payment authorization is voided",
+            "affectedInfo": [
+              "payment_authorization"
+            ]
+          },
+          {
+            "tag": "stock_released",
+            "description": "Reserved inventory is released back to available stock",
+            "affectedInfo": [
+              "reserved_stock"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "order_status"
+      ],
+      "affectedInfo": [
+        "order_status",
+        "payment_authorization",
+        "reserved_stock"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-create-order": {
+      "type": "outcome",
+      "description": "The system processes the create order intent and persists a new order",
+      "businessGoal": null,
+      "trigger": "create_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_created"
+      ],
+      "choiceDetails": {
+        "order_created": {
+          "condition": "always",
+          "description": "A new order is persisted in draft state",
+          "requiredInfo": [
+            "customer_info",
+            "available_products"
+          ],
+          "scenarios": [
+            "Customer creates an order with two valid products"
+          ]
+        }
+      },
+      "rejects": [
+        "invalid_order_data"
+      ],
+      "rejectDetails": {
+        "invalid_order_data": {
+          "description": "The order data is malformed or contains inconsistencies",
+          "requiredInfo": [
+            "customer_info",
+            "available_products"
+          ],
+          "scenarios": [
+            "Product quantity is negative",
+            "Customer reference points to a deleted account"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_created": [
+          {
+            "tag": "order_in_draft_state",
+            "description": "The order is persisted with status draft",
+            "affectedInfo": [
+              "order_status"
+            ]
+          },
+          {
+            "tag": "order_has_line_items",
+            "description": "The order contains the selected products as line items",
+            "affectedInfo": [
+              "order_line_items"
+            ]
+          },
+          {
+            "tag": "order_linked_to_customer",
+            "description": "The order is linked to the customer who created it",
+            "affectedInfo": [
+              "order_customer_reference"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "customer_info",
+        "available_products"
+      ],
+      "affectedInfo": [
+        "order_status",
+        "order_line_items",
+        "order_customer_reference"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-create-purchase-order": {
+      "type": "outcome",
+      "description": "The system processes the create purchase order intent and persists a new PO",
+      "businessGoal": null,
+      "trigger": "create_purchase_order",
+      "triggerType": "intent",
+      "choices": [
+        "purchase_order_created"
+      ],
+      "choiceDetails": {
+        "purchase_order_created": {
+          "condition": "always",
+          "description": "A new purchase order is persisted in pending approval state",
+          "requiredInfo": [
+            "supplier_status",
+            "department_budget"
+          ],
+          "scenarios": [
+            "Officer creates a PO for office supplies within budget"
+          ]
+        }
+      },
+      "rejects": [
+        "invalid_purchase_order_data"
+      ],
+      "rejectDetails": {
+        "invalid_purchase_order_data": {
+          "description": "The purchase order data is malformed or contains inconsistencies",
+          "requiredInfo": [
+            "supplier_status",
+            "department_budget"
+          ],
+          "scenarios": [
+            "PO references a supplier that has been deactivated since validation"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "purchase_order_created": [
+          {
+            "tag": "purchase_order_pending",
+            "description": "The purchase order is persisted with status pending approval",
+            "affectedInfo": [
+              "purchase_order_status"
+            ]
+          },
+          {
+            "tag": "budget_reserved",
+            "description": "The requested amount is reserved against the department budget",
+            "affectedInfo": [
+              "budget_reservation",
+              "department_budget"
+            ]
+          },
+          {
+            "tag": "purchase_order_linked_to_supplier",
+            "description": "The purchase order references the selected supplier",
+            "affectedInfo": [
+              "purchase_order_supplier_reference"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "supplier_status",
+        "department_budget"
+      ],
+      "affectedInfo": [
+        "purchase_order_status",
+        "budget_reservation",
+        "department_budget",
+        "purchase_order_supplier_reference"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "process-fulfill-order": {
+      "type": "outcome",
+      "description": "The system fulfills the order by picking, packing and shipping",
+      "businessGoal": null,
+      "trigger": "fulfill_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_fulfilled"
+      ],
+      "choiceDetails": {
+        "order_fulfilled": {
+          "condition": "always",
+          "description": "The order is fulfilled and shipped to the customer",
+          "requiredInfo": [
+            "stock_levels",
+            "order_line_items"
+          ],
+          "scenarios": [
+            "All items are in stock and successfully shipped"
+          ]
+        }
+      },
+      "rejects": [
+        "fulfillment_failed"
+      ],
+      "rejectDetails": {
+        "fulfillment_failed": {
+          "description": "The order could not be fulfilled due to a logistics issue",
+          "requiredInfo": [
+            "stock_levels",
+            "order_line_items"
+          ],
+          "scenarios": [
+            "Warehouse reports damaged goods for an item in the order",
+            "Shipping provider rejects the delivery address"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_fulfilled": [
+          {
+            "tag": "order_status_fulfilled",
+            "description": "The order status transitions to fulfilled",
+            "affectedInfo": [
+              "order_status"
+            ]
+          },
+          {
+            "tag": "stock_decremented",
+            "description": "Physical stock is decremented for shipped items",
+            "affectedInfo": [
+              "stock_levels"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "stock_levels",
+        "order_line_items"
+      ],
+      "affectedInfo": [
+        "order_status",
+        "stock_levels"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-order-notification": {
+      "type": "outcome",
+      "description": "The system sends a confirmation email to the customer and logs the order event for audit",
+      "businessGoal": null,
+      "trigger": "notify_order_confirmed",
+      "triggerType": "intent",
+      "choices": [
+        "customer_email_sent",
+        "order_audit_logged"
+      ],
+      "choiceDetails": {
+        "customer_email_sent": {
+          "condition": "always",
+          "description": "A confirmation email is sent to the customer",
+          "requiredInfo": [
+            "customer_email",
+            "order_status"
+          ],
+          "scenarios": [
+            "Customer receives order confirmation with tracking details"
+          ]
+        },
+        "order_audit_logged": {
+          "condition": "always",
+          "description": "The order confirmation is logged for audit purposes",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "Audit system records the confirmation timestamp and order details"
+          ]
+        }
+      },
+      "rejects": [
+        "notification_failed"
+      ],
+      "rejectDetails": {
+        "notification_failed": {
+          "description": "The notification could not be sent due to a system error",
+          "requiredInfo": [
+            "customer_email"
+          ],
+          "scenarios": [
+            "Email service is down",
+            "Customer email address is invalid"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "customer_email_sent": [
+          {
+            "tag": "confirmation_email_delivered",
+            "description": "The confirmation email has been sent to the customer",
+            "affectedInfo": [
+              "customer_email"
+            ]
+          }
+        ],
+        "order_audit_logged": [
+          {
+            "tag": "audit_entry_created",
+            "description": "An audit log entry is created for the order confirmation",
+            "affectedInfo": [
+              "audit_log"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "customer_email",
+        "order_status"
+      ],
+      "affectedInfo": [
+        "customer_email",
+        "audit_log"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-reject-purchase-order": {
+      "type": "outcome",
+      "description": "The system processes the rejection and releases the budget reservation",
+      "businessGoal": null,
+      "trigger": "reject_purchase_order",
+      "triggerType": "intent",
+      "choices": [
+        "purchase_order_rejected"
+      ],
+      "choiceDetails": {
+        "purchase_order_rejected": {
+          "condition": "always",
+          "description": "The purchase order is rejected and the budget reservation is released",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": [
+            "Manager rejects a PO and budget is freed up"
+          ]
+        }
+      },
+      "rejects": [
+        "rejection_processing_error"
+      ],
+      "rejectDetails": {
+        "rejection_processing_error": {
+          "description": "The rejection could not be processed due to a system error",
+          "requiredInfo": [
+            "purchase_order_status"
+          ],
+          "scenarios": [
+            "Budget release service is unavailable"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "purchase_order_rejected": [
+          {
+            "tag": "purchase_order_status_rejected",
+            "description": "The purchase order status transitions to rejected",
+            "affectedInfo": [
+              "purchase_order_status"
+            ]
+          },
+          {
+            "tag": "budget_reservation_released",
+            "description": "The reserved budget amount is released back to the department",
+            "affectedInfo": [
+              "budget_reservation",
+              "department_budget"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "purchase_order_status"
+      ],
+      "affectedInfo": [
+        "purchase_order_status",
+        "budget_reservation",
+        "department_budget"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "procurement",
+      "module": "purchasing",
+      "aggregate": "procurement-processing"
+    },
+    "process-route-order": {
+      "type": "outcome",
+      "description": "The system routes the order to express or standard fulfillment based on shipping preference",
+      "businessGoal": null,
+      "trigger": "route_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_routed_express",
+        "order_routed_standard"
+      ],
+      "choiceDetails": {
+        "order_routed_express": {
+          "condition": "customer selected express shipping",
+          "description": "The order is routed to the express fulfillment channel",
+          "requiredInfo": [
+            "shipping_preference"
+          ],
+          "scenarios": [
+            "Customer chose next-day delivery",
+            "Customer chose 2-day shipping"
+          ]
+        },
+        "order_routed_standard": {
+          "condition": "always",
+          "description": "The order is routed to the standard fulfillment channel",
+          "requiredInfo": [
+            "shipping_preference"
+          ],
+          "scenarios": [
+            "Customer chose free standard shipping",
+            "No shipping preference specified — defaults to standard"
+          ]
+        }
+      },
+      "rejects": [
+        "routing_failed"
+      ],
+      "rejectDetails": {
+        "routing_failed": {
+          "description": "The order could not be routed to any fulfillment channel",
+          "requiredInfo": [
+            "shipping_preference",
+            "order_line_items"
+          ],
+          "scenarios": [
+            "Shipping destination is not serviceable by any carrier",
+            "All fulfillment centers are at capacity"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_routed_express": [
+          {
+            "tag": "order_route_set_express",
+            "description": "The order route is set to express fulfillment",
+            "affectedInfo": [
+              "order_route"
+            ]
+          },
+          {
+            "tag": "order_status_routed",
+            "description": "The order status transitions to routed",
+            "affectedInfo": [
+              "order_status"
+            ]
+          }
+        ],
+        "order_routed_standard": [
+          {
+            "tag": "order_route_set_standard",
+            "description": "The order route is set to standard fulfillment",
+            "affectedInfo": [
+              "order_route"
+            ]
+          },
+          {
+            "tag": "order_status_routed",
+            "description": "The order status transitions to routed",
+            "affectedInfo": [
+              "order_status"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "shipping_preference",
+        "order_line_items"
+      ],
+      "affectedInfo": [
+        "order_route",
+        "order_status"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
+    "process-submit-order": {
+      "type": "outcome",
+      "description": "The system processes the submit order intent and transitions the order to submitted",
+      "businessGoal": null,
+      "trigger": "submit_order",
+      "triggerType": "intent",
+      "choices": [
+        "order_submitted"
+      ],
+      "choiceDetails": {
+        "order_submitted": {
+          "condition": "always",
+          "description": "The order transitions to submitted and is queued for confirmation",
+          "requiredInfo": [
+            "order_status",
+            "order_line_items"
+          ],
+          "scenarios": [
+            "Customer submits a valid draft order with two items"
+          ]
+        }
+      },
+      "rejects": [
+        "invalid_order_data"
+      ],
+      "rejectDetails": {
+        "invalid_order_data": {
+          "description": "The order data is inconsistent at submission time",
+          "requiredInfo": [
+            "order_status",
+            "order_line_items"
+          ],
+          "scenarios": [
+            "Order was modified concurrently and is now in an invalid state"
+          ]
+        }
+      },
+      "assertionDetails": {
+        "order_submitted": [
+          {
+            "tag": "order_status_submitted",
+            "description": "The order status transitions to submitted",
+            "affectedInfo": [
+              "order_status"
+            ]
+          },
+          {
+            "tag": "order_not_editable",
+            "description": "The order can no longer be modified by the customer",
+            "affectedInfo": [
+              "order_editability"
+            ]
+          }
+        ]
+      },
+      "requiredInfo": [
+        "order_status",
+        "order_line_items"
+      ],
+      "affectedInfo": [
+        "order_status",
+        "order_editability"
+      ],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
+    },
     "reject-purchase-order": {
       "type": "intent",
       "description": "A department manager rejects a purchase order",
@@ -557,7 +2166,7 @@
       ],
       "choiceDetails": {
         "reject_purchase_order": {
-          "condition": "Rejector has authority and PO is in pending approval state",
+          "condition": null,
           "description": "The purchase order is rejected and the budget reservation is released",
           "requiredInfo": [
             "approver_authority",
@@ -585,7 +2194,9 @@
           "requiredInfo": [
             "purchase_order_status"
           ],
-          "scenarios": []
+          "scenarios": [
+            "Manager tries to reject a PO that was already rejected"
+          ]
         }
       },
       "assertionDetails": {},
@@ -594,13 +2205,57 @@
         "purchase_order_status"
       ],
       "affectedInfo": [],
-      "rejectsWithoutScenarios": [
-        "purchase_order_not_yet_rejected"
-      ],
+      "rejectsWithoutScenarios": [],
       "role": "department_manager",
       "context": "procurement",
       "module": "purchasing",
       "aggregate": "procurement-processing"
+    },
+    "route-order": {
+      "type": "intent",
+      "description": "The system determines the shipping route for a submitted order",
+      "businessGoal": "route orders to the appropriate fulfillment channel",
+      "trigger": "order_submitted",
+      "triggerType": "success",
+      "choices": [
+        "route_order"
+      ],
+      "choiceDetails": {
+        "route_order": {
+          "condition": null,
+          "description": "The order is queued for routing based on shipping preference",
+          "requiredInfo": [
+            "order_status",
+            "shipping_preference"
+          ],
+          "scenarios": []
+        }
+      },
+      "rejects": [
+        "order_is_submitted"
+      ],
+      "rejectDetails": {
+        "order_is_submitted": {
+          "description": "The order is in submitted state and ready for routing",
+          "requiredInfo": [
+            "order_status"
+          ],
+          "scenarios": [
+            "System receives a routing request for an already routed order"
+          ]
+        }
+      },
+      "assertionDetails": {},
+      "requiredInfo": [
+        "order_status",
+        "shipping_preference"
+      ],
+      "affectedInfo": [],
+      "rejectsWithoutScenarios": [],
+      "role": "machine",
+      "context": "ordering",
+      "module": "order_management",
+      "aggregate": "order-processing"
     },
     "submit-order": {
       "type": "intent",
@@ -613,7 +2268,7 @@
       ],
       "choiceDetails": {
         "submit_order": {
-          "condition": "Order has at least one line item and is in draft state",
+          "condition": null,
           "description": "The order transitions from draft to submitted and is queued for confirmation",
           "requiredInfo": [
             "order_status",

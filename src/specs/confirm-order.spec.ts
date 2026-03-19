@@ -1,5 +1,5 @@
 type ConfirmOrder = MachineOutcomeDecision<
-    'submit_order',
+    'confirm_order',
     'payment_failed' | 'stock_unavailable',
     'order_confirmed'
 >
@@ -11,7 +11,7 @@ const confirmOrder: OutcomeDecisionSpec<ConfirmOrder, Contexts, Modules, Aggrega
     module: 'order_management',
     aggregate: 'order-processing',
     description: 'The system confirms a submitted order after verifying payment and stock',
-    trigger: 'submit_order',
+    trigger: 'confirm_order',
     shouldFailWith: {
         payment_failed: {
             description: 'Payment could not be processed',
@@ -31,7 +31,7 @@ const confirmOrder: OutcomeDecisionSpec<ConfirmOrder, Contexts, Modules, Aggrega
     },
     shouldSucceedWith: {
         order_confirmed: {
-            condition: 'Payment is successful and all items are in stock',
+            condition: 'always',
             description: 'The order is confirmed and ready for fulfillment',
             requiredInfo: ['payment_status', 'stock_levels'],
         }

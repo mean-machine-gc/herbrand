@@ -32,7 +32,6 @@ const createOrder: IntentDecisionSpec<CreateOrder, Contexts, Modules, Aggregates
     },
     producesIntent: {
         intent: 'create_order',
-        condition: 'Customer info is valid and all products exist',
         description: 'A new order is created in draft state with the selected products',
         requiredInfo: ['customer_info', 'available_products'],
         scenarios: [

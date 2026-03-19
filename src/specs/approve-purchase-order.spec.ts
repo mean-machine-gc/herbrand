@@ -24,11 +24,13 @@ const approvePurchaseOrder: IntentDecisionSpec<ApprovePurchaseOrder, Contexts, M
         purchase_order_pending_approval: {
             description: 'The purchase order is in pending approval state',
             requiredInfo: ['purchase_order_status'],
+            scenarios: [
+                { description: 'Manager tries to approve an already approved PO' }
+            ]
         }
     },
     producesIntent: {
         intent: 'approve_purchase_order',
-        condition: 'Approver has authority and PO is in pending approval state',
         description: 'The purchase order is approved and sent to the supplier',
         requiredInfo: ['approver_authority', 'purchase_order_status'],
     },

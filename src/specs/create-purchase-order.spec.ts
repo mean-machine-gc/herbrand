@@ -31,7 +31,6 @@ const createPurchaseOrder: IntentDecisionSpec<CreatePurchaseOrder, Contexts, Mod
     },
     producesIntent: {
         intent: 'create_purchase_order',
-        condition: 'Supplier is valid and budget is available',
         description: 'A new purchase order is created in pending approval state',
         requiredInfo: ['supplier_status', 'department_budget'],
     },

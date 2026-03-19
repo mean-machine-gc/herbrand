@@ -189,7 +189,7 @@
 </style>
 </head>
 <body>
-<h1>User Stories (6)</h1>
+<h1>User Stories (11)</h1>
 <div class="filters">
         <select id="filter-context" class="filter-select" onchange="applyFilters()"><option value="">All contexts</option><option value="ordering">ordering</option><option value="procurement">procurement</option></select>
         <select id="filter-module" class="filter-select" onchange="applyFilters()"><option value="">All modules</option><option value="order_management">order_management</option><option value="purchasing">purchasing</option></select>
@@ -209,16 +209,30 @@
                 <button class="tab" onclick="switchTab('approve-purchase-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-approve-purchase-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">approver_authorized</span> The approver has authority over this department and amount</div><div class="ac-line"><span class="ac-tag">purchase_order_pending_approval</span> The purchase order is in pending approval state</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">approve purchase order</span></div></div><div class="ac-section ac-missing"><span class="ac-keyword">Then</span><div class="ac-line ac-empty-line">No outcome decision linked — acceptance criteria incomplete</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">approver_authorized</span> The approver has authority over this department and amount</div><div class="ac-line"><span class="ac-tag">purchase_order_pending_approval</span> The purchase order is in pending approval state</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">approve purchase order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">purchase_order_approved</span> The purchase order is approved and the supplier is notified</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">purchase_order_status_approved</span> The purchase order status transitions to approved</div><div class="ac-effects"><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">supplier_notified</span> The supplier is notified of the approved purchase order</div><div class="ac-effects"><span class="ac-effect-tag">supplier_notification</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">approval_processing_error</span> The approval could not be processed due to a system error</div></div>
             </div>
             <div class="tab-content" id="tab-approve-purchase-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The approver has authority over this department and amount">approver_authorized</th><th class="dt-precon" title="The purchase order is in pending approval state">purchase_order_pending_approval</th></tr></thead>
-        <tbody><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The approver has authority over this department and amount</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order is in pending approval state</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The approver has authority over this department and amount">approver_authorized</th><th class="dt-precon" title="The purchase order is in pending approval state">purchase_order_pending_approval</th><th class="dt-constraint" title="The approval could not be processed due to a system error">approval_processing_error</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">purchase_order_approved</span></td><td class="dt-assertions-cell"><span class="ac-tag">purchase_order_status_approved</span> <span class="ac-tag">supplier_notified</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">purchase_order_status</span> <span class="ac-effect-tag">supplier_notification</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The approval could not be processed due to a system error</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:approval_processing_error</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The approver has authority over this department and amount</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order is in pending approval state</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-approve-purchase-order-sc" style="display:none">
                 <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">purchase_order_approved</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">approval_processing_error</span>
+            </div>
+            <div class="sc-description">The approval could not be processed due to a system error</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-skipped">skipped</span>
                 <span class="sc-tag">approver_authorized</span>
@@ -235,7 +249,56 @@
         </div>
             </div>
             <div class="tab-content" id="tab-approve-purchase-order-vw" style="display:none">
-                <div class="view-card"><div class="view-role">department_manager</div><div class="view-infos"><span class="ac-effect-tag">approver_authority</span><span class="ac-effect-tag">purchase_order_status</span></div></div>
+                <div class="view-card"><div class="view-label">View 1 of 2</div><div class="view-role">department_manager</div><div class="view-infos"><span class="ac-effect-tag">approver_authority</span><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="view-card"><div class="view-label">View 2 of 2</div><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">purchase_order_amount</span><span class="ac-effect-tag">auto_approval_threshold</span></div></div>
+            </div>
+        </div>
+        <div class="story-card" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing">
+            <div class="user-story">
+                As a <strong>machine</strong>,
+                I want to <strong>approve purchase order</strong>
+                so to <strong>streamline low-value purchases by auto-approving below threshold</strong>
+            </div>
+            <div class="tabs" id="tabs-auto-approve-purchase-order">
+                <button class="tab active" onclick="switchTab('auto-approve-purchase-order', 'ac')">Acceptance Criteria</button>
+                <button class="tab" onclick="switchTab('auto-approve-purchase-order', 'dt')">Decision Table</button>
+                <button class="tab" onclick="switchTab('auto-approve-purchase-order', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('auto-approve-purchase-order', 'vw')">Views</button>
+            </div>
+            <div class="tab-content" id="tab-auto-approve-purchase-order-ac">
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">amount_below_threshold</span> The purchase order amount is below the auto-approval threshold</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">approve purchase order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">purchase_order_approved</span> The purchase order is approved and the supplier is notified</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">purchase_order_status_approved</span> The purchase order status transitions to approved</div><div class="ac-effects"><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">supplier_notified</span> The supplier is notified of the approved purchase order</div><div class="ac-effects"><span class="ac-effect-tag">supplier_notification</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">approval_processing_error</span> The approval could not be processed due to a system error</div></div>
+            </div>
+            <div class="tab-content" id="tab-auto-approve-purchase-order-dt" style="display:none">
+                <div class="dt-wrapper"><table class="dt-table">
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="1" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The purchase order amount is below the auto-approval threshold">amount_below_threshold</th><th class="dt-constraint" title="The approval could not be processed due to a system error">approval_processing_error</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">purchase_order_approved</span></td><td class="dt-assertions-cell"><span class="ac-tag">purchase_order_status_approved</span> <span class="ac-tag">supplier_notified</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">purchase_order_status</span> <span class="ac-effect-tag">supplier_notification</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The approval could not be processed due to a system error</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:approval_processing_error</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order amount is below the auto-approval threshold</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+    </table></div>
+            </div>
+            <div class="tab-content" id="tab-auto-approve-purchase-order-sc" style="display:none">
+                <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">purchase_order_approved</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">approval_processing_error</span>
+            </div>
+            <div class="sc-description">The approval could not be processed due to a system error</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-skipped">skipped</span>
+                <span class="sc-tag">amount_below_threshold</span>
+            </div>
+            <div class="sc-description">The purchase order amount is below the auto-approval threshold</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div>
+            </div>
+            <div class="tab-content" id="tab-auto-approve-purchase-order-vw" style="display:none">
+                <div class="view-card"><div class="view-label">View 1 of 2</div><div class="view-role">department_manager</div><div class="view-infos"><span class="ac-effect-tag">approver_authority</span><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="view-card"><div class="view-label">View 2 of 2</div><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">purchase_order_amount</span><span class="ac-effect-tag">auto_approval_threshold</span></div></div>
             </div>
         </div>
         <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
@@ -251,16 +314,30 @@
                 <button class="tab" onclick="switchTab('cancel-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-cancel-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_not_yet_confirmed</span> The order has not been confirmed yet</div><div class="ac-line"><span class="ac-tag">order_not_yet_cancelled</span> The order has not already been cancelled</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">cancel order</span></div></div><div class="ac-section ac-missing"><span class="ac-keyword">Then</span><div class="ac-line ac-empty-line">No outcome decision linked — acceptance criteria incomplete</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_not_yet_confirmed</span> The order has not been confirmed yet</div><div class="ac-line"><span class="ac-tag">order_not_yet_cancelled</span> The order has not already been cancelled</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">cancel order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_cancelled</span> The order is cancelled and all held resources are released</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_cancelled</span> The order status transitions to cancelled</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">payment_authorization_voided</span> Any pending payment authorization is voided</div><div class="ac-effects"><span class="ac-effect-tag">payment_authorization</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">stock_released</span> Reserved inventory is released back to available stock</div><div class="ac-effects"><span class="ac-effect-tag">reserved_stock</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">order_not_cancellable</span> The order is in a state that does not allow cancellation</div></div>
             </div>
             <div class="tab-content" id="tab-cancel-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order has not been confirmed yet">order_not_yet_confirmed</th><th class="dt-precon" title="The order has not already been cancelled">order_not_yet_cancelled</th></tr></thead>
-        <tbody><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order has not been confirmed yet</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order has not already been cancelled</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order has not been confirmed yet">order_not_yet_confirmed</th><th class="dt-precon" title="The order has not already been cancelled">order_not_yet_cancelled</th><th class="dt-constraint" title="The order is in a state that does not allow cancellation">order_not_cancellable</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_cancelled</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_status_cancelled</span> <span class="ac-tag">payment_authorization_voided</span> <span class="ac-tag">stock_released</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">payment_authorization</span> <span class="ac-effect-tag">reserved_stock</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in a state that does not allow cancellation</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:order_not_cancellable</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order has not been confirmed yet</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order has not already been cancelled</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-cancel-order-sc" style="display:none">
                 <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_cancelled</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">order_not_cancellable</span>
+            </div>
+            <div class="sc-description">The order is in a state that does not allow cancellation</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-skipped">skipped</span>
                 <span class="sc-tag">order_not_yet_confirmed</span>
@@ -293,16 +370,30 @@
                 <button class="tab" onclick="switchTab('create-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-create-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">customer_info_provided</span> The customer has provided required contact and shipping information</div><div class="ac-line"><span class="ac-tag">products_available</span> All selected products exist and are available for sale</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">create order</span></div></div><div class="ac-section ac-missing"><span class="ac-keyword">Then</span><div class="ac-line ac-empty-line">No outcome decision linked — acceptance criteria incomplete</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">customer_info_provided</span> The customer has provided required contact and shipping information</div><div class="ac-line"><span class="ac-tag">products_available</span> All selected products exist and are available for sale</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">create order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_created</span> A new order is persisted in draft state</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_in_draft_state</span> The order is persisted with status draft</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_has_line_items</span> The order contains the selected products as line items</div><div class="ac-effects"><span class="ac-effect-tag">order_line_items</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_linked_to_customer</span> The order is linked to the customer who created it</div><div class="ac-effects"><span class="ac-effect-tag">order_customer_reference</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">invalid_order_data</span> The order data is malformed or contains inconsistencies</div></div>
             </div>
             <div class="tab-content" id="tab-create-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The customer has provided required contact and shipping information">customer_info_provided</th><th class="dt-precon" title="All selected products exist and are available for sale">products_available</th></tr></thead>
-        <tbody><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The customer has provided required contact and shipping information</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">All selected products exist and are available for sale</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The customer has provided required contact and shipping information">customer_info_provided</th><th class="dt-precon" title="All selected products exist and are available for sale">products_available</th><th class="dt-constraint" title="The order data is malformed or contains inconsistencies">invalid_order_data</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_created</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_in_draft_state</span> <span class="ac-tag">order_has_line_items</span> <span class="ac-tag">order_linked_to_customer</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">order_line_items</span> <span class="ac-effect-tag">order_customer_reference</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order data is malformed or contains inconsistencies</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:invalid_order_data</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The customer has provided required contact and shipping information</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">All selected products exist and are available for sale</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-create-order-sc" style="display:none">
                 <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_created</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">invalid_order_data</span>
+            </div>
+            <div class="sc-description">The order data is malformed or contains inconsistencies</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-skipped">skipped</span>
                 <span class="sc-tag">customer_info_provided</span>
@@ -335,16 +426,30 @@
                 <button class="tab" onclick="switchTab('create-purchase-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-create-purchase-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">supplier_selected</span> A valid and active supplier has been selected</div><div class="ac-line"><span class="ac-tag">budget_available</span> The department budget can accommodate the purchase order total</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">create purchase order</span></div></div><div class="ac-section ac-missing"><span class="ac-keyword">Then</span><div class="ac-line ac-empty-line">No outcome decision linked — acceptance criteria incomplete</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">supplier_selected</span> A valid and active supplier has been selected</div><div class="ac-line"><span class="ac-tag">budget_available</span> The department budget can accommodate the purchase order total</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">create purchase order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">purchase_order_created</span> A new purchase order is persisted in pending approval state</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">purchase_order_pending</span> The purchase order is persisted with status pending approval</div><div class="ac-effects"><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">budget_reserved</span> The requested amount is reserved against the department budget</div><div class="ac-effects"><span class="ac-effect-tag">budget_reservation</span> <span class="ac-effect-tag">department_budget</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">purchase_order_linked_to_supplier</span> The purchase order references the selected supplier</div><div class="ac-effects"><span class="ac-effect-tag">purchase_order_supplier_reference</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">invalid_purchase_order_data</span> The purchase order data is malformed or contains inconsistencies</div></div>
             </div>
             <div class="tab-content" id="tab-create-purchase-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="A valid and active supplier has been selected">supplier_selected</th><th class="dt-precon" title="The department budget can accommodate the purchase order total">budget_available</th></tr></thead>
-        <tbody><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">A valid and active supplier has been selected</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The department budget can accommodate the purchase order total</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="A valid and active supplier has been selected">supplier_selected</th><th class="dt-precon" title="The department budget can accommodate the purchase order total">budget_available</th><th class="dt-constraint" title="The purchase order data is malformed or contains inconsistencies">invalid_purchase_order_data</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">purchase_order_created</span></td><td class="dt-assertions-cell"><span class="ac-tag">purchase_order_pending</span> <span class="ac-tag">budget_reserved</span> <span class="ac-tag">purchase_order_linked_to_supplier</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">purchase_order_status</span> <span class="ac-effect-tag">budget_reservation</span> <span class="ac-effect-tag">department_budget</span> <span class="ac-effect-tag">purchase_order_supplier_reference</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order data is malformed or contains inconsistencies</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:invalid_purchase_order_data</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">A valid and active supplier has been selected</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The department budget can accommodate the purchase order total</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-create-purchase-order-sc" style="display:none">
                 <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">purchase_order_created</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">invalid_purchase_order_data</span>
+            </div>
+            <div class="sc-description">The purchase order data is malformed or contains inconsistencies</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-skipped">skipped</span>
                 <span class="sc-tag">supplier_selected</span>
@@ -364,6 +469,167 @@
                 <div class="view-card"><div class="view-role">procurement_officer</div><div class="view-infos"><span class="ac-effect-tag">supplier_status</span><span class="ac-effect-tag">department_budget</span></div></div>
             </div>
         </div>
+        <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
+            <div class="user-story">
+                As a <strong>machine</strong>,
+                I want to <strong>fulfill order</strong>
+                so to <strong>deliver confirmed orders to customers</strong>
+            </div>
+            <div class="tabs" id="tabs-fulfill-order">
+                <button class="tab active" onclick="switchTab('fulfill-order', 'ac')">Acceptance Criteria</button>
+                <button class="tab" onclick="switchTab('fulfill-order', 'dt')">Decision Table</button>
+                <button class="tab" onclick="switchTab('fulfill-order', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('fulfill-order', 'vw')">Views</button>
+            </div>
+            <div class="tab-content" id="tab-fulfill-order-ac">
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_ready_for_fulfillment</span> The order is in confirmed state and ready to be fulfilled</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">fulfill order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_fulfilled</span> The order is fulfilled and shipped to the customer</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_fulfilled</span> The order status transitions to fulfilled</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">stock_decremented</span> Physical stock is decremented for shipped items</div><div class="ac-effects"><span class="ac-effect-tag">stock_levels</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">fulfillment_failed</span> The order could not be fulfilled due to a logistics issue</div></div>
+            </div>
+            <div class="tab-content" id="tab-fulfill-order-dt" style="display:none">
+                <div class="dt-wrapper"><table class="dt-table">
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="1" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order is in confirmed state and ready to be fulfilled">order_ready_for_fulfillment</th><th class="dt-constraint" title="The order could not be fulfilled due to a logistics issue">fulfillment_failed</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_fulfilled</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_status_fulfilled</span> <span class="ac-tag">stock_decremented</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">stock_levels</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order could not be fulfilled due to a logistics issue</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:fulfillment_failed</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in confirmed state and ready to be fulfilled</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+    </table></div>
+            </div>
+            <div class="tab-content" id="tab-fulfill-order-sc" style="display:none">
+                <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_fulfilled</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">fulfillment_failed</span>
+            </div>
+            <div class="sc-description">The order could not be fulfilled due to a logistics issue</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-skipped">skipped</span>
+                <span class="sc-tag">order_ready_for_fulfillment</span>
+            </div>
+            <div class="sc-description">The order is in confirmed state and ready to be fulfilled</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div>
+            </div>
+            <div class="tab-content" id="tab-fulfill-order-vw" style="display:none">
+                <div class="view-card"><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">order_status</span><span class="ac-effect-tag">order_line_items</span></div></div>
+            </div>
+        </div>
+        <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
+            <div class="user-story">
+                As a <strong>machine</strong>,
+                I want to <strong>confirm order</strong>
+                so to <strong>automatically process submitted orders for payment and stock verification</strong>
+            </div>
+            <div class="tabs" id="tabs-initiate-confirmation">
+                <button class="tab active" onclick="switchTab('initiate-confirmation', 'ac')">Acceptance Criteria</button>
+                <button class="tab" onclick="switchTab('initiate-confirmation', 'dt')">Decision Table</button>
+                <button class="tab" onclick="switchTab('initiate-confirmation', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('initiate-confirmation', 'vw')">Views</button>
+            </div>
+            <div class="tab-content" id="tab-initiate-confirmation-ac">
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_is_submitted</span> The order is in submitted state</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">confirm order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_confirmed</span> The order is confirmed and ready for fulfillment</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_confirmed</span> The order status transitions to confirmed</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">payment_captured</span> Payment has been charged to the customer</div><div class="ac-effects"><span class="ac-effect-tag">payment_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">stock_reserved</span> Inventory is decremented for the ordered items</div><div class="ac-effects"><span class="ac-effect-tag">stock_levels</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">payment_failed</span> Payment could not be processed</div><div class="ac-line"><span class="ac-tag ac-tag-fail">stock_unavailable</span> One or more products are out of stock</div></div>
+            </div>
+            <div class="tab-content" id="tab-initiate-confirmation-dt" style="display:none">
+                <div class="dt-wrapper"><table class="dt-table">
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="1" class="dt-group-label">Preconditions</th><th colspan="2" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order is in submitted state">order_is_submitted</th><th class="dt-constraint" title="Payment could not be processed">payment_failed</th><th class="dt-constraint" title="One or more products are out of stock">stock_unavailable</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_confirmed</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_status_confirmed</span> <span class="ac-tag">payment_captured</span> <span class="ac-tag">stock_reserved</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">payment_status</span> <span class="ac-effect-tag">stock_levels</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">Payment could not be processed</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:payment_failed</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">One or more products are out of stock</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:stock_unavailable</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in submitted state</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+    </table></div>
+            </div>
+            <div class="tab-content" id="tab-initiate-confirmation-sc" style="display:none">
+                <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_confirmed</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">payment_failed</span>
+            </div>
+            <div class="sc-description">Payment could not be processed</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">stock_unavailable</span>
+            </div>
+            <div class="sc-description">One or more products are out of stock</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-skipped">skipped</span>
+                <span class="sc-tag">order_is_submitted</span>
+            </div>
+            <div class="sc-description">The order is in submitted state</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div>
+            </div>
+            <div class="tab-content" id="tab-initiate-confirmation-vw" style="display:none">
+                <div class="view-card"><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">order_status</span></div></div>
+            </div>
+        </div>
+        <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
+            <div class="user-story">
+                As a <strong>machine</strong>,
+                I want to <strong>notify order confirmed</strong>
+                so to <strong>keep customers informed and maintain audit trail for confirmed orders</strong>
+            </div>
+            <div class="tabs" id="tabs-notify-order-confirmed">
+                <button class="tab active" onclick="switchTab('notify-order-confirmed', 'ac')">Acceptance Criteria</button>
+                <button class="tab" onclick="switchTab('notify-order-confirmed', 'dt')">Decision Table</button>
+                <button class="tab" onclick="switchTab('notify-order-confirmed', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('notify-order-confirmed', 'vw')">Views</button>
+            </div>
+            <div class="tab-content" id="tab-notify-order-confirmed-ac">
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_is_confirmed</span> The order is in confirmed state</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">notify order confirmed</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">customer_email_sent</span> A confirmation email is sent to the customer</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">confirmation_email_delivered</span> The confirmation email has been sent to the customer</div><div class="ac-effects"><span class="ac-effect-tag">customer_email</span></div></div></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_audit_logged</span> The order confirmation is logged for audit purposes</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">audit_entry_created</span> An audit log entry is created for the order confirmation</div><div class="ac-effects"><span class="ac-effect-tag">audit_log</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">notification_failed</span> The notification could not be sent due to a system error</div></div>
+            </div>
+            <div class="tab-content" id="tab-notify-order-confirmed-dt" style="display:none">
+                <div class="dt-wrapper"><table class="dt-table">
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="1" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order is in confirmed state">order_is_confirmed</th><th class="dt-constraint" title="The notification could not be sent due to a system error">notification_failed</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">customer_email_sent</span></td><td class="dt-assertions-cell"><span class="ac-tag">confirmation_email_delivered</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">customer_email</span></td></tr><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_audit_logged</span></td><td class="dt-assertions-cell"><span class="ac-tag">audit_entry_created</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">audit_log</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The notification could not be sent due to a system error</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:notification_failed</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in confirmed state</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+    </table></div>
+            </div>
+            <div class="tab-content" id="tab-notify-order-confirmed-sc" style="display:none">
+                <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">customer_email_sent</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_audit_logged</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">notification_failed</span>
+            </div>
+            <div class="sc-description">The notification could not be sent due to a system error</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-skipped">skipped</span>
+                <span class="sc-tag">order_is_confirmed</span>
+            </div>
+            <div class="sc-description">The order is in confirmed state</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div>
+            </div>
+            <div class="tab-content" id="tab-notify-order-confirmed-vw" style="display:none">
+                <div class="view-card"><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">order_status</span><span class="ac-effect-tag">customer_email</span></div></div>
+            </div>
+        </div>
         <div class="story-card" data-context="procurement" data-module="purchasing" data-aggregate="procurement-processing">
             <div class="user-story">
                 As a <strong>department_manager</strong>,
@@ -377,16 +643,30 @@
                 <button class="tab" onclick="switchTab('reject-purchase-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-reject-purchase-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">rejector_authorized</span> The rejector has authority over this department</div><div class="ac-line"><span class="ac-tag">purchase_order_not_yet_rejected</span> The purchase order has not already been rejected</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">reject purchase order</span></div></div><div class="ac-section ac-missing"><span class="ac-keyword">Then</span><div class="ac-line ac-empty-line">No outcome decision linked — acceptance criteria incomplete</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">rejector_authorized</span> The rejector has authority over this department</div><div class="ac-line"><span class="ac-tag">purchase_order_not_yet_rejected</span> The purchase order has not already been rejected</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">reject purchase order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">purchase_order_rejected</span> The purchase order is rejected and the budget reservation is released</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">purchase_order_status_rejected</span> The purchase order status transitions to rejected</div><div class="ac-effects"><span class="ac-effect-tag">purchase_order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">budget_reservation_released</span> The reserved budget amount is released back to the department</div><div class="ac-effects"><span class="ac-effect-tag">budget_reservation</span> <span class="ac-effect-tag">department_budget</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">rejection_processing_error</span> The rejection could not be processed due to a system error</div></div>
             </div>
             <div class="tab-content" id="tab-reject-purchase-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The rejector has authority over this department">rejector_authorized</th><th class="dt-precon" title="The purchase order has not already been rejected">purchase_order_not_yet_rejected</th></tr></thead>
-        <tbody><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The rejector has authority over this department</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order has not already been rejected</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The rejector has authority over this department">rejector_authorized</th><th class="dt-precon" title="The purchase order has not already been rejected">purchase_order_not_yet_rejected</th><th class="dt-constraint" title="The rejection could not be processed due to a system error">rejection_processing_error</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">purchase_order_rejected</span></td><td class="dt-assertions-cell"><span class="ac-tag">purchase_order_status_rejected</span> <span class="ac-tag">budget_reservation_released</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">purchase_order_status</span> <span class="ac-effect-tag">budget_reservation</span> <span class="ac-effect-tag">department_budget</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The rejection could not be processed due to a system error</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:rejection_processing_error</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The rejector has authority over this department</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The purchase order has not already been rejected</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-reject-purchase-order-sc" style="display:none">
                 <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">purchase_order_rejected</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">rejection_processing_error</span>
+            </div>
+            <div class="sc-description">The rejection could not be processed due to a system error</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-skipped">skipped</span>
                 <span class="sc-tag">rejector_authorized</span>
@@ -408,6 +688,62 @@
         </div>
         <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
             <div class="user-story">
+                As a <strong>machine</strong>,
+                I want to <strong>route order</strong>
+                so to <strong>route orders to the appropriate fulfillment channel</strong>
+            </div>
+            <div class="tabs" id="tabs-route-order">
+                <button class="tab active" onclick="switchTab('route-order', 'ac')">Acceptance Criteria</button>
+                <button class="tab" onclick="switchTab('route-order', 'dt')">Decision Table</button>
+                <button class="tab" onclick="switchTab('route-order', 'sc')">Scenarios</button>
+                <button class="tab" onclick="switchTab('route-order', 'vw')">Views</button>
+            </div>
+            <div class="tab-content" id="tab-route-order-ac">
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_is_submitted</span> The order is in submitted state and ready for routing</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">route order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_routed_express</span> The order is routed to the express fulfillment channel</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">customer selected express shipping</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_route_set_express</span> The order route is set to express fulfillment</div><div class="ac-effects"><span class="ac-effect-tag">order_route</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_routed</span> The order status transitions to routed</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_routed_standard</span> The order is routed to the standard fulfillment channel</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_route_set_standard</span> The order route is set to standard fulfillment</div><div class="ac-effects"><span class="ac-effect-tag">order_route</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_routed</span> The order status transitions to routed</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">routing_failed</span> The order could not be routed to any fulfillment channel</div></div>
+            </div>
+            <div class="tab-content" id="tab-route-order-dt" style="display:none">
+                <div class="dt-wrapper"><table class="dt-table">
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="1" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order is in submitted state and ready for routing">order_is_submitted</th><th class="dt-constraint" title="The order could not be routed to any fulfillment channel">routing_failed</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">customer selected express shipping</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_routed_express</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_route_set_express</span> <span class="ac-tag">order_status_routed</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_route</span> <span class="ac-effect-tag">order_status</span></td></tr><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_routed_standard</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_route_set_standard</span> <span class="ac-tag">order_status_routed</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_route</span> <span class="ac-effect-tag">order_status</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order could not be routed to any fulfillment channel</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:routing_failed</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in submitted state and ready for routing</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+    </table></div>
+            </div>
+            <div class="tab-content" id="tab-route-order-sc" style="display:none">
+                <div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_routed_express</span>
+            </div>
+            <div class="sc-description">customer selected express shipping</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-success">success</span>
+                <span class="sc-tag">order_routed_standard</span>
+            </div>
+            <div class="sc-description">always</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-failure">failure</span>
+                <span class="sc-tag">routing_failed</span>
+            </div>
+            <div class="sc-description">The order could not be routed to any fulfillment channel</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div><div class="sc-card">
+            <div class="sc-header">
+                <span class="sc-type sc-type-skipped">skipped</span>
+                <span class="sc-tag">order_is_submitted</span>
+            </div>
+            <div class="sc-description">The order is in submitted state and ready for routing</div>
+            <div class="sc-no-scenarios">No scenarios yet</div>
+        </div>
+            </div>
+            <div class="tab-content" id="tab-route-order-vw" style="display:none">
+                <div class="view-card"><div class="view-role">machine</div><div class="view-infos"><span class="ac-effect-tag">order_status</span><span class="ac-effect-tag">shipping_preference</span></div></div>
+            </div>
+        </div>
+        <div class="story-card" data-context="ordering" data-module="order_management" data-aggregate="order-processing">
+            <div class="user-story">
                 As a <strong>customer</strong>,
                 I want to <strong>submit order</strong>
                 so to <strong>proceed with the purchase and receive the goods</strong>
@@ -419,35 +755,28 @@
                 <button class="tab" onclick="switchTab('submit-order', 'vw')">Views</button>
             </div>
             <div class="tab-content" id="tab-submit-order-ac">
-                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_has_items</span> The order contains at least one line item</div><div class="ac-line"><span class="ac-tag">order_in_draft</span> The order is in draft state and has not been submitted yet</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">submit order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_confirmed</span> The order is confirmed and ready for fulfillment</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">Payment is successful and all items are in stock</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_confirmed</span> The order status transitions to confirmed</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">payment_captured</span> Payment has been charged to the customer</div><div class="ac-effects"><span class="ac-effect-tag">payment_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">stock_reserved</span> Inventory is decremented for the ordered items</div><div class="ac-effects"><span class="ac-effect-tag">stock_levels</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">payment_failed</span> Payment could not be processed</div><div class="ac-line"><span class="ac-tag ac-tag-fail">stock_unavailable</span> One or more products are out of stock</div></div>
+                <div class="ac-section"><span class="ac-keyword">Given</span><div class="ac-line"><span class="ac-tag">order_has_items</span> The order contains at least one line item</div><div class="ac-line"><span class="ac-tag">order_in_draft</span> The order is in draft state and has not been submitted yet</div></div><div class="ac-section"><span class="ac-keyword">When</span><div class="ac-line"><span class="ac-badge-intent">submit order</span></div></div><div class="ac-section"><span class="ac-keyword">Then</span><div class="ac-line"><span class="ac-badge-outcome">order_submitted</span> The order transitions to submitted and is queued for confirmation</div><div class="ac-nested"><span class="ac-keyword-secondary">If</span><div class="ac-line">always</div></div><div class="ac-nested"><span class="ac-keyword-secondary">Assertions</span><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_status_submitted</span> The order status transitions to submitted</div><div class="ac-effects"><span class="ac-effect-tag">order_status</span></div></div><div class="ac-assertion"><div class="ac-line"><span class="ac-tag">order_not_editable</span> The order can no longer be modified by the customer</div><div class="ac-effects"><span class="ac-effect-tag">order_editability</span></div></div></div></div><div class="ac-section"><span class="ac-keyword ac-keyword-fail">Should Fail If</span><div class="ac-line"><span class="ac-tag ac-tag-fail">invalid_order_data</span> The order data is inconsistent at submission time</div></div>
             </div>
             <div class="tab-content" id="tab-submit-order-dt" style="display:none">
                 <div class="dt-wrapper"><table class="dt-table">
-        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="2" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order contains at least one line item">order_has_items</th><th class="dt-precon" title="The order is in draft state and has not been submitted yet">order_in_draft</th><th class="dt-constraint" title="Payment could not be processed">payment_failed</th><th class="dt-constraint" title="One or more products are out of stock">stock_unavailable</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
-        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">Payment is successful and all items are in stock</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_confirmed</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_status_confirmed</span> <span class="ac-tag">payment_captured</span> <span class="ac-tag">stock_reserved</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">payment_status</span> <span class="ac-effect-tag">stock_levels</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">Payment could not be processed</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:payment_failed</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">One or more products are out of stock</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:stock_unavailable</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order contains at least one line item</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in draft state and has not been submitted yet</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
+        <thead><tr class="dt-group-row"><th></th><th></th><th colspan="2" class="dt-group-label">Preconditions</th><th colspan="1" class="dt-group-label">Constraints</th><th></th><th></th><th></th></tr><tr><th class="dt-scenario">Scenario</th><th class="dt-type">Type</th><th class="dt-precon" title="The order contains at least one line item">order_has_items</th><th class="dt-precon" title="The order is in draft state and has not been submitted yet">order_in_draft</th><th class="dt-constraint" title="The order data is inconsistent at submission time">invalid_order_data</th><th class="dt-outcome">Outcome</th><th class="dt-assertions">Assertions</th><th class="dt-effects">Effects</th></tr></thead>
+        <tbody><tr class="dt-row-success"><td class="dt-scenario-cell"><span class="dt-condition-tag">always</span></td><td class="dt-type-cell"><span class="dt-type-success">success</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-outcome-cell"><span class="ac-badge-outcome">order_submitted</span></td><td class="dt-assertions-cell"><span class="ac-tag">order_status_submitted</span> <span class="ac-tag">order_not_editable</span></td><td class="dt-effects-cell"><span class="ac-effect-tag">order_status</span> <span class="ac-effect-tag">order_editability</span></td></tr><tr class="dt-row-failure"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order data is inconsistent at submission time</span></td><td class="dt-type-cell"><span class="dt-type-failure">failure</span></td><td class="dt-check">✓</td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-outcome-cell"><span class="ac-tag ac-tag-fail">rejected:invalid_order_data</span></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order contains at least one line item</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-fail">✗</td><td class="dt-check">✓</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr><tr class="dt-row-skipped"><td class="dt-scenario-cell"><span class="dt-scenario-name">The order is in draft state and has not been submitted yet</span></td><td class="dt-type-cell"><span class="dt-type-skipped">skipped</span></td><td class="dt-check">✓</td><td class="dt-fail">✗</td><td class="dt-na">—</td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td><td class="dt-empty-cell"></td></tr></tbody>
     </table></div>
             </div>
             <div class="tab-content" id="tab-submit-order-sc" style="display:none">
                 <div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-success">success</span>
-                <span class="sc-tag">order_confirmed</span>
+                <span class="sc-tag">order_submitted</span>
             </div>
-            <div class="sc-description">Payment is successful and all items are in stock</div>
+            <div class="sc-description">always</div>
             <div class="sc-no-scenarios">No scenarios yet</div>
         </div><div class="sc-card">
             <div class="sc-header">
                 <span class="sc-type sc-type-failure">failure</span>
-                <span class="sc-tag">payment_failed</span>
+                <span class="sc-tag">invalid_order_data</span>
             </div>
-            <div class="sc-description">Payment could not be processed</div>
-            <div class="sc-no-scenarios">No scenarios yet</div>
-        </div><div class="sc-card">
-            <div class="sc-header">
-                <span class="sc-type sc-type-failure">failure</span>
-                <span class="sc-tag">stock_unavailable</span>
-            </div>
-            <div class="sc-description">One or more products are out of stock</div>
+            <div class="sc-description">The order data is inconsistent at submission time</div>
             <div class="sc-no-scenarios">No scenarios yet</div>
         </div><div class="sc-card">
             <div class="sc-header">
@@ -470,7 +799,7 @@
             </div>
         </div>
 <script>
-const storiesData = [{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"}];
+const storiesData = [{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"procurement","module":"purchasing","aggregate":"procurement-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"},{"context":"ordering","module":"order_management","aggregate":"order-processing"}];
 
 function applyFilters() {
     const ctx = document.getElementById('filter-context').value;

@@ -24,11 +24,13 @@ const rejectPurchaseOrder: IntentDecisionSpec<RejectPurchaseOrder, Contexts, Mod
         purchase_order_not_yet_rejected: {
             description: 'The purchase order has not already been rejected',
             requiredInfo: ['purchase_order_status'],
+            scenarios: [
+                { description: 'Manager tries to reject a PO that was already rejected' }
+            ]
         }
     },
     producesIntent: {
         intent: 'reject_purchase_order',
-        condition: 'Rejector has authority and PO is in pending approval state',
         description: 'The purchase order is rejected and the budget reservation is released',
         requiredInfo: ['approver_authority', 'purchase_order_status'],
     },
