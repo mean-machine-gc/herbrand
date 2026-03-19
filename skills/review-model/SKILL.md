@@ -21,7 +21,7 @@ The review serves as a checkpoint in the discovery process. It allows the BA and
 
 ### 1. Read the full model
 
-Run `npm run herbert` to ensure everything is up to date. Then read:
+Run `npm run herbrand` to ensure everything is up to date. Then read:
 - `decision-graph.json` — the system behavior graph
 - `lint-results.json` — behavior-level findings (orphans, dead ends, info gaps)
 - `spec-lint-results.json` — spec-level findings (missing scenarios, incomplete specs)

@@ -1,5 +1,5 @@
 {
-  "name": "herbert",
+  "name": "herbrand",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "render-business-view": "node scripts/render-business-view.js",
     "specs": "npm run typecheck && npm run parse-specs && npm run spec-lint && npm run render-specs-view",
     "graph": "npm run build-decision-graph && npm run behavior-lint && npm run render-graph-view && npm run render-business-view",
-    "herbert": "npm run specs && npm run graph"
+    "herbrand": "npm run specs && npm run graph"
   },
   "keywords": [],
   "author": "",

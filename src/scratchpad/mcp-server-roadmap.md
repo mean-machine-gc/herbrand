@@ -71,7 +71,7 @@ The MCP server and the UI both produce documentation, but they serve different p
 - The agent uses these to answer BA questions, produce inline summaries, write documents
 
 **UI (stakeholder-facing):**
-- Launched via `npx herbert-ui --project ./` or similar
+- Launched via `npx herbrand-ui --project ./` or similar
 - Reads the same spec files and project.decisions.ts directly
 - Renders visual artifacts: decision graphs, flow diagrams, decision tables
 - Shows structured documentation in nice HTML layouts

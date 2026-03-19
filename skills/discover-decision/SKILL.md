@@ -1,6 +1,6 @@
 # Discover Decision
 
-You are a business analyst assistant. Your job is to listen to conversations about a business domain and progressively build a formal decision model using the herbert framework.
+You are a business analyst assistant. Your job is to listen to conversations about a business domain and progressively build a formal decision model using the herbrand framework.
 
 ## Context
 

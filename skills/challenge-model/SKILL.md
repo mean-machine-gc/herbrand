@@ -17,7 +17,7 @@ A model that nobody questions is a model that nobody trusts. This skill actively
 
 ### 1. Read the full model
 
-Run `npm run herbert` to get the latest graph and lint results. Read `lint-results.json` (behavior-lint) and `spec-lint-results.json` (spec-lint) — these are your starting points. Also read the scratchpad for open questions.
+Run `npm run herbrand` to get the latest graph and lint results. Read `lint-results.json` (behavior-lint) and `spec-lint-results.json` (spec-lint) — these are your starting points. Also read the scratchpad for open questions.
 
 ### 2. Analyze for gaps
 

@@ -1,16 +1,16 @@
-# Herbert Framework Primer
+# Herbrand Framework Primer
 
-Herbert is a decision-first business analysis framework, named after Herbert Simon — the economist who argued that decision-making is the fundamental act of organizational behavior.
+Herbrand is a decision-first business analysis framework for information system modelling. The name combines Herbert Simon — the economist who argued that decision-making is the fundamental act of organizational behavior — and Alberto Brandolini — the creator of EventStorming who pioneered collaborative domain discovery. Herbrand reconciles business analysis with established architectural patterns such as CQRS and Event Sourcing, providing a formal method that bridges the gap between domain discovery and system design.
 
 ## Core idea
 
-Herbert models a system as a set of **bounded decisions** — units of information processing that transform inputs into outputs through a defined procedure. Every business process is a chain of these decisions.
+Herbrand models a system as a set of **bounded decisions** — units of information processing that transform inputs into outputs through a defined procedure. Every business process is a chain of these decisions.
 
-The person using Herbert is a **business analyst** who doesn't know or care about the underlying types. They discover the domain through conversation — with clients, domain experts, or stakeholders. Your job is to listen, capture, and progressively formalize what you hear into a structured decision model.
+The person using Herbrand is a **business analyst** who doesn't know or care about the underlying types. They discover the domain through conversation — with clients, domain experts, or stakeholders. Your job is to listen, capture, and progressively formalize what you hear into a structured decision model.
 
 ## The two loops
 
-Herbert models two interconnected processing loops, each consuming one stream and producing another:
+Herbrand models two interconnected processing loops, each consuming one stream and producing another:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ Outcome decisions have **side effects** — they change state. Each success outc
 
 ## Information context
 
-Every decision procedure step requires information to compute. Herbert tracks **info units** — named pieces of information that exist in the domain (e.g., `order_status`, `payment_status`, `available_products`). These are not data models or schemas; they represent the **bounded information context** of each decision, directly inspired by Herbert Simon's bounded rationality.
+Every decision procedure step requires information to compute. Herbrand tracks **info units** — named pieces of information that exist in the domain (e.g., `order_status`, `payment_status`, `available_products`). These are not data models or schemas; they represent the **bounded information context** of each decision, directly inspired by Herbrand Simon's bounded rationality.
 
 Info units are declared in a single project-wide union — the **global information space** of the project. They are referenced at each procedure step:
 - **requiredInfo on preconditions** (intent decisions) — what information is needed to evaluate this precondition
@@ -87,7 +87,7 @@ The same entity can appear in different aggregates under different contexts. Thi
 
 ## Process first, data later
 
-Herbert deliberately avoids modeling data upfront. The decision flow reveals what aggregates, modules, and contexts exist. Starting from entities leads to CRUD. Starting from decisions leads to behavior.
+Herbrand deliberately avoids modeling data upfront. The decision flow reveals what aggregates, modules, and contexts exist. Starting from entities leads to CRUD. Starting from decisions leads to behavior.
 
 Data observations belong in the scratchpad, not in the formal model, until the process is well understood.
 
@@ -105,7 +105,7 @@ src/
 
 ## The two validation loops
 
-Herbert uses two intertwined feedback loops. Each loop validates at a different level and feeds corrections back to the specs.
+Herbrand uses two intertwined feedback loops. Each loop validates at a different level and feeds corrections back to the specs.
 
 ### Loop 1: Spec validation (per-decision completeness)
 
@@ -146,7 +146,7 @@ conversation → spec ──→ Loop 1 (spec-lint) ──→ clean? ──→ Lo
                 └── address behavior findings ──────────────┘
 ```
 
-The pipeline command `npm run herbert` runs both loops in sequence. Use `npm run specs` to iterate on Loop 1 alone, `npm run graph` to run Loop 2 once specs are clean.
+The pipeline command `npm run herbrand` runs both loops in sequence. Use `npm run specs` to iterate on Loop 1 alone, `npm run graph` to run Loop 2 once specs are clean.
 
 ## The session rhythm
 
@@ -170,7 +170,7 @@ Then repeat. The model grows iteratively, never in one pass.
 
 - `npm run specs` — Loop 1: typecheck → parse → spec-lint → specs view
 - `npm run graph` — Loop 2: build graph → behavior-lint → graph view (blocked by spec-lint errors)
-- `npm run herbert` — both loops in sequence
+- `npm run herbrand` — both loops in sequence
 
 ## Golden rules
 
