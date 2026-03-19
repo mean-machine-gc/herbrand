@@ -111,6 +111,8 @@ export type UserStoryView = {
 /// Acceptance criteria — Given/When/Then structure
 
 export type AcceptanceCriteria = {
+  trigger: string
+  triggerType: 'success' | 'reject' | 'intent'
   given: UserStoryPrecondition[]
   when: string
   then: UserStoryOutcome[]

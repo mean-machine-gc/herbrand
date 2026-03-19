@@ -54,6 +54,8 @@ export function extractUserStories(graph) {
             }
         }
         const acceptanceCriteria = {
+            trigger: spec.trigger,
+            triggerType: spec.triggerType,
             given,
             when: intentLabel,
             then,

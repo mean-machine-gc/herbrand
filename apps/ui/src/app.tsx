@@ -59,7 +59,7 @@ function Shell() {
       <AppShell.Main>
         {activeTab === "specs" && <SpecsView store={store} />}
         {activeTab === "graph" && <GraphView store={store} />}
-        {activeTab === "business" && <BusinessView />}
+        {activeTab === "business" && <BusinessView store={store} />}
       </AppShell.Main>
     </AppShell>
   );

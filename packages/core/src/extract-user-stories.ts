@@ -76,6 +76,8 @@ export function extractUserStories(graph: DecisionGraph): Record<string, UserSto
     }
 
     const acceptanceCriteria: AcceptanceCriteria = {
+      trigger: spec.trigger,
+      triggerType: spec.triggerType,
       given,
       when: intentLabel,
       then,

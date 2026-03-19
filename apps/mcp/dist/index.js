@@ -37,18 +37,6 @@ server.addTool({
     },
 });
 server.addTool({
-    name: "get_decision_graph",
-    description: "Returns the current decision graph from the reactive store. The graph is built automatically when specs change and spec-lint passes.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        const graph = store.decisionGraph;
-        if (!graph)
-            return "Cannot build graph: spec-lint has errors. Fix specs first.";
-        return JSON.stringify(graph, null, 2);
-    },
-});
-server.addTool({
     name: "get_behavior_lint",
     description: "Returns the current behavior-lint results from the reactive store. Lint runs automatically when the decision graph changes. Reports orphans, dead ends, info flow gaps, unhandled rejections, boundary issues.",
     parameters: projectDirParam,
@@ -88,18 +76,6 @@ server.addTool({
     },
 });
 server.addTool({
-    name: "get_graph",
-    description: "Returns the full decision graph from the reactive store — nodes, edges, and specs.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        const graph = store.decisionGraph;
-        if (!graph)
-            return "No decision graph available. Spec-lint may have errors.";
-        return JSON.stringify(graph, null, 2);
-    },
-});
-server.addTool({
     name: "get_pipeline_results",
     description: "Returns a summary of the full reactive pipeline state — spec count, spec-lint results, graph status, and behavior-lint results.",
     parameters: projectDirParam,
@@ -112,6 +88,38 @@ server.addTool({
             graph: store.decisionGraph ? { nodes: store.nodeCount } : null,
             behaviorLint: store.behaviorLintResults,
         }, null, 2);
+    },
+});
+server.addTool({
+    name: "get_user_stories",
+    description: "Returns all user stories derived from the decision graph. Each story includes acceptance criteria, decision table, scenarios, and views.",
+    parameters: projectDirParam,
+    execute: async (args) => {
+        ensureWatching(args.projectDir);
+        const stories = store.userStories;
+        const list = Object.entries(stories).map(([name, s]) => ({
+            name,
+            role: s.role,
+            intentLabel: s.intentLabel,
+            businessGoal: s.businessGoal,
+            hasLinkedOutcome: s.hasLinkedOutcome,
+        }));
+        return JSON.stringify(list, null, 2);
+    },
+});
+server.addTool({
+    name: "get_user_story",
+    description: "Returns a single user story by name with full details — acceptance criteria, decision table, scenarios, and views.",
+    parameters: z.object({
+        projectDir: z.string().describe("Absolute path to the herbrand project directory"),
+        name: z.string().describe("User story name (the intent decision spec name), e.g. 'create-order'"),
+    }),
+    execute: async (args) => {
+        ensureWatching(args.projectDir);
+        const story = store.userStories[args.name];
+        if (!story)
+            return "User story not found";
+        return JSON.stringify(story, null, 2);
     },
 });
 server.start({

@@ -91,6 +91,8 @@ export type UserStoryView = {
     role: string | null;
 };
 export type AcceptanceCriteria = {
+    trigger: string;
+    triggerType: 'success' | 'reject' | 'intent';
     given: UserStoryPrecondition[];
     when: string;
     then: UserStoryOutcome[];
