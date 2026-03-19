@@ -16,9 +16,9 @@
 
 | Who | Trigger | Produces | Rejects | Status |
 |-----|---------|----------|---------|--------|
-| customer | wants to order | create_order intent | missing info, bad product | formalized → create-order.spec.ts |
-| system | order submitted | order_confirmed outcome | payment, stock | formalized → confirm-order.spec.ts |
-| customer | wants to cancel | cancel_order intent | already confirmed | formalized → cancel-order.spec.ts |
+| customer | wants to order | create_order intent | missing info, bad product | formalized → create-order.hb.yaml |
+| system | order submitted | order_confirmed outcome | payment, stock | formalized → confirm-order.hb.yaml |
+| customer | wants to cancel | cancel_order intent | already confirmed | formalized → cancel-order.hb.yaml |
 | system | order confirmed | fulfill_order intent | ? | ready |
 | ? | payment fails | ? | ? | raw |
 

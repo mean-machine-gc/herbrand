@@ -2,7 +2,6 @@ import type { SpecFile, ParsedSpecs, DecisionGraph, LintResult, ReactFlowGraph, 
 export declare class HerbrandStore {
     private _specFiles;
     private _watcher;
-    private _watchDir;
     private _debounceTimer;
     private _parsedSpecs;
     private _specLintResults;
@@ -11,6 +10,7 @@ export declare class HerbrandStore {
     private _reactFlowGraph;
     private _userStories;
     setSpecFiles(files: SpecFile[]): void;
+    private _projectDir;
     private _readSpecsFromDisk;
     private _refresh;
     private _debouncedRefresh;

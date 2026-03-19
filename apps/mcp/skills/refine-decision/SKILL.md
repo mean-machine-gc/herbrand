@@ -16,7 +16,7 @@ Use this skill when the conversation reveals new detail about a decision that al
 
 ### Step 1: Read the existing spec
 
-Read the `.spec.ts` file before making any changes. Understand the current state.
+Read the `.hb.yaml` file before making any changes. Understand the current state.
 
 ### Step 2: Capture in scratchpad first
 
@@ -25,21 +25,21 @@ Before modifying the spec, note the new information in `src/scratchpad/` with co
 ### Step 3: Apply the refinement
 
 **Adding a new precondition (intent decision):**
-- Add the new precondition tag to the decision type's `Rejects` union
+- Add the new precondition tag to the spec's rejects/preconditions
 - Add the entry in `preconditions` with description, `requiredInfo`, and scenarios
 - Use a positive statement for the tag
-- Add new info units to the `Info` union in `project.decisions.ts` if needed
+- Add new info units to the info list in `project.hb.yaml` if needed
 
 **Adding a new constraint (outcome decision):**
-- Add the new constraint to the decision type's `Rejects` union
+- Add the new constraint to the spec's rejects/preconditions
 - Add the entry in `shouldFailWith` with description, `requiredInfo`, and scenarios
-- Add the constraint to the `OutcomeRejects` union in `project.decisions.ts`
+- Add the constraint to the outcomeRejects list in `project.hb.yaml`
 
 **Adding a new success outcome (outcome decision):**
-- Add the new outcome to the decision type's `Choices` union
+- Add the new outcome to the spec's choices
 - Add entry in `shouldSucceedWith` — remember, at least one must have `condition: 'always'`
 - Add entry in `shouldAssert` with assertion tags and `affectedInfo`
-- Add the outcome to the `Outcomes` union in `project.decisions.ts`
+- Add the outcome to the outcomes list in `project.hb.yaml`
 
 **Adding scenarios:**
 - Add concrete scenarios to `preconditions[x].scenarios`, `shouldFailWith[x].scenarios`, or `shouldSucceedWith[x].scenarios`

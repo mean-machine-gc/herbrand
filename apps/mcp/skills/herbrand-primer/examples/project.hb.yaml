@@ -1,0 +1,74 @@
+outcomes:
+  - order_created
+  - order_submitted
+  - order_cancelled
+  - order_confirmed
+  - order_fulfilled
+  - order_routed_express
+  - order_routed_standard
+  - customer_email_sent
+  - order_audit_logged
+  - purchase_order_created
+  - purchase_order_approved
+  - purchase_order_rejected
+
+intents:
+  - create_order
+  - submit_order
+  - cancel_order
+  - confirm_order
+  - create_purchase_order
+  - approve_purchase_order
+  - reject_purchase_order
+  - fulfill_order
+  - route_order
+  - notify_order_confirmed
+
+info:
+  - customer_info
+  - available_products
+  - order_status
+  - order_line_items
+  - order_customer_reference
+  - order_editability
+  - payment_status
+  - stock_levels
+  - payment_authorization
+  - reserved_stock
+  - supplier_status
+  - department_budget
+  - purchase_order_status
+  - purchase_order_supplier_reference
+  - budget_reservation
+  - approver_authority
+  - supplier_notification
+  - shipping_preference
+  - order_route
+  - customer_email
+  - audit_log
+  - purchase_order_amount
+  - auto_approval_threshold
+
+outcomeRejects:
+  - payment_failed
+  - stock_unavailable
+  - invalid_order_data
+  - order_not_cancellable
+  - invalid_purchase_order_data
+  - approval_processing_error
+  - rejection_processing_error
+  - fulfillment_failed
+  - routing_failed
+  - notification_failed
+
+contexts:
+  - ordering
+  - procurement
+
+modules:
+  - order_management
+  - purchasing
+
+aggregates:
+  - order-processing
+  - procurement-processing

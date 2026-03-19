@@ -1,213 +1,166 @@
-import type { SpecFile, ParsedSpec, ParsedSpecs, RejectDetail, ChoiceDetail, AssertionDetail } from "./types.js";
+import YAML from "yaml";
+import type { SpecFile, ParsedSpec, ParsedSpecs } from "./types.js";
+import { projectSchema, buildDecisionSchema, type Project } from "./schemas.js";
 
-function extractMatch(content: string, pattern: RegExp): string | null {
-  const m = content.match(pattern);
-  return m ? m[1] : null;
-}
-
-function extractStringArray(content: string, pattern: RegExp): string[] {
-  const m = content.match(pattern);
-  if (!m) return [];
-  return [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]);
-}
-
-function parseRejectBlock(blockContent: string): Record<string, RejectDetail> {
-  const details: Record<string, RejectDetail> = {};
-
-  for (const m of blockContent.matchAll(/^\s{8}(\w+):\s*\{([\s\S]*?)^\s{8}\}/gm)) {
-    const key = m[1];
-    const body = m[2];
-
-    const description = extractMatch(body, /description:\s*'([^']+)'/);
-    const requiredInfo = extractStringArray(body, /requiredInfo:\s*\[([^\]]*)\]/);
-    const allDescriptions = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map((x) => x[1]);
-    const scenarios = allDescriptions.filter((e) => e !== description);
-
-    details[key] = { description, requiredInfo, scenarios };
-  }
-
-  return details;
-}
-
-function parseSucceedBlock(blockContent: string): Record<string, ChoiceDetail> {
-  const details: Record<string, ChoiceDetail> = {};
-
-  for (const m of blockContent.matchAll(/^\s{8}(\w+):\s*\{([\s\S]*?)^\s{8}\}/gm)) {
-    const key = m[1];
-    const body = m[2];
-
-    const condition = extractMatch(body, /condition:\s*'([^']+)'/);
-    const description = extractMatch(body, /description:\s*'([^']+)'/);
-    const requiredInfo = extractStringArray(body, /requiredInfo:\s*\[([^\]]*)\]/);
-    const allDescriptions = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map((x) => x[1]);
-    const scenarios = allDescriptions.filter((e) => e !== description && e !== condition);
-
-    details[key] = { condition, description, requiredInfo, scenarios };
-  }
-
-  return details;
-}
-
-function parseAssertBlock(blockContent: string): { details: Record<string, AssertionDetail[]>; affectedInfo: string[] } {
-  const details: Record<string, AssertionDetail[]> = {};
-  const affectedInfoSet = new Set<string>();
-
-  for (const choiceMatch of blockContent.matchAll(/^\s{8}(\w+):\s*\[([\s\S]*?)\s{8}\]/gm)) {
-    const choiceKey = choiceMatch[1];
-    const arrayBody = choiceMatch[2];
-    const assertions: AssertionDetail[] = [];
-
-    for (const assertMatch of arrayBody.matchAll(
-      /\{\s*tag:\s*'([^']+)',\s*description:\s*'([^']+)',\s*affectedInfo:\s*\[([^\]]*)\]\s*\}/g
-    )) {
-      const affInfos = [...assertMatch[3].matchAll(/'([^']+)'/g)].map((x) => x[1]);
-      for (const i of affInfos) affectedInfoSet.add(i);
-      assertions.push({
-        tag: assertMatch[1],
-        description: assertMatch[2],
-        affectedInfo: affInfos,
-      });
+function toParsedSpec(spec: any): ParsedSpec {
+  if (spec.type === "intent") {
+    // Aggregate requiredInfo from preconditions + producesIntent
+    const allReqInfo = new Set<string>();
+    for (const det of Object.values(spec.preconditions) as any[]) {
+      for (const i of det.requiredInfo) allReqInfo.add(i);
     }
+    for (const i of spec.producesIntent.requiredInfo) allReqInfo.add(i);
 
-    details[choiceKey] = assertions;
-  }
+    // Rejects without scenarios
+    const rejectsWithoutScenarios = Object.entries(spec.preconditions)
+      .filter(([, det]: [string, any]) => !det.scenarios || det.scenarios.length === 0)
+      .map(([key]) => key);
 
-  return { details, affectedInfo: [...affectedInfoSet] };
-}
-
-function parseSpecContent(content: string): ParsedSpec {
-  const isOutcome = /OutcomeDecisionSpec/.test(content);
-  const isIntent = /IntentDecisionSpec/.test(content);
-
-  // Trigger
-  let trigger = "";
-  let triggerType: "success" | "reject" | "intent" = "intent";
-
-  if (isIntent) {
-    const triggerMatch = content.match(
-      /trigger:\s*\{\s*type:\s*'(success|reject)',\s*(?:outcome|rejection):\s*'([^']+)'/
-    );
-    if (triggerMatch) {
-      triggerType = triggerMatch[1] as "success" | "reject";
-      trigger = triggerMatch[2];
-    }
+    return {
+      type: "intent",
+      description: spec.description,
+      businessGoal: spec.businessGoal,
+      trigger: spec.trigger.type === "success" ? spec.trigger.outcome : spec.trigger.rejection,
+      triggerType: spec.trigger.type,
+      choices: [spec.producesIntent.intent],
+      choiceDetails: {
+        [spec.producesIntent.intent]: {
+          condition: null,
+          description: spec.producesIntent.description,
+          requiredInfo: spec.producesIntent.requiredInfo,
+          scenarios: [],
+        },
+      },
+      rejects: Object.keys(spec.preconditions),
+      rejectDetails: Object.fromEntries(
+        Object.entries(spec.preconditions).map(([key, det]: [string, any]) => [
+          key,
+          {
+            description: det.description,
+            requiredInfo: det.requiredInfo,
+            scenarios: det.scenarios ?? [],
+          },
+        ])
+      ),
+      assertionDetails: {},
+      requiredInfo: [...allReqInfo],
+      affectedInfo: [],
+      rejectsWithoutScenarios,
+      role: spec.agent.role ?? (spec.agent.kind === "machine" ? "machine" : null),
+      context: spec.context,
+      module: spec.module,
+      aggregate: spec.aggregate,
+    };
   } else {
-    const triggerMatch = content.match(/trigger:\s*'([^']+)'/);
-    if (triggerMatch) {
-      trigger = triggerMatch[1];
-      triggerType = "intent";
+    // Outcome decision
+    const allReqInfo = new Set<string>();
+    for (const det of Object.values(spec.shouldFailWith) as any[]) {
+      for (const i of det.requiredInfo) allReqInfo.add(i);
     }
-  }
-
-  // Rejects / preconditions
-  const failBlock = content.match(/(?:preconditions|shouldFailWith):\s*\{([\s\S]*?)\n    \}/);
-  const rejectDetails = failBlock ? parseRejectBlock(failBlock[1]) : {};
-  const rejects = Object.keys(rejectDetails);
-
-  // Choices
-  let choiceDetails: Record<string, ChoiceDetail> = {};
-  let choices: string[] = [];
-
-  if (isIntent) {
-    const producesBlock = content.match(/producesIntent:\s*\{([\s\S]*?)\n    \}/);
-    if (producesBlock) {
-      const body = producesBlock[1];
-      const intent = extractMatch(body, /intent:\s*'([^']+)'/) ?? "unknown";
-      const description = extractMatch(body, /description:\s*'([^']+)'/);
-      const requiredInfo = extractStringArray(body, /requiredInfo:\s*\[([^\]]*)\]/);
-      const allDescriptions = [...body.matchAll(/\{\s*description:\s*'([^']+)'\s*\}/g)].map((x) => x[1]);
-      const scenarios = allDescriptions.filter((e) => e !== description);
-
-      choices = [intent];
-      choiceDetails = {
-        [intent]: { condition: null, description, requiredInfo, scenarios },
-      };
+    for (const det of Object.values(spec.shouldSucceedWith) as any[]) {
+      for (const i of det.requiredInfo) allReqInfo.add(i);
     }
-  } else {
-    const succeedBlock = content.match(/shouldSucceedWith:\s*\{([\s\S]*?)\n    \}/);
-    if (succeedBlock) {
-      choiceDetails = parseSucceedBlock(succeedBlock[1]);
-      choices = Object.keys(choiceDetails);
+
+    const allAffectedInfo = new Set<string>();
+    for (const assertions of Object.values(spec.shouldAssert) as any[][]) {
+      for (const a of assertions) {
+        for (const i of a.affectedInfo) allAffectedInfo.add(i);
+      }
     }
+
+    const rejectsWithoutScenarios = Object.entries(spec.shouldFailWith)
+      .filter(([, det]: [string, any]) => !det.scenarios || det.scenarios.length === 0)
+      .map(([key]) => key);
+
+    return {
+      type: "outcome",
+      description: spec.description,
+      businessGoal: null,
+      trigger: spec.trigger,
+      triggerType: "intent",
+      choices: Object.keys(spec.shouldSucceedWith),
+      choiceDetails: Object.fromEntries(
+        Object.entries(spec.shouldSucceedWith).map(([key, det]: [string, any]) => [
+          key,
+          {
+            condition: det.condition,
+            description: det.description,
+            requiredInfo: det.requiredInfo,
+            scenarios: det.scenarios ?? [],
+          },
+        ])
+      ),
+      rejects: Object.keys(spec.shouldFailWith),
+      rejectDetails: Object.fromEntries(
+        Object.entries(spec.shouldFailWith).map(([key, det]: [string, any]) => [
+          key,
+          {
+            description: det.description,
+            requiredInfo: det.requiredInfo,
+            scenarios: det.scenarios ?? [],
+          },
+        ])
+      ),
+      assertionDetails: Object.fromEntries(
+        Object.entries(spec.shouldAssert).map(([key, assertions]: [string, any]) => [
+          key,
+          assertions.map((a: any) => ({
+            tag: a.tag,
+            description: a.description,
+            affectedInfo: a.affectedInfo,
+          })),
+        ])
+      ),
+      requiredInfo: [...allReqInfo],
+      affectedInfo: [...allAffectedInfo],
+      rejectsWithoutScenarios,
+      role: "machine",
+      context: spec.context,
+      module: spec.module,
+      aggregate: spec.aggregate,
+    };
   }
-
-  // Assertions (outcome only)
-  let assertionDetails: Record<string, AssertionDetail[]> = {};
-  let affectedInfo: string[] = [];
-
-  if (isOutcome) {
-    const assertBlock = content.match(/shouldAssert:\s*\{([\s\S]*)\}\s*\}/);
-    if (assertBlock) {
-      const parsed = parseAssertBlock(assertBlock[1]);
-      assertionDetails = parsed.details;
-      affectedInfo = parsed.affectedInfo;
-    }
-  }
-
-  // Aggregate requiredInfo
-  const allReqInfo = new Set<string>();
-  for (const det of Object.values(rejectDetails)) {
-    for (const i of det.requiredInfo) allReqInfo.add(i);
-  }
-  for (const det of Object.values(choiceDetails)) {
-    for (const i of det.requiredInfo) allReqInfo.add(i);
-  }
-
-  // Rejects without scenarios
-  const rejectsWithoutScenarios = rejects.filter(
-    (key) => rejectDetails[key].scenarios.length === 0
-  );
-
-  // Metadata
-  const role = extractMatch(content, /role:\s*'([^']+)'/);
-  const agentKind = extractMatch(content, /kind:\s*'([^']+)'/);
-  const context = extractMatch(content, /context:\s*'([^']+)'/);
-  const module = extractMatch(content, /module:\s*'([^']+)'/);
-  const aggregate = extractMatch(content, /aggregate:\s*'([^']+)'/);
-  const description = extractMatch(content, /description:\s*'([^']+)'/);
-  const businessGoal = extractMatch(content, /businessGoal:\s*'([^']+)'/);
-
-  return {
-    type: isOutcome ? "outcome" : "intent",
-    description: description ?? null,
-    businessGoal: businessGoal ?? null,
-    trigger,
-    triggerType,
-    choices,
-    choiceDetails,
-    rejects,
-    rejectDetails,
-    assertionDetails,
-    requiredInfo: [...allReqInfo],
-    affectedInfo,
-    rejectsWithoutScenarios,
-    role: role ?? agentKind ?? null,
-    context: context ?? null,
-    module: module ?? null,
-    aggregate: aggregate ?? null,
-  };
-}
-
-function parseInfoUnion(content: string): string[] {
-  const infoMatch = content.match(/type Info\s*=([\s\S]*?)(?=\ntype\s)/);
-  if (!infoMatch) return [];
-  return [...infoMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
 }
 
 export function parseSpecs(files: SpecFile[]): ParsedSpecs {
   const specs: Record<string, ParsedSpec> = {};
   let declaredInfos: string[] = [];
 
-  for (const file of files) {
-    if (file.fileName === "project.decisions.ts") {
-      declaredInfos = parseInfoUnion(file.content);
-      continue;
-    }
+  // Find and parse project file first
+  const projectFile = files.find(f => f.fileName === "project.hb.yaml");
+  let project: Project | null = null;
 
-    if (file.fileName.endsWith(".spec.ts")) {
-      const name = file.fileName.replace(".spec.ts", "");
-      specs[name] = parseSpecContent(file.content);
+  if (projectFile) {
+    const raw = YAML.parse(projectFile.content);
+    const result = projectSchema.safeParse(raw);
+    if (result.success) {
+      project = result.data;
+      declaredInfos = project.info;
     }
+  }
+
+  // If no project file, return empty (can't validate specs without streams)
+  if (!project) {
+    return { specs, declaredInfos };
+  }
+
+  // Build decision schema from project streams
+  const decisionSchema = buildDecisionSchema(project);
+
+  // Parse spec files
+  for (const file of files) {
+    if (file.fileName === "project.hb.yaml") continue;
+    if (!file.fileName.endsWith(".hb.yaml")) continue;
+
+    const name = file.fileName.replace(".hb.yaml", "");
+    const raw = YAML.parse(file.content);
+    const result = decisionSchema.safeParse(raw);
+
+    if (result.success) {
+      specs[name] = toParsedSpec(result.data);
+    }
+    // Invalid specs are silently skipped — spec-lint will catch the issues
+    // via the validation results exposed separately
   }
 
   return { specs, declaredInfos };

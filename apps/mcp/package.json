@@ -10,6 +10,7 @@
   "dependencies": {
     "fastmcp": "^3.0.0",
     "@herbrand/core": "*",
+    "yaml": "^2.7.0",
     "@herbrand/signals": "*"
   },
   "devDependencies": {

@@ -36,15 +36,13 @@ All four answered → ready to formalize.
 
 ## What the agent wrote
 
-### 1. Updated `project.decisions.ts`
+### 1. Updated `project.hb.yaml`
 
-Added to Outcomes: `'order_created'`
-Added to Intents: `'create_order'`
-Added to Info: `'customer_info'`, `'available_products'`
+Added `order_created` to outcomes, `create_order` to intents, `customer_info` and `available_products` to info.
 
-### 2. Created `src/specs/create-order.spec.ts`
+### 2. Created `specs/create-order.hb.yaml`
 
-(See examples/intent-human.spec.ts)
+(See examples/intent-human.hb.yaml)
 
 ### 3. Validated
 

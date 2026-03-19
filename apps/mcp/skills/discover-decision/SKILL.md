@@ -33,18 +33,18 @@ If you can't answer all four → write to the scratchpad, keep probing.
 ### Step 2: Identify the streams
 
 For an intent decision:
-- What outcome or rejection triggers it? → add to `Outcomes` union if new
-- What intent does it produce? → add to `Intents` union if new
+- What outcome or rejection triggers it? → add to outcomes list in `project.hb.yaml` if new
+- What intent does it produce? → add to intents list in `project.hb.yaml` if new
 
 For an outcome decision:
 - What intent triggers it? → should already exist in `Intents`
-- What outcome does it produce? → add to `Outcomes` union if new
-- What constraints can fail? → add to `OutcomeRejects` union if new
+- What outcome does it produce? → add to outcomes list in `project.hb.yaml` if new
+- What constraints can fail? → add to outcomeRejects list in `project.hb.yaml` if new
 
 ### Step 3: Identify info units
 
-For each precondition/constraint: what info is needed to evaluate it? Add to `Info` union if new.
-For each assertion (outcome only): what info changes? Add to `Info` union if new.
+For each precondition/constraint: what info is needed to evaluate it? Add to info list in `project.hb.yaml` if new.
+For each assertion (outcome only): what info changes? Add to info list in `project.hb.yaml` if new.
 
 Remember: info units are inferred from the spec content:
 - A precondition `customer_info_provided` implies required info `customer_info`
@@ -52,8 +52,8 @@ Remember: info units are inferred from the spec content:
 
 ### Step 4: Write the files
 
-1. Update `project.decisions.ts` — add new entries to the unions
-2. Create `src/specs/{decision-name}.spec.ts` — the decision type + spec constant
+1. Update `project.hb.yaml` — add new entries to the streams
+2. Create `specs/{decision-name}.hb.yaml` — the decision spec in YAML format
 
 ### Step 5: Validate
 
@@ -82,34 +82,34 @@ Never ask about types, triggers, specs, or framework concepts.
 
 ### Human reacting to an outcome
 "The customer sees that the order was created and decides to submit it."
-→ `HumanIntentDecision<'order_created', ..., 'submit_order'>`
-→ trigger: `{ type: 'success', outcome: 'order_created' }`
+→ `type: intent`, `agent: { kind: human, role: customer }`
+→ `trigger: { type: success, outcome: order_created }`
 
 ### Machine reacting to an outcome (automation)
 "After the order is submitted, the system automatically starts confirmation."
-→ `MachineIntentDecision<'order_submitted', ..., 'confirm_order'>`
-→ trigger: `{ type: 'success', outcome: 'order_submitted' }`
+→ `type: intent`, `agent: { kind: machine }`
+→ `trigger: { type: success, outcome: order_submitted }`
 
 ### Reacting to a rejection (recovery)
 "When payment fails, customer service reviews the order."
-→ `HumanIntentDecision<'rejected:payment_failed', ..., 'review_payment'>`
-→ trigger: `{ type: 'reject', rejection: 'rejected:payment_failed' }`
+→ `type: intent`, `agent: { kind: human, role: customer_service }`
+→ `trigger: { type: reject, rejection: rejected:payment_failed }`
 
 ## Outcome decision patterns
 
 ### Single outcome (most common)
 "The system processes the order creation."
-→ `MachineOutcomeDecision<'create_order', ..., 'order_created'>`
-→ `condition: 'always'` on the single outcome
+→ `type: outcome`, `trigger: create_order`
+→ single outcome with `condition: always`
 
 ### Multiple outcomes with conditions
 "The system routes the order — express if they paid for it, standard otherwise."
-→ `MachineOutcomeDecision<'route_order', ..., 'order_routed_express' | 'order_routed_standard'>`
-→ express has a condition, standard has `condition: 'always'`
+→ `type: outcome`, `trigger: route_order`
+→ express has a specific condition, standard has `condition: always`
 
 ### Multiple unconditional outcomes
 "The system sends an email and logs the audit trail."
-→ Both outcomes have `condition: 'always'`
+→ Both outcomes have `condition: always`
 
 ## Naming conventions
 
@@ -119,5 +119,5 @@ Never ask about types, triggers, specs, or framework concepts.
 - **Constraints** — describe the failure: `payment_failed`, `stock_unavailable`
 - **Info units** — descriptive nouns: `order_status`, `payment_status`
 - **Assertion tags** — snake_case descriptive: `order_status_confirmed`, `payment_captured`
-- **Spec files** — kebab-case: `create-order.spec.ts`, `process-create-order.spec.ts`
+- **Spec files** — kebab-case: `create-order.hb.yaml`, `process-create-order.hb.yaml`
 - **Aggregates** — process names: `order-processing`, not `order`

@@ -7,24 +7,32 @@ const VIRTUAL_MODULE_ID = "virtual:herbrand-specs";
 const RESOLVED_ID = "\0" + VIRTUAL_MODULE_ID;
 
 export function herbrandSpecsPlugin(): Plugin {
-  let specsFolder = process.env.HERBRAND_FOLDER || process.cwd();
+  let projectFolder = process.env.HERBRAND_FOLDER || process.cwd();
 
   function loadSpecs(): Array<{ fileName: string; content: string }> {
-    const pattern = path.join(specsFolder, "src", "specs", "*.spec.ts");
-    const files = fg.sync(pattern);
-    return files.map((filePath) => ({
-      fileName: path.basename(filePath),
-      content: fs.readFileSync(filePath, "utf-8"),
-    }));
+    const files: Array<{ fileName: string; content: string }> = [];
+
+    // Load project.hb.yaml from project root
+    const projectFile = path.join(projectFolder, "project.hb.yaml");
+    if (fs.existsSync(projectFile)) {
+      files.push({ fileName: "project.hb.yaml", content: fs.readFileSync(projectFile, "utf-8") });
+    }
+
+    // Load specs/*.hb.yaml
+    const specFiles = fg.sync(path.join(projectFolder, "specs", "*.hb.yaml"));
+    for (const filePath of specFiles) {
+      files.push({ fileName: path.basename(filePath), content: fs.readFileSync(filePath, "utf-8") });
+    }
+
+    return files;
   }
 
   return {
     name: "herbrand-specs",
 
-    configResolved(config) {
-      // Allow override from env or CLI
+    configResolved() {
       if (process.env.HERBRAND_FOLDER) {
-        specsFolder = path.resolve(process.env.HERBRAND_FOLDER);
+        projectFolder = path.resolve(process.env.HERBRAND_FOLDER);
       }
     },
 
@@ -40,30 +48,24 @@ export function herbrandSpecsPlugin(): Plugin {
     },
 
     configureServer(server) {
-      // Watch the specs folder for changes
-      const watchPath = path.join(specsFolder, "src", "specs");
-      server.watcher.add(watchPath);
+      // Watch project root for project.hb.yaml
+      server.watcher.add(projectFolder);
+      // Watch specs folder
+      const specsDir = path.join(projectFolder, "specs");
+      server.watcher.add(specsDir);
 
-      server.watcher.on("change", (filePath) => {
-        if (filePath.endsWith(".spec.ts")) {
-          // Invalidate the virtual module to trigger HMR
+      const reload = (filePath: string) => {
+        if (filePath.endsWith(".hb.yaml")) {
           const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
           if (mod) {
             server.moduleGraph.invalidateModule(mod);
             server.ws.send({ type: "full-reload" });
           }
         }
-      });
+      };
 
-      server.watcher.on("add", (filePath) => {
-        if (filePath.endsWith(".spec.ts")) {
-          const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-          if (mod) {
-            server.moduleGraph.invalidateModule(mod);
-            server.ws.send({ type: "full-reload" });
-          }
-        }
-      });
+      server.watcher.on("change", reload);
+      server.watcher.on("add", reload);
     },
   };
 }

@@ -72,7 +72,7 @@ If you can't answer all four, it stays in the scratchpad.
 When you write a spec from a scratchpad entry:
 
 - Mark the entry as `formalized` in the status column
-- Note which spec it became: `→ create-order.spec.ts`
+- Note which spec it became: `→ create-order.hb.yaml`
 - Keep any remaining open questions — they may inform refinement later
 
 ## File naming
