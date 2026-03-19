@@ -1,0 +1,33 @@
+type: outcome
+agent:
+  kind: machine
+context: procurement
+module: purchasing
+aggregate: procurement-processing
+description: The system processes the approval and notifies the supplier
+trigger: approve_purchase_order
+shouldFailWith:
+  approval_processing_error:
+    description: The approval could not be processed due to a system error
+    requiredInfo:
+      - purchase_order_status
+    scenarios:
+      - Supplier notification service is unavailable
+shouldSucceedWith:
+  purchase_order_approved:
+    condition: always
+    description: The purchase order is approved and the supplier is notified
+    requiredInfo:
+      - purchase_order_status
+    scenarios:
+      - Manager approves a PO and supplier receives notification
+shouldAssert:
+  purchase_order_approved:
+    - tag: purchase_order_status_approved
+      description: The purchase order status transitions to approved
+      affectedInfo:
+        - purchase_order_status
+    - tag: supplier_notified
+      description: The supplier is notified of the approved purchase order
+      affectedInfo:
+        - supplier_notification

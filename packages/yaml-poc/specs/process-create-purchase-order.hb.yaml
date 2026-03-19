@@ -1,0 +1,40 @@
+type: outcome
+agent:
+  kind: machine
+context: procurement
+module: purchasing
+aggregate: procurement-processing
+description: The system processes the create purchase order intent and persists a new PO
+trigger: create_purchase_order
+shouldFailWith:
+  invalid_purchase_order_data:
+    description: The purchase order data is malformed or contains inconsistencies
+    requiredInfo:
+      - supplier_status
+      - department_budget
+    scenarios:
+      - PO references a supplier that has been deactivated since validation
+shouldSucceedWith:
+  purchase_order_created:
+    condition: always
+    description: A new purchase order is persisted in pending approval state
+    requiredInfo:
+      - supplier_status
+      - department_budget
+    scenarios:
+      - Officer creates a PO for office supplies within budget
+shouldAssert:
+  purchase_order_created:
+    - tag: purchase_order_pending
+      description: The purchase order is persisted with status pending approval
+      affectedInfo:
+        - purchase_order_status
+    - tag: budget_reserved
+      description: The requested amount is reserved against the department budget
+      affectedInfo:
+        - budget_reservation
+        - department_budget
+    - tag: purchase_order_linked_to_supplier
+      description: The purchase order references the selected supplier
+      affectedInfo:
+        - purchase_order_supplier_reference

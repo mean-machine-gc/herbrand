@@ -1,0 +1,13 @@
+{
+  "name": "@herbrand/yaml-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node src/test.js"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0",
+    "zod": "^3.25.0"
+  }
+}

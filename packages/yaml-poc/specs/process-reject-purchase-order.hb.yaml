@@ -1,0 +1,34 @@
+type: outcome
+agent:
+  kind: machine
+context: procurement
+module: purchasing
+aggregate: procurement-processing
+description: The system processes the rejection and releases the budget reservation
+trigger: reject_purchase_order
+shouldFailWith:
+  rejection_processing_error:
+    description: The rejection could not be processed due to a system error
+    requiredInfo:
+      - purchase_order_status
+    scenarios:
+      - Budget release service is unavailable
+shouldSucceedWith:
+  purchase_order_rejected:
+    condition: always
+    description: The purchase order is rejected and the budget reservation is released
+    requiredInfo:
+      - purchase_order_status
+    scenarios:
+      - Manager rejects a PO and budget is freed up
+shouldAssert:
+  purchase_order_rejected:
+    - tag: purchase_order_status_rejected
+      description: The purchase order status transitions to rejected
+      affectedInfo:
+        - purchase_order_status
+    - tag: budget_reservation_released
+      description: The reserved budget amount is released back to the department
+      affectedInfo:
+        - budget_reservation
+        - department_budget

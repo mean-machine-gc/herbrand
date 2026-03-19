@@ -1,0 +1,37 @@
+type: outcome
+agent:
+  kind: machine
+context: ordering
+module: order_management
+aggregate: order-processing
+description: The system processes the cancel order intent and releases held resources
+trigger: cancel_order
+shouldFailWith:
+  order_not_cancellable:
+    description: The order is in a state that does not allow cancellation
+    requiredInfo:
+      - order_status
+    scenarios:
+      - System receives cancel intent for an order already in fulfillment
+shouldSucceedWith:
+  order_cancelled:
+    condition: always
+    description: The order is cancelled and all held resources are released
+    requiredInfo:
+      - order_status
+    scenarios:
+      - Customer cancels a draft order with no payment hold
+shouldAssert:
+  order_cancelled:
+    - tag: order_status_cancelled
+      description: The order status transitions to cancelled
+      affectedInfo:
+        - order_status
+    - tag: payment_authorization_voided
+      description: Any pending payment authorization is voided
+      affectedInfo:
+        - payment_authorization
+    - tag: stock_released
+      description: Reserved inventory is released back to available stock
+      affectedInfo:
+        - reserved_stock
