@@ -1,2 +1,2 @@
-export type { ParsedSpec, ParsedSpecs, DecisionGraph, GraphNode, GraphEdge, LintResult, SpecInput, SpecUpdate, RejectDetail, ChoiceDetail, AssertionDetail, } from "./types.js";
-export { parseSpecs, specLint, buildDecisionGraph, behaviorLint, createSpec, updateSpec, readSpec, listSpecs, readGraph, runPipeline, } from "./functions.js";
+export type { SpecFile, ParsedSpec, ParsedSpecs, DecisionGraph, GraphNode, GraphEdge, LintResult, RejectDetail, ChoiceDetail, AssertionDetail, } from "./types.js";
+export { parseSpecs, specLint, buildDecisionGraph, behaviorLint, } from "./functions.js";

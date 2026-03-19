@@ -5,6 +5,7 @@
   "scripts": {
     "herbrand": "npm run herbrand -w packages/poc",
     "specs": "npm run specs -w packages/poc",
-    "graph": "npm run graph -w packages/poc"
+    "graph": "npm run graph -w packages/poc",
+    "ui": "HERBRAND_FOLDER=$PWD/packages/poc npm run dev -w apps/ui"
   }
 }

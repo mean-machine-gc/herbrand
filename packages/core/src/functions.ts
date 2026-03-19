@@ -1,15 +1,17 @@
 import type {
+  SpecFile,
   ParsedSpecs,
   DecisionGraph,
   LintResult,
-  ParsedSpec,
-  SpecInput,
-  SpecUpdate,
 } from "./types.js";
+import { parseSpecs as parseSpecsImpl } from "./parse-specs.js";
+import { specLint as specLintImpl } from "./spec-lint.js";
+import { buildDecisionGraph as buildDecisionGraphImpl } from "./build-graph.js";
+import { behaviorLint as behaviorLintImpl } from "./behavior-lint.js";
 
-/// Pipeline functions
+/// Pipeline functions — pure data in, data out
 
-export type ParseSpecs = (projectDir: string) => ParsedSpecs
+export type ParseSpecs = (files: SpecFile[]) => ParsedSpecs
 
 export type SpecLint = (parsed: ParsedSpecs) => LintResult[]
 
@@ -17,62 +19,12 @@ export type BuildDecisionGraph = (parsed: ParsedSpecs) => DecisionGraph
 
 export type BehaviorLint = (graph: DecisionGraph) => LintResult[]
 
-/// Agent-facing functions
+/// Implementations
 
-export type CreateSpec = (projectDir: string, input: SpecInput) => ParsedSpec
+export const parseSpecs: ParseSpecs = parseSpecsImpl
 
-export type UpdateSpec = (projectDir: string, update: SpecUpdate) => ParsedSpec
+export const specLint: SpecLint = specLintImpl
 
-export type ReadSpec = (projectDir: string, name: string) => ParsedSpec | null
+export const buildDecisionGraph: BuildDecisionGraph = buildDecisionGraphImpl
 
-export type ListSpecs = (projectDir: string) => Array<{ name: string; type: string; description: string | null }>
-
-export type ReadGraph = (projectDir: string) => DecisionGraph | null
-
-export type RunPipeline = (projectDir: string) => {
-  specLint: LintResult[]
-  graph: DecisionGraph | null
-  behaviorLint: LintResult[]
-}
-
-/// Placeholder implementations (to be filled from poc scripts)
-
-export const parseSpecs: ParseSpecs = (_projectDir) => {
-  throw new Error("Not implemented")
-}
-
-export const specLint: SpecLint = (_parsed) => {
-  throw new Error("Not implemented")
-}
-
-export const buildDecisionGraph: BuildDecisionGraph = (_parsed) => {
-  throw new Error("Not implemented")
-}
-
-export const behaviorLint: BehaviorLint = (_graph) => {
-  throw new Error("Not implemented")
-}
-
-export const createSpec: CreateSpec = (_projectDir, _input) => {
-  throw new Error("Not implemented")
-}
-
-export const updateSpec: UpdateSpec = (_projectDir, _update) => {
-  throw new Error("Not implemented")
-}
-
-export const readSpec: ReadSpec = (_projectDir, _name) => {
-  throw new Error("Not implemented")
-}
-
-export const listSpecs: ListSpecs = (_projectDir) => {
-  throw new Error("Not implemented")
-}
-
-export const readGraph: ReadGraph = (_projectDir) => {
-  throw new Error("Not implemented")
-}
-
-export const runPipeline: RunPipeline = (_projectDir) => {
-  throw new Error("Not implemented")
-}
+export const behaviorLint: BehaviorLint = behaviorLintImpl

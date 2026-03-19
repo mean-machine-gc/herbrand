@@ -1,3 +1,7 @@
+export type SpecFile = {
+    fileName: string;
+    content: string;
+};
 export type RejectDetail = {
     description: string | null;
     requiredInfo: string[];
@@ -62,46 +66,4 @@ export type LintResult = {
     rule: string;
     message: string;
     spec: string | null;
-};
-export type SpecInput = {
-    name: string;
-    type: 'intent' | 'outcome';
-    trigger: string;
-    triggerType: 'success' | 'reject' | 'intent';
-    role?: string;
-    context?: string;
-    module?: string;
-    aggregate?: string;
-    businessGoal?: string;
-    description?: string;
-    preconditions?: Record<string, {
-        description: string;
-        requiredInfo: string[];
-        scenarios?: string[];
-    }>;
-    producesIntent?: {
-        intent: string;
-        description: string;
-        requiredInfo: string[];
-    };
-    shouldFailWith?: Record<string, {
-        description: string;
-        requiredInfo: string[];
-        scenarios?: string[];
-    }>;
-    shouldSucceedWith?: Record<string, {
-        condition: string;
-        description: string;
-        requiredInfo: string[];
-        scenarios?: string[];
-    }>;
-    shouldAssert?: Record<string, Array<{
-        tag: string;
-        description: string;
-        affectedInfo: string[];
-    }>>;
-};
-export type SpecUpdate = {
-    name: string;
-    changes: Partial<SpecInput>;
 };

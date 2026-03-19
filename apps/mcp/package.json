@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "fastmcp": "^3.0.0",
-    "@herbrand/core": "*"
+    "@herbrand/core": "*",
+    "@herbrand/signals": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

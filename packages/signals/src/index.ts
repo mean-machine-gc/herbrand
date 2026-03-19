@@ -1,0 +1,160 @@
+import { signal, computed } from "@preact/signals-core";
+import fs from "node:fs";
+import path from "node:path";
+import type {
+  SpecFile,
+  ParsedSpecs,
+  DecisionGraph,
+  LintResult,
+} from "@herbrand/core";
+import {
+  parseSpecs,
+  specLint,
+  buildDecisionGraph,
+  behaviorLint,
+} from "@herbrand/core";
+
+export class HerbrandStore {
+  /// Root signal — set by filesystem watcher, vite plugin, or manually
+
+  private _specFiles = signal<SpecFile[]>([]);
+  private _watcher: fs.FSWatcher | null = null;
+  private _watchDir: string | null = null;
+  private _debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /// Reactive pipeline — computed automatically when specFiles changes
+
+  private _parsedSpecs = computed<ParsedSpecs>(() => {
+    const files = this._specFiles.value;
+    if (files.length === 0) return { specs: {}, declaredInfos: [] };
+    return parseSpecs(files);
+  });
+
+  private _specLintResults = computed<LintResult[]>(() => {
+    const parsed = this._parsedSpecs.value;
+    if (Object.keys(parsed.specs).length === 0) return [];
+    return specLint(parsed);
+  });
+
+  private _decisionGraph = computed<DecisionGraph | null>(() => {
+    const parsed = this._parsedSpecs.value;
+    if (Object.keys(parsed.specs).length === 0) return null;
+    const errors = this._specLintResults.value.filter((r) => r.level === "error");
+    if (errors.length > 0) return null;
+    return buildDecisionGraph(parsed);
+  });
+
+  private _behaviorLintResults = computed<LintResult[]>(() => {
+    const graph = this._decisionGraph.value;
+    if (!graph) return [];
+    return behaviorLint(graph);
+  });
+
+  /// Setters
+
+  setSpecFiles(files: SpecFile[]) {
+    this._specFiles.value = files;
+  }
+
+  /// Filesystem watcher
+
+  private _readSpecsFromDisk(specsDir: string): SpecFile[] {
+    if (!fs.existsSync(specsDir)) return [];
+    return fs.readdirSync(specsDir)
+      .filter((f) => f.endsWith(".spec.ts"))
+      .map((f) => ({
+        fileName: f,
+        content: fs.readFileSync(path.join(specsDir, f), "utf-8"),
+      }));
+  }
+
+  private _refresh() {
+    if (!this._watchDir) return;
+    this.setSpecFiles(this._readSpecsFromDisk(this._watchDir));
+  }
+
+  private _debouncedRefresh() {
+    if (this._debounceTimer) clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => this._refresh(), 100);
+  }
+
+  watch(projectDir: string) {
+    this.stop();
+    const specsDir = path.join(projectDir, "src", "specs");
+    this._watchDir = specsDir;
+
+    // Initial load
+    this._refresh();
+
+    // Watch for changes
+    if (fs.existsSync(specsDir)) {
+      this._watcher = fs.watch(specsDir, { recursive: false }, (_eventType, fileName) => {
+        if (fileName && fileName.endsWith(".spec.ts")) {
+          this._debouncedRefresh();
+        }
+      });
+    }
+  }
+
+  stop() {
+    if (this._watcher) {
+      this._watcher.close();
+      this._watcher = null;
+    }
+    if (this._debounceTimer) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+    }
+    this._watchDir = null;
+  }
+
+  /// Getters
+
+  get specFiles(): SpecFile[] {
+    return this._specFiles.value;
+  }
+
+  get parsedSpecs(): ParsedSpecs {
+    return this._parsedSpecs.value;
+  }
+
+  get specLintResults(): LintResult[] {
+    return this._specLintResults.value;
+  }
+
+  get decisionGraph(): DecisionGraph | null {
+    return this._decisionGraph.value;
+  }
+
+  get behaviorLintResults(): LintResult[] {
+    return this._behaviorLintResults.value;
+  }
+
+  get hasSpecErrors(): boolean {
+    return this._specLintResults.value.some((r) => r.level === "error");
+  }
+
+  get hasGraphErrors(): boolean {
+    return this._behaviorLintResults.value.some((r) => r.level === "error");
+  }
+
+  get specCount(): number {
+    return Object.keys(this._parsedSpecs.value.specs).length;
+  }
+
+  get nodeCount(): number {
+    return this._decisionGraph.value?.nodes.length ?? 0;
+  }
+
+  /// Raw signals — for UI frameworks that consume signals directly
+
+  get signals() {
+    return {
+      specFiles: this._specFiles,
+      parsedSpecs: this._parsedSpecs,
+      specLintResults: this._specLintResults,
+      decisionGraph: this._decisionGraph,
+      behaviorLintResults: this._behaviorLintResults,
+    };
+  }
+}
