@@ -1,5 +1,8 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { HerbrandStore } from "@herbrand/signals";
 const server = new FastMCP({
     name: "Herbrand",
@@ -8,76 +11,36 @@ const server = new FastMCP({
 const store = new HerbrandStore();
 // Track which project we're watching — start watching on first tool call
 let watchingDir = null;
+let uiLaunched = false;
+function launchUI(projectDir) {
+    if (uiLaunched)
+        return;
+    uiLaunched = true;
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const uiCli = path.resolve(__dirname, "../../ui/bin/cli.js");
+    const child = spawn("node", [uiCli, "--folder", projectDir], {
+        detached: true,
+        stdio: "ignore",
+    });
+    child.unref();
+}
 function ensureWatching(projectDir) {
     if (watchingDir !== projectDir) {
         store.watch(projectDir);
         watchingDir = projectDir;
+        launchUI(projectDir);
     }
 }
 const projectDirParam = z.object({
     projectDir: z.string().describe("Absolute path to the herbrand project directory"),
 });
-/// Pipeline read tools (get-prefixed, read from store)
-server.addTool({
-    name: "get_parsed_specs",
-    description: "Returns the current parsed specs from the reactive store. Specs are parsed automatically when files change.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        return JSON.stringify(store.parsedSpecs, null, 2);
-    },
-});
-server.addTool({
-    name: "get_spec_lint",
-    description: "Returns the current spec-lint results from the reactive store. Lint runs automatically when specs change. Reports missing descriptions, scenarios, info, context/module/aggregate.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        return JSON.stringify(store.specLintResults, null, 2);
-    },
-});
-server.addTool({
-    name: "get_behavior_lint",
-    description: "Returns the current behavior-lint results from the reactive store. Lint runs automatically when the decision graph changes. Reports orphans, dead ends, info flow gaps, unhandled rejections, boundary issues.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        return JSON.stringify(store.behaviorLintResults, null, 2);
-    },
-});
-/// Agent-facing read tools (get-prefixed, read from store)
-server.addTool({
-    name: "get_spec",
-    description: "Returns a single parsed decision spec by name from the reactive store.",
-    parameters: z.object({
-        projectDir: z.string().describe("Absolute path to the herbrand project directory"),
-        name: z.string().describe("Spec name, e.g. 'create-order'"),
-    }),
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        const spec = store.parsedSpecs.specs[args.name];
-        if (!spec)
-            return "Spec not found";
-        return JSON.stringify(spec, null, 2);
-    },
-});
-server.addTool({
-    name: "get_specs_list",
-    description: "Returns a list of all decision specs with name, type, and description from the reactive store.",
-    parameters: projectDirParam,
-    execute: async (args) => {
-        ensureWatching(args.projectDir);
-        const list = Object.entries(store.parsedSpecs.specs).map(([name, spec]) => ({
-            name,
-            type: spec.type,
-            description: spec.description,
-        }));
-        return JSON.stringify(list, null, 2);
-    },
-});
+/// Tool: get_pipeline_results
+/// The agent's primary feedback tool — returns full project state in one call.
+/// Drives the validation loops: spec-lint results tell the agent what to fix,
+/// behavior-lint results tell the agent what's missing in the system.
 server.addTool({
     name: "get_pipeline_results",
-    description: "Returns a summary of the full reactive pipeline state — spec count, spec-lint results, graph status, and behavior-lint results.",
+    description: "Returns the full reactive pipeline state — spec count, spec-lint results (with spec names to fix), and behavior-lint results (with references). Use this to understand the project state and drive the validation loops.",
     parameters: projectDirParam,
     execute: async (args) => {
         ensureWatching(args.projectDir);
@@ -85,14 +48,16 @@ server.addTool({
             specCount: store.specCount,
             specLint: store.specLintResults,
             hasSpecErrors: store.hasSpecErrors,
-            graph: store.decisionGraph ? { nodes: store.nodeCount } : null,
             behaviorLint: store.behaviorLintResults,
         }, null, 2);
     },
 });
+/// Tool: get_user_stories
+/// The agent's business context tool — returns summary of all user stories.
+/// Use this to understand the domain landscape and what decisions exist.
 server.addTool({
     name: "get_user_stories",
-    description: "Returns all user stories derived from the decision graph. Each story includes acceptance criteria, decision table, scenarios, and views.",
+    description: "Returns a summary of all user stories derived from the decision graph — name, role, intent, business goal, and linked outcome status. Use this to understand the business domain landscape.",
     parameters: projectDirParam,
     execute: async (args) => {
         ensureWatching(args.projectDir);
@@ -107,9 +72,12 @@ server.addTool({
         return JSON.stringify(list, null, 2);
     },
 });
+/// Tool: get_user_story
+/// The agent's deep dive tool — returns full business details for one decision.
+/// Includes acceptance criteria, decision table, scenarios, and views.
 server.addTool({
     name: "get_user_story",
-    description: "Returns a single user story by name with full details — acceptance criteria, decision table, scenarios, and views.",
+    description: "Returns a single user story by name with full business details — acceptance criteria (Given/When/Then), decision table, scenarios, and views. Use this to understand a specific decision in business terms.",
     parameters: z.object({
         projectDir: z.string().describe("Absolute path to the herbrand project directory"),
         name: z.string().describe("User story name (the intent decision spec name), e.g. 'create-order'"),
