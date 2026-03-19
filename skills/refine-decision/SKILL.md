@@ -36,22 +36,25 @@ Apply the refinement:
 
 **Adding a new reject:**
 - Add the new reject literal to the decision type's `Rejects` union
-- Add the corresponding entry in `shouldFailWith` with description and examples
+- Add the corresponding entry in `shouldFailWith` with description, `requiredInfo`, and examples
+- Identify what info is needed to detect this failure — add to the `Info` union in `project.decisions.ts` if new
 
 **Adding a new choice:**
 - Add the new choice literal to the decision type's `Choices` union
-- Add entries in both `shouldSucceedWith` and `shouldAssert`
-- Update the `Outcomes` or `Intents` union in `project.decisions.ts` if needed
+- Add entries in `shouldSucceedWith` (with `requiredInfo`) and `shouldAssert` (with `affectedInfo`)
+- Update the `Outcomes`, `Intents`, or `Info` unions in `project.decisions.ts` if needed
 
 **Enriching an existing entry:**
 - Add examples to `shouldFailWith` or `shouldSucceedWith`
 - Sharpen descriptions to be more precise
-- Add new assertion tags to `shouldAssert`
+- Add new assertion tags to `shouldAssert` with their `affectedInfo`
+- Add or refine `requiredInfo` on rejects and success conditions
 
 **Correcting the decision:**
 - Change the agent role if the wrong person was identified
-- Change the input if the trigger was misidentified
+- Change the trigger if it was misidentified
 - Update descriptions to match corrected understanding
+- Verify `requiredInfo` and `affectedInfo` still make sense after the correction
 
 ### 4. Check ripple effects
 

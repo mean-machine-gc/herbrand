@@ -41,16 +41,26 @@ When a decision is ready, do the following in order:
 - Add new intents to the `Intents` union (imperative, like commands: `create_order`)
 - Update `Contexts`, `Modules`, `Aggregates` if new ones emerge
 
-**b. Create the spec file** at `src/specs/{decision-name}.spec.ts` containing:
+**b. Update the Info union** in `src/project.decisions.ts`:
+- For each reject, identify what information is needed to detect that failure — add it to the `Info` union
+- For each success condition, identify what information is needed to evaluate it — add it to the `Info` union
+- For each assertion, identify what information changes as a side effect — add it to the `Info` union
+- Info units are inferred from the spec content: a reject `invalid_product` implies a required info `available_products`; an assertion `order_in_draft_state` implies an affected info `order_status`
+
+**c. Create the spec file** at `src/specs/{decision-name}.spec.ts` containing:
 - The decision type (e.g., `type CreateOrder = HumanIntentDecision<...>`)
-- The decision spec constant with all fields filled in
+- The decision spec constant with all fields filled in, including:
+  - `trigger` — the outcome or intent that starts this decision
+  - `requiredInfo` on each reject — what info is needed to detect this failure
+  - `requiredInfo` on each success condition — what info is needed to evaluate this condition
+  - `affectedInfo` on each assertion — what info changes as a result
 
 Use the decision helpers from `project.decisions.ts`:
 - `HumanIntentDecision<Input, Rejects, Choice>` — a human reacts to an outcome, produces an intent
 - `MachineIntentDecision<Input, Rejects, Choice>` — a machine reacts to an outcome, produces an intent
 - `MachineOutcomeDecision<Input, Rejects, Choice>` — a machine receives an intent, produces an outcome
 
-**c. Update the scratchpad** — mark the observation as formalized, note any remaining open questions.
+**d. Update the scratchpad** — mark the observation as formalized, note any remaining open questions.
 
 ### 4. Validate
 

@@ -58,6 +58,16 @@ Look for these patterns:
 - Terms used inconsistently across decisions or that mean different things to different stakeholders
 - Ask: "When you say X, do you mean the same thing as when Y said X?"
 
+**Information gaps:**
+- Info units that are read (requiredInfo) but never written (affectedInfo) by any decision — where does this information come from?
+- Info units that are written (affectedInfo) but never read (requiredInfo) by any decision — does anyone use this information?
+- Decisions where a reject checks info that no prior decision in the flow has affected — is this info available at this point?
+- Ask: "How does the system know X at this point? Where does that information come from?"
+
+**Information conflicts:**
+- Multiple decisions in different contexts affecting the same info unit — are they really the same information?
+- Ask: "When X changes here, does it affect what Y sees over there?"
+
 ### 3. Prioritize
 
 Not all gaps are equally important. Prioritize by:

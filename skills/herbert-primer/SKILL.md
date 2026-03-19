@@ -23,10 +23,22 @@ Outcomes → Intent Decisions → Intents → Outcome Decisions → Outcomes →
 
 Every decision has:
 - **An agent** — who decides (human with a role, or machine)
-- **An input** — what triggers it (an outcome or an intent)
+- **A trigger** — what starts it (an outcome or an intent)
 - **Choices** — what it produces when it succeeds (an intent or an outcome)
-- **Rejects** — what can go wrong (failure reasons with descriptions and examples)
-- **Assertions** — what must be true after each successful choice (tagged, testable post-conditions)
+- **Rejects** — what can go wrong, each declaring the **info** it needs to detect the failure
+- **Success conditions** — what must be true for each choice, each declaring the **info** it needs to evaluate
+- **Assertions** — what must be true after each successful choice (tagged, testable post-conditions), each declaring the **info** it affects as a side effect
+
+## Information context
+
+Herbert tracks **info units** — named pieces of information that exist in the domain (e.g., `order_status`, `payment_status`, `available_products`). These are not data models or schemas; they are the bounded information context of each decision, directly inspired by Herbert Simon's bounded rationality.
+
+Info units are declared in a single project-wide union and referenced in three places:
+- **requiredInfo on rejects** — what information is needed to detect this failure
+- **requiredInfo on success conditions** — what information is needed to confirm this condition
+- **affectedInfo on assertions** — what information changes as a side effect of this choice
+
+This creates a traceable read/write model: each decision *reads* info (requiredInfo) and *writes* info (affectedInfo). The info flow is derived from the decision specs, never designed upfront.
 
 ## The three boundaries
 

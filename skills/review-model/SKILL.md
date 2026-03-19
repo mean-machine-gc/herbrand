@@ -23,6 +23,7 @@ The review serves as a checkpoint in the discovery process. It allows the BA and
 
 Read all spec files and the scratchpad. Build a mental picture of:
 - The decision flow: what triggers what, who's involved
+- The information context: what information each decision needs and what it changes
 - The failure modes: what can go wrong at each step
 - The assertions: what must be true after each successful decision
 - What's still in the scratchpad (captured but not formalized)
@@ -44,9 +45,10 @@ Write a plain-language summary structured as:
 - A one-paragraph narrative describing the process end to end
 - For each decision in the flow:
   - Who does it and what triggers it
+  - What information they need to make the decision
   - What can go wrong (in the domain expert's language)
   - What happens when it succeeds
-  - What we're sure must be true afterwards
+  - What we're sure must be true afterwards and what information changes
 - Open questions related to this flow
 
 **At the end:**

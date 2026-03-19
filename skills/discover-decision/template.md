@@ -6,9 +6,9 @@
 -
 
 ### Possible Decisions
-| Who | Trigger | Produces | Rejects | Status |
-|-----|---------|----------|---------|--------|
-|     |         |          |         | raw / ready / formalized |
+| Who | Trigger | Produces | Rejects | Info needed | Status |
+|-----|---------|----------|---------|-------------|--------|
+|     |         |          |         |             | raw / ready / formalized |
 
 ### Open Questions
 -
