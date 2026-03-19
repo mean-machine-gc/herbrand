@@ -1,0 +1,11 @@
+import { Stack, Text } from "@mantine/core";
+import { Briefcase } from "@phosphor-icons/react";
+
+export function BusinessView() {
+  return (
+    <Stack align="center" justify="center" h="60vh" gap="md">
+      <Briefcase size={48} weight="light" color="var(--mantine-color-dimmed)" />
+      <Text c="dimmed" size="sm">Nothing to show</Text>
+    </Stack>
+  );
+}
