@@ -4,14 +4,14 @@ type CreatePurchaseOrder = HumanIntentDecision<
     'create_purchase_order'
 >
 
-const createPurchaseOrder: DecisionSpec<CreatePurchaseOrder, Contexts, Modules, Aggregates> = {
+const createPurchaseOrder: IntentDecisionSpec<CreatePurchaseOrder, Contexts, Modules, Aggregates> = {
     type: 'intent',
     agent: { kind: 'human', role: 'procurement_officer' },
     context: 'procurement',
     module: 'purchasing',
     aggregate: 'procurement-processing',
     description: 'A procurement officer creates a purchase order to request goods from a supplier',
-    trigger: 'purchase_order_created',
+    trigger: { type: 'success', outcome: 'purchase_order_created' },
     shouldFailWith: {
         missing_supplier: {
             description: 'No supplier has been selected or the supplier is inactive',
@@ -35,23 +35,4 @@ const createPurchaseOrder: DecisionSpec<CreatePurchaseOrder, Contexts, Modules, 
             requiredInfo: ['supplier_status', 'department_budget'],
         }
     },
-    shouldAssert: {
-        create_purchase_order: [
-            {
-                tag: 'purchase_order_pending_approval',
-                description: 'The purchase order is persisted with status pending approval',
-                affectedInfo: ['purchase_order_status']
-            },
-            {
-                tag: 'budget_reserved',
-                description: 'The requested amount is reserved against the department budget',
-                affectedInfo: ['budget_reservation', 'department_budget']
-            },
-            {
-                tag: 'purchase_order_linked_to_supplier',
-                description: 'The purchase order references the selected supplier',
-                affectedInfo: ['purchase_order_supplier_reference']
-            }
-        ]
-    }
 }

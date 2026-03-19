@@ -4,7 +4,7 @@ type ConfirmOrder = MachineOutcomeDecision<
     'order_confirmed'
 >
 
-const confirmOrder: DecisionSpec<ConfirmOrder, Contexts, Modules, Aggregates> = {
+const confirmOrder: OutcomeDecisionSpec<ConfirmOrder, Contexts, Modules, Aggregates> = {
     type: 'outcome',
     agent: { kind: 'machine' },
     context: 'ordering',

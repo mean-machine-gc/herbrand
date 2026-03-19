@@ -4,14 +4,14 @@ type SubmitOrder = HumanIntentDecision<
     'submit_order'
 >
 
-const submitOrder: DecisionSpec<SubmitOrder, Contexts, Modules, Aggregates> = {
+const submitOrder: IntentDecisionSpec<SubmitOrder, Contexts, Modules, Aggregates> = {
     type: 'intent',
     agent: { kind: 'human', role: 'customer' },
     context: 'ordering',
     module: 'order_management',
     aggregate: 'order-processing',
     description: 'A customer submits a draft order for processing',
-    trigger: 'order_created',
+    trigger: { type: 'success', outcome: 'order_created' },
     shouldFailWith: {
         order_empty: {
             description: 'The order has no line items',
@@ -35,23 +35,4 @@ const submitOrder: DecisionSpec<SubmitOrder, Contexts, Modules, Aggregates> = {
             requiredInfo: ['order_status', 'order_line_items'],
         }
     },
-    shouldAssert: {
-        submit_order: [
-            {
-                tag: 'order_status_submitted',
-                description: 'The order status transitions to submitted',
-                affectedInfo: ['order_status']
-            },
-            {
-                tag: 'order_not_editable',
-                description: 'The order can no longer be modified by the customer',
-                affectedInfo: ['order_editability']
-            },
-            {
-                tag: 'confirmation_process_initiated',
-                description: 'The system begins payment and stock verification',
-                affectedInfo: []
-            }
-        ]
-    }
 }

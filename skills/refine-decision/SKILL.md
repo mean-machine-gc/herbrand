@@ -17,8 +17,10 @@ Refinement happens when the conversation reveals new detail about an already-for
 - A more precise description of an existing reject or choice
 - New examples that illustrate edge cases
 - A correction ("actually, only managers can do that, not any employee")
-- New assertions that must hold after a successful choice
+- New assertions that must hold after a successful choice (outcome decisions only)
 - A change in who makes the decision or what triggers it
+- Discovery that a rejection should trigger a recovery flow (creates a new intent decision triggered by `rejected:${tag}`)
+- A trigger change from success outcome to rejection, or vice versa
 
 ## Workflow
 
@@ -41,13 +43,14 @@ Apply the refinement:
 
 **Adding a new choice:**
 - Add the new choice literal to the decision type's `Choices` union
-- Add entries in `shouldSucceedWith` (with `requiredInfo`) and `shouldAssert` (with `affectedInfo`)
+- Add entry in `shouldSucceedWith` with `requiredInfo`
+- For outcome decisions: add entry in `shouldAssert` with `affectedInfo`
 - Update the `Outcomes`, `Intents`, or `Info` unions in `project.decisions.ts` if needed
 
 **Enriching an existing entry:**
 - Add examples to `shouldFailWith` or `shouldSucceedWith`
 - Sharpen descriptions to be more precise
-- Add new assertion tags to `shouldAssert` with their `affectedInfo`
+- For outcome decisions: add new assertion tags to `shouldAssert` with their `affectedInfo`
 - Add or refine `requiredInfo` on rejects and success conditions
 
 **Correcting the decision:**
@@ -60,6 +63,7 @@ Apply the refinement:
 
 A refinement can affect other decisions:
 - A new outcome might become the input for another decision
+- A new reject on an outcome decision creates a new rejection event (`rejected:${tag}`) — consider whether any intent decision should react to it
 - A corrected trigger might disconnect a decision from its source
 - A changed role might conflict with other decisions by the same role
 

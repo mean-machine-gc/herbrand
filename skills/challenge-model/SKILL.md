@@ -46,6 +46,11 @@ Look for these patterns:
 - Processes where only one role appears — usually there's oversight, approval, or notification
 - Ask: "Does anyone else need to know about this? Who oversees this?"
 
+**Unhandled rejections:**
+- Outcome decisions whose rejections have no intent decision reacting to them
+- Every rejection is an event — someone or something might need to respond
+- Ask: "What happens when X fails? Does someone need to step in?"
+
 **Reverse flows:**
 - Happy paths are modeled but undo/compensation is missing
 - Ask: "What if we need to undo X? How do we reverse Y?"
@@ -59,13 +64,13 @@ Look for these patterns:
 - Ask: "When you say X, do you mean the same thing as when Y said X?"
 
 **Information gaps:**
-- Info units that are read (requiredInfo) but never written (affectedInfo) by any decision — where does this information come from?
+- Info units that are read (requiredInfo) but never written (affectedInfo) by any outcome decision — where does this information come from?
 - Info units that are written (affectedInfo) but never read (requiredInfo) by any decision — does anyone use this information?
-- Decisions where a reject checks info that no prior decision in the flow has affected — is this info available at this point?
+- Intent decisions whose requiredInfo depends on info that no prior outcome decision in the flow has affected — is this info available at this point?
 - Ask: "How does the system know X at this point? Where does that information come from?"
 
 **Information conflicts:**
-- Multiple decisions in different contexts affecting the same info unit — are they really the same information?
+- Multiple outcome decisions in different contexts affecting the same info unit — are they really the same information?
 - Ask: "When X changes here, does it affect what Y sees over there?"
 
 ### 3. Prioritize

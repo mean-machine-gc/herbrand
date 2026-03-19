@@ -4,14 +4,14 @@ type ApprovePurchaseOrder = HumanIntentDecision<
     'approve_purchase_order'
 >
 
-const approvePurchaseOrder: DecisionSpec<ApprovePurchaseOrder, Contexts, Modules, Aggregates> = {
+const approvePurchaseOrder: IntentDecisionSpec<ApprovePurchaseOrder, Contexts, Modules, Aggregates> = {
     type: 'intent',
     agent: { kind: 'human', role: 'department_manager' },
     context: 'procurement',
     module: 'purchasing',
     aggregate: 'procurement-processing',
     description: 'A department manager approves a purchase order for fulfillment',
-    trigger: 'purchase_order_created',
+    trigger: { type: 'success', outcome: 'purchase_order_created' },
     shouldFailWith: {
         not_authorized: {
             description: 'The approver does not have authority over this department or amount',
@@ -32,18 +32,4 @@ const approvePurchaseOrder: DecisionSpec<ApprovePurchaseOrder, Contexts, Modules
             requiredInfo: ['approver_authority', 'purchase_order_status'],
         }
     },
-    shouldAssert: {
-        approve_purchase_order: [
-            {
-                tag: 'purchase_order_status_approved',
-                description: 'The purchase order status transitions to approved',
-                affectedInfo: ['purchase_order_status']
-            },
-            {
-                tag: 'supplier_notified',
-                description: 'The supplier is notified of the approved purchase order',
-                affectedInfo: ['supplier_notification']
-            }
-        ]
-    }
 }

@@ -21,13 +21,24 @@ Outcomes → Intent Decisions → Intents → Outcome Decisions → Outcomes →
 - **Intent Decisions** are made by a human or machine who observes an outcome and expresses an intent
 - **Outcome Decisions** are made by a machine that receives an intent and produces an outcome
 
-Every decision has:
-- **An agent** — who decides (human with a role, or machine)
-- **A trigger** — what starts it (an outcome or an intent)
-- **Choices** — what it produces when it succeeds (an intent or an outcome)
+There are two types of decisions:
+
+**Intent decisions** (human or machine reacting to the world):
+- **Trigger** — a success outcome OR a rejection from another decision
+- **Choices** — the intents this decision can produce
 - **Rejects** — what can go wrong, each declaring the **info** it needs to detect the failure
 - **Success conditions** — what must be true for each choice, each declaring the **info** it needs to evaluate
-- **Assertions** — what must be true after each successful choice (tagged, testable post-conditions), each declaring the **info** it affects as a side effect
+- Intent decisions express what the agent wants — they have no side effects
+
+**Outcome decisions** (machine executing an intent):
+- **Trigger** — an intent
+- **Choices** — the outcomes this decision can produce
+- **Rejects** — what can go wrong (these produce rejection events in the `rejected:${tag}` stream that other intent decisions can react to)
+- **Success conditions** — same as above
+- **Assertions** — what must be true after each successful choice (tagged post-conditions), each declaring the **info** it affects as a side effect
+- Outcome decisions are the only ones that change state
+
+Rejections are not dead ends. When an outcome decision rejects, it produces a rejection event (e.g., `rejected:payment_failed`) that flows into the rejection stream. Other intent decisions can be triggered by these rejections, creating recovery and compensation flows.
 
 ## Information context
 
@@ -36,9 +47,9 @@ Herbert tracks **info units** — named pieces of information that exist in the 
 Info units are declared in a single project-wide union and referenced in three places:
 - **requiredInfo on rejects** — what information is needed to detect this failure
 - **requiredInfo on success conditions** — what information is needed to confirm this condition
-- **affectedInfo on assertions** — what information changes as a side effect of this choice
+- **affectedInfo on assertions** — what information changes as a side effect (outcome decisions only)
 
-This creates a traceable read/write model: each decision *reads* info (requiredInfo) and *writes* info (affectedInfo). The info flow is derived from the decision specs, never designed upfront.
+This creates a traceable read/write model: intent decisions *read* info (requiredInfo) and outcome decisions *write* info (affectedInfo). The info flow is derived from the decision specs, never designed upfront.
 
 ## The three boundaries
 
@@ -92,4 +103,5 @@ Then repeat. The model grows iteratively, never in one pass.
 - **Scratchpad before specs.** Capture freeform first, formalize only when ready.
 - **Process first, data later.** Decisions reveal structure. Entities don't.
 - **One decision, one file.** Always.
-- **Exhaustive by design.** Every reject must be described. Every choice must have conditions and assertions. The framework enforces this through types — the agent enforces it through conversation.
+- **Exhaustive by design.** Every reject must be described. Every choice must have conditions. Outcome decisions must have assertions. The framework enforces this through types — the agent enforces it through conversation.
+- **Rejections are outcomes.** When something fails, that's an event someone might react to. Always consider whether a rejection needs a recovery flow.

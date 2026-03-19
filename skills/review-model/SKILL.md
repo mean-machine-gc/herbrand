@@ -48,7 +48,8 @@ Write a plain-language summary structured as:
   - What information they need to make the decision
   - What can go wrong (in the domain expert's language)
   - What happens when it succeeds
-  - What we're sure must be true afterwards and what information changes
+  - For outcome decisions: what we're sure must be true afterwards and what information changes
+  - What happens when it fails — are there recovery flows triggered by rejections?
 - Open questions related to this flow
 
 **At the end:**

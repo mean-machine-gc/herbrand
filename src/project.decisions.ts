@@ -30,8 +30,23 @@ type Contexts = 'ordering' | 'procurement'
 type Modules = 'order_management' | 'purchasing'
 type Aggregates = 'order-processing' | 'procurement-processing'
 
-/// project decision types, pinned to this domain's outcomes and intents
-type HumanIntentDecision<Outcome extends Outcomes, Rejects extends string, Intent extends Intents> = Decision<'intent', Human,  Outcome, Info, Rejects, Intent>
-type MachineIntentDecision<Outcome extends Outcomes, Rejects extends string, Intent extends Intents> = Decision<'intent', Machine,  Outcome, Info, Rejects, Intent>
-type MachineOutcomeDecision<Intent extends Intents, Rejects extends string, Outcome extends Outcomes> = Decision<'outcome', Machine, Intent, Info, Rejects, Outcome>
+/// project decision helpers — narrow framework helpers with this domain's unions
+
+type HumanIntentDecision<
+    Trigger extends Outcomes | Rejection,
+    Rejects extends string,
+    Choice extends Intents
+> = IntentDecision<Human, Trigger, Info, Rejects, Choice>
+
+type MachineIntentDecision<
+    Trigger extends Outcomes | Rejection,
+    Rejects extends string,
+    Choice extends Intents
+> = IntentDecision<Machine, Trigger, Info, Rejects, Choice>
+
+type MachineOutcomeDecision<
+    Trigger extends Intents,
+    Rejects extends string,
+    Choice extends Outcomes
+> = OutcomeDecision<Trigger, Info, Rejects, Choice>
 

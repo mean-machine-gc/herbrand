@@ -4,14 +4,14 @@ type CreateOrder = HumanIntentDecision<
     'create_order'
 >
 
-const createOrder: DecisionSpec<CreateOrder, Contexts, Modules, Aggregates> = {
+const createOrder: IntentDecisionSpec<CreateOrder, Contexts, Modules, Aggregates> = {
     type: 'intent',
     agent: { kind: 'human', role: 'customer' },
     context: 'ordering',
     module: 'order_management',
     aggregate: 'order-processing',
     description: 'A customer creates a new order by selecting products',
-    trigger: 'order_created',
+    trigger: { type: 'success', outcome: 'order_created' },
     shouldFailWith: {
         missing_customer_info: {
             description: 'The customer has not provided required contact or shipping information',
@@ -39,23 +39,4 @@ const createOrder: DecisionSpec<CreateOrder, Contexts, Modules, Aggregates> = {
             ]
         }
     },
-    shouldAssert: {
-        create_order: [
-            {
-                tag: 'order_in_draft_state',
-                description: 'The order aggregate is persisted with status draft',
-                affectedInfo: ['order_status']
-            },
-            {
-                tag: 'order_has_line_items',
-                description: 'The order contains the selected products as line items',
-                affectedInfo: ['order_line_items']
-            },
-            {
-                tag: 'order_linked_to_customer',
-                description: 'The order is linked to the customer who created it',
-                affectedInfo: ['order_customer_reference']
-            }
-        ]
-    }
 }

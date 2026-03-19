@@ -4,14 +4,14 @@ type RejectPurchaseOrder = HumanIntentDecision<
     'reject_purchase_order'
 >
 
-const rejectPurchaseOrder: DecisionSpec<RejectPurchaseOrder, Contexts, Modules, Aggregates> = {
+const rejectPurchaseOrder: IntentDecisionSpec<RejectPurchaseOrder, Contexts, Modules, Aggregates> = {
     type: 'intent',
     agent: { kind: 'human', role: 'department_manager' },
     context: 'procurement',
     module: 'purchasing',
     aggregate: 'procurement-processing',
     description: 'A department manager rejects a purchase order',
-    trigger: 'purchase_order_created',
+    trigger: { type: 'success', outcome: 'purchase_order_created' },
     shouldFailWith: {
         not_authorized: {
             description: 'The rejector does not have authority over this department',
@@ -32,18 +32,4 @@ const rejectPurchaseOrder: DecisionSpec<RejectPurchaseOrder, Contexts, Modules, 
             requiredInfo: ['approver_authority', 'purchase_order_status'],
         }
     },
-    shouldAssert: {
-        reject_purchase_order: [
-            {
-                tag: 'purchase_order_status_rejected',
-                description: 'The purchase order status transitions to rejected',
-                affectedInfo: ['purchase_order_status']
-            },
-            {
-                tag: 'budget_reservation_released',
-                description: 'The reserved budget amount is released back to the department',
-                affectedInfo: ['budget_reservation', 'department_budget']
-            }
-        ]
-    }
 }

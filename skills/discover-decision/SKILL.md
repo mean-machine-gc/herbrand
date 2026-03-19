@@ -26,11 +26,14 @@ Use `src/scratchpad/` for this. One file per topic or session. Keep it freeform.
 
 A decision exists when you can answer these questions:
 - **Who decides?** A human (with a role) or the system (machine)?
-- **What triggers it?** An outcome (something that happened) or an intent (something requested)?
+- **What triggers it?** A success outcome, a rejection from another decision, or an intent?
 - **What can go wrong?** At least one rejection reason.
-- **What does it produce?** An intent (if triggered by an outcome) or an outcome (if triggered by an intent).
+- **What does it produce?** An intent (if triggered by an outcome or rejection) or an outcome (if triggered by an intent).
+- **Is it an intent or outcome decision?** Intent decisions express what the agent wants (no side effects). Outcome decisions execute an intent and change state (have assertions).
 
-If you can't answer all four, it's not ready — leave it in the scratchpad.
+If you can't answer all five, it's not ready — leave it in the scratchpad.
+
+When someone describes what happens after a failure ("when payment fails, customer service steps in"), that's an intent decision triggered by a rejection. The trigger uses the `rejected:${tag}` format (e.g., `rejected:payment_failed`).
 
 ### 3. Formalize
 
@@ -44,21 +47,27 @@ When a decision is ready, do the following in order:
 **b. Update the Info union** in `src/project.decisions.ts`:
 - For each reject, identify what information is needed to detect that failure — add it to the `Info` union
 - For each success condition, identify what information is needed to evaluate it — add it to the `Info` union
-- For each assertion, identify what information changes as a side effect — add it to the `Info` union
+- For outcome decisions only: for each assertion, identify what information changes as a side effect — add it to the `Info` union
 - Info units are inferred from the spec content: a reject `invalid_product` implies a required info `available_products`; an assertion `order_in_draft_state` implies an affected info `order_status`
 
 **c. Create the spec file** at `src/specs/{decision-name}.spec.ts` containing:
 - The decision type (e.g., `type CreateOrder = HumanIntentDecision<...>`)
-- The decision spec constant with all fields filled in, including:
-  - `trigger` — the outcome or intent that starts this decision
-  - `requiredInfo` on each reject — what info is needed to detect this failure
-  - `requiredInfo` on each success condition — what info is needed to evaluate this condition
-  - `affectedInfo` on each assertion — what info changes as a result
+- The decision spec constant with all fields filled in
+
+For **intent decisions** use `IntentDecisionSpec`:
+- `trigger` — either `{ type: 'success', outcome: '...' }` or `{ type: 'reject', rejection: 'rejected:...' }`
+- `requiredInfo` on each reject and success condition
+- No assertions (intent decisions have no side effects)
+
+For **outcome decisions** use `OutcomeDecisionSpec`:
+- `trigger` — the intent that starts this decision (plain string)
+- `requiredInfo` on each reject and success condition
+- `shouldAssert` with `affectedInfo` on each assertion (outcome decisions change state)
 
 Use the decision helpers from `project.decisions.ts`:
-- `HumanIntentDecision<Input, Rejects, Choice>` — a human reacts to an outcome, produces an intent
-- `MachineIntentDecision<Input, Rejects, Choice>` — a machine reacts to an outcome, produces an intent
-- `MachineOutcomeDecision<Input, Rejects, Choice>` — a machine receives an intent, produces an outcome
+- `HumanIntentDecision<Trigger, Rejects, Choice>` — a human reacts to an outcome or rejection, produces an intent
+- `MachineIntentDecision<Trigger, Rejects, Choice>` — a machine reacts to an outcome or rejection, produces an intent
+- `MachineOutcomeDecision<Trigger, Rejects, Choice>` — a machine receives an intent, produces an outcome
 
 **d. Update the scratchpad** — mark the observation as formalized, note any remaining open questions.
 
