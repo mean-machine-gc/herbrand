@@ -7,6 +7,7 @@ import type {
   DecisionGraph,
   LintResult,
   ReactFlowGraph,
+  UserStory,
 } from "@herbrand/core";
 import {
   parseSpecs,
@@ -14,6 +15,7 @@ import {
   buildDecisionGraph,
   behaviorLint,
   toReactFlowGraph,
+  extractUserStories,
 } from "@herbrand/core";
 
 export class HerbrandStore {
@@ -56,6 +58,12 @@ export class HerbrandStore {
     const graph = this._decisionGraph.value;
     if (!graph) return null;
     return toReactFlowGraph(graph);
+  });
+
+  private _userStories = computed<Record<string, UserStory>>(() => {
+    const graph = this._decisionGraph.value;
+    if (!graph) return {};
+    return extractUserStories(graph);
   });
 
   /// Setters
@@ -142,6 +150,10 @@ export class HerbrandStore {
     return this._reactFlowGraph.value;
   }
 
+  get userStories(): Record<string, UserStory> {
+    return this._userStories.value;
+  }
+
   get hasSpecErrors(): boolean {
     return this._specLintResults.value.some((r) => r.level === "error");
   }
@@ -168,6 +180,7 @@ export class HerbrandStore {
       decisionGraph: this._decisionGraph,
       behaviorLintResults: this._behaviorLintResults,
       reactFlowGraph: this._reactFlowGraph,
+      userStories: this._userStories,
     };
   }
 }

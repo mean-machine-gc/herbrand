@@ -67,3 +67,68 @@ export type LintResult = {
     message: string;
     spec: string | null;
 };
+export type UserStoryPrecondition = {
+    tag: string;
+    description: string | null;
+    requiredInfo: string[];
+    scenarios: string[];
+};
+export type UserStoryOutcome = {
+    outcome: string;
+    condition: string | null;
+    description: string | null;
+    scenarios: string[];
+    assertions: AssertionDetail[];
+};
+export type UserStoryConstraint = {
+    tag: string;
+    description: string | null;
+    scenarios: string[];
+};
+export type UserStoryView = {
+    id: string;
+    infos: string[];
+    role: string | null;
+};
+export type AcceptanceCriteria = {
+    given: UserStoryPrecondition[];
+    when: string;
+    then: UserStoryOutcome[];
+    shouldFailIf: UserStoryConstraint[];
+};
+export type DecisionTableRow = {
+    type: 'success' | 'failure' | 'skipped';
+    scenarioDescription: string | null;
+    preconditions: Record<string, boolean>;
+    constraints: Record<string, boolean>;
+    outcome: string | null;
+    assertions: string[];
+    effects: string[];
+};
+export type DecisionTable = {
+    preconditionColumns: string[];
+    constraintColumns: string[];
+    rows: DecisionTableRow[];
+};
+export type Scenario = {
+    type: 'success' | 'failure' | 'skipped';
+    tag: string;
+    description: string | null;
+    scenarios: string[];
+};
+export type UserStory = {
+    name: string;
+    role: string | null;
+    intent: string;
+    intentLabel: string;
+    businessGoal: string | null;
+    description: string | null;
+    context: string | null;
+    module: string | null;
+    aggregate: string | null;
+    acceptanceCriteria: AcceptanceCriteria;
+    decisionTable: DecisionTable;
+    scenarios: Scenario[];
+    views: UserStoryView[];
+    hasLinkedOutcome: boolean;
+};
