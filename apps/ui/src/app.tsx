@@ -8,6 +8,7 @@ import {
   useComputedColorScheme,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { HerbrandLogo } from "./logo";
 
 function ThemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
@@ -32,7 +33,9 @@ function Shell() {
     <AppShell header={{ height: 50 }} padding="md">
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
-          <Title order={4}>Herbrand</Title>
+          <span style={{ fontFamily: "'Courier New', Courier, monospace", fontWeight: 700, fontSize: 18 }}>
+            <HerbrandLogo /> Herbrand
+          </span>
           <ThemeToggle />
         </Group>
       </AppShell.Header>
