@@ -16,16 +16,15 @@ type Agent =
     | Llm
     | Machine
 
-type Decision<Type extends string, A extends Agent, Input extends string, Output extends string, Rejects extends string, Choices extends string> = {
+type Decision<Type extends string, A extends Agent, Input extends string, Rejects extends string, Choices extends string> = {
     type: Type
     agent: A
     input: Input
-    output: Output
     rejects: Rejects
     choices: Choices
 }
 
-type AnyDecision = Decision<any, any, any, any, any, any>
+type AnyDecision = Decision<any, any, any, any, any>
 
 type DecisionSpec<D extends AnyDecision, Contexts extends string, Modules extends string, Aggregates extends string> = {
     type: D['type']
@@ -43,8 +42,8 @@ type DecisionSpec<D extends AnyDecision, Contexts extends string, Modules extend
         description: string
         examples?: Array<{ description: string }>
     }>
-    shouldAssert: Record<D['choices'], {
-        assertion: string
+    shouldAssert: Record<D['choices'], Array<{
+        tag: string
         description: string
-    }>
+    }>>
 }
