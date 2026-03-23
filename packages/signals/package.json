@@ -1,7 +1,7 @@
 {
-  "name": "herbrand-signals",
+  "name": "@herbrand/signals",
   "version": "0.1.0",
-  "description": "Herbrand reactive signal store — reactive pipeline for decision specs",
+  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,24 +11,15 @@
       "import": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/"
-  ],
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
     "@preact/signals-core": "^1.8.0",
-    "herbrand-core": "^0.1.0"
+    "@herbrand/core": "*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.9.3"
-  },
-  "keywords": ["herbrand", "signals", "reactive"],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mean-machine-gc/herbrand"
   }
 }

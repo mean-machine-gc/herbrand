@@ -1,7 +1,7 @@
 {
-  "name": "herbrand-core",
+  "name": "@herbrand/core",
   "version": "0.1.0",
-  "description": "Herbrand core — parse, validate, lint, and analyze decision specs",
+  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,9 +11,6 @@
       "import": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/"
-  ],
   "scripts": {
     "build": "tsc"
   },
@@ -27,11 +24,5 @@
     "@types/dagre": "^0.7.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.9.3"
-  },
-  "keywords": ["herbrand", "decision-modelling", "business-analysis"],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mean-machine-gc/herbrand"
   }
 }

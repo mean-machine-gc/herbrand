@@ -1,6 +1,6 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
-import { HerbrandStore } from "herbrand-signals";
+import { HerbrandStore } from "@herbrand/signals";
 import { startup } from "./startup.js";
 
 // Project dir from CLI arg or env

@@ -5,8 +5,8 @@ import {
 import {
   FileTs, Warning, XCircle, ArrowRight, Info,
 } from "@phosphor-icons/react";
-import type { HerbrandStore } from "herbrand-signals";
-import type { ParsedSpec, LintResult } from "herbrand-core";
+import type { HerbrandStore } from "@herbrand/signals";
+import type { ParsedSpec, LintResult } from "@herbrand/core";
 
 // Badge colors
 const intentColor = "blue";

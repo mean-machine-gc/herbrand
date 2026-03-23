@@ -12,9 +12,9 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import type { HerbrandStore } from "herbrand-signals";
-import type { LintResult } from "herbrand-core";
-import type { RFNodeData, RFLaneData } from "herbrand-core";
+import type { HerbrandStore } from "@herbrand/signals";
+import type { LintResult } from "@herbrand/core";
+import type { RFNodeData, RFLaneData } from "@herbrand/core";
 
 const nodeColors: Record<string, string> = {
   intent: "#4A90D9",

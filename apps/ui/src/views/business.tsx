@@ -3,8 +3,8 @@ import {
   Stack, Text, Paper, Badge, Group, Title, Tabs, Table, Box, ScrollArea,
 } from "@mantine/core";
 import { Briefcase } from "@phosphor-icons/react";
-import type { HerbrandStore } from "herbrand-signals";
-import type { UserStory, AcceptanceCriteria, DecisionTable, Scenario as ScenarioType, UserStoryView } from "herbrand-core";
+import type { HerbrandStore } from "@herbrand/signals";
+import type { UserStory, AcceptanceCriteria, DecisionTable, Scenario as ScenarioType, UserStoryView } from "@herbrand/core";
 
 // Shared badge colors
 const intentColor = "blue";

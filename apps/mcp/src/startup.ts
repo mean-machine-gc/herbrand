@@ -4,7 +4,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { platform } from "node:os";
 import YAML from "yaml";
-import { projectSchema, generateProjectJsonSchema, generateDecisionJsonSchema } from "herbrand-core";
+import { projectSchema, generateProjectJsonSchema, generateDecisionJsonSchema } from "@herbrand/core";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
