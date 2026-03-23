@@ -1,6 +1,6 @@
 {
   "name": "herbrand-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Herbrand MCP server — decision-first business analysis for information systems",
   "type": "module",
   "bin": {
@@ -12,16 +12,17 @@
   ],
   "scripts": {
     "build": "tsc",
-    "bundle": "tsup src/index.ts src/startup.ts --format esm --dts --outDir dist --external fastmcp",
+    "bundle": "tsup",
     "prepublishOnly": "npm run bundle",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@herbrand/core": "0.1.0",
-    "@herbrand/signals": "0.1.0",
+    "chokidar": "^4.0.0",
     "fastmcp": "^3.0.0"
   },
   "devDependencies": {
+    "@herbrand/core": "0.1.0",
+    "@herbrand/signals": "0.1.0",
     "@types/node": "^22.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3"
