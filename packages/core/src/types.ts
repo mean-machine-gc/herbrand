@@ -3,6 +3,7 @@
 export type SpecFile = {
   fileName: string
   content: string
+  sourceContext?: string  // folder the spec was discovered from (e.g., "ordering")
 }
 
 export type RejectDetail = {
@@ -42,6 +43,7 @@ export type ParsedSpec = {
   context: string | null
   module: string | null
   aggregate: string | null
+  sourceContext?: string  // folder the spec was discovered from (e.g., "ordering")
 }
 
 export type ParsedSpecs = {

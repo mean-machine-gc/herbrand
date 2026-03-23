@@ -1,8 +1,14 @@
 import type { DecisionGraph, LintResult, ParsedSpec } from "./types.js";
+import { parseStreamNamespace } from "./schemas.js";
 
-export function behaviorLint(graph: DecisionGraph): LintResult[] {
+export function behaviorLint(graph: DecisionGraph, context?: string): LintResult[] {
   const results: LintResult[] = [];
-  const { nodes, edges, specs, declaredInfos } = graph;
+  const { nodes, edges, specs: allSpecs, declaredInfos } = graph;
+
+  // Filter by context if provided
+  const specs = context
+    ? Object.fromEntries(Object.entries(allSpecs).filter(([, s]) => s.sourceContext === context))
+    : allSpecs;
 
   function warn(rule: string, message: string, spec?: string) {
     results.push({ level: "warning", rule, message, spec: spec ?? null });
@@ -180,6 +186,45 @@ export function behaviorLint(graph: DecisionGraph): LintResult[] {
         const bInfos = new Set([...b.spec.requiredInfo, ...b.spec.affectedInfo]);
         if ([...aInfos].filter((x) => bInfos.has(x)).length === 0) {
           warn("aggregate_no_shared_info", `'${a.name}' and '${b.name}' in aggregate '${agg}' share no info — do they belong together?`);
+        }
+      }
+    }
+  }
+
+  // === CROSS-MODULE INTEGRATION (global lint only) ===
+
+  if (!context) {
+    // Collect produced and consumed streams by module
+    const producedByModule: Record<string, Set<string>> = {};
+    const consumedFromModule: Record<string, Set<string>> = {};
+
+    for (const spec of Object.values(specs)) {
+      const specModule = spec.module;
+      if (!specModule) continue;
+
+      // Produced streams: choices (outcomes for outcome specs, intents for intent specs)
+      for (const choice of spec.choices) {
+        const { module: streamModule } = parseStreamNamespace(choice);
+        if (streamModule === specModule) {
+          if (!producedByModule[streamModule]) producedByModule[streamModule] = new Set();
+          producedByModule[streamModule].add(choice);
+        }
+      }
+
+      // Consumed streams: trigger
+      const { module: triggerModule } = parseStreamNamespace(spec.trigger);
+      if (triggerModule && triggerModule !== specModule) {
+        if (!consumedFromModule[triggerModule]) consumedFromModule[triggerModule] = new Set();
+        consumedFromModule[triggerModule].add(spec.trigger);
+      }
+    }
+
+    // Cross-module consumed but not published
+    for (const [mod, consumed] of Object.entries(consumedFromModule)) {
+      const produced = producedByModule[mod] ?? new Set();
+      for (const stream of consumed) {
+        if (!produced.has(stream)) {
+          warn("cross_module_consumed_not_published", `Stream '${stream}' is consumed from module '${mod}' but no spec in that module produces it`);
         }
       }
     }

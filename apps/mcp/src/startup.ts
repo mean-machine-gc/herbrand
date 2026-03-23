@@ -44,6 +44,26 @@ function installSkills(projectDir: string) {
       }
     }
   }
+
+  // Install agents
+  const agentsSource = path.resolve(__dirname, "../agents");
+  if (!fs.existsSync(agentsSource)) return;
+
+  const agentTargets = [
+    path.join(projectDir, ".claude", "agents"),
+    path.join(projectDir, ".opencode", "agents"),
+    path.join(projectDir, ".github", "agents"),
+    path.join(projectDir, ".cursor", "agents"),
+  ];
+
+  for (const target of agentTargets) {
+    fs.mkdirSync(target, { recursive: true });
+    for (const entry of fs.readdirSync(agentsSource, { withFileTypes: true })) {
+      if (entry.isFile()) {
+        fs.copyFileSync(path.join(agentsSource, entry.name), path.join(target, entry.name));
+      }
+    }
+  }
 }
 
 // --- JSON Schemas + IDE ---
@@ -81,7 +101,7 @@ function setupIdeValidation(projectDir: string) {
 
   if (!settings["yaml.schemas"]) settings["yaml.schemas"] = {};
   settings["yaml.schemas"][".herbrand/project.schema.json"] = "project.hb.yaml";
-  settings["yaml.schemas"][".herbrand/decision.schema.json"] = "specs/*.hb.yaml";
+  settings["yaml.schemas"][".herbrand/decision.schema.json"] = ["specs/*.hb.yaml", "*/specs/*.hb.yaml"];
 
   fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
 }

@@ -1,8 +1,14 @@
 import type { ParsedSpecs, LintResult } from "./types.js";
+import { parseStreamNamespace } from "./schemas.js";
 
-export function specLint(parsed: ParsedSpecs): LintResult[] {
+export function specLint(parsed: ParsedSpecs, context?: string): LintResult[] {
   const results: LintResult[] = [];
-  const { specs, declaredInfos } = parsed;
+  const { specs: allSpecs, declaredInfos } = parsed;
+
+  // Filter by context if provided
+  const specs = context
+    ? Object.fromEntries(Object.entries(allSpecs).filter(([, s]) => s.sourceContext === context))
+    : allSpecs;
 
   function warn(rule: string, message: string, spec?: string) {
     results.push({ level: "warning", rule, message, spec: spec ?? null });
@@ -92,6 +98,21 @@ export function specLint(parsed: ParsedSpecs): LintResult[] {
     // Rejects without scenarios
     for (const reject of spec.rejectsWithoutScenarios) {
       warn("missing_scenarios", `Reject '${reject}' has no scenarios`, name);
+    }
+
+    // Context folder mismatch: spec in ordering/specs/ must have context: ordering
+    if (spec.sourceContext && spec.context && spec.context !== spec.sourceContext) {
+      error("context_folder_mismatch", `Spec declares context '${spec.context}' but lives in '${spec.sourceContext}/specs/' — must match folder`, name);
+    }
+
+    // Stream namespace mismatch: produced streams should use the spec's module as prefix
+    if (spec.module) {
+      for (const choice of spec.choices) {
+        const { module: streamModule } = parseStreamNamespace(choice);
+        if (streamModule && streamModule !== spec.module) {
+          warn("stream_namespace_mismatch", `Produced stream '${choice}' has module prefix '${streamModule}' but spec belongs to module '${spec.module}'`, name);
+        }
+      }
     }
   }
 

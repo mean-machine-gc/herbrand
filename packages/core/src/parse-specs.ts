@@ -157,7 +157,10 @@ export function parseSpecs(files: SpecFile[]): ParsedSpecs {
     const result = decisionSchema.safeParse(raw);
 
     if (result.success) {
-      specs[name] = toParsedSpec(result.data);
+      const key = file.sourceContext ? `${file.sourceContext}/${name}` : name;
+      const parsed = toParsedSpec(result.data);
+      parsed.sourceContext = file.sourceContext;
+      specs[key] = parsed;
     }
     // Invalid specs are silently skipped — spec-lint will catch the issues
     // via the validation results exposed separately

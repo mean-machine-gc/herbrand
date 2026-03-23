@@ -10,6 +10,7 @@ import type {
   DecisionTableRow,
   Scenario,
 } from "./types.js";
+import { parseStreamNamespace } from "./schemas.js";
 
 export function extractUserStories(graph: DecisionGraph): Record<string, UserStory> {
   const { nodes, edges, specs } = graph;
@@ -20,7 +21,8 @@ export function extractUserStories(graph: DecisionGraph): Record<string, UserSto
     if (spec.type !== "intent") continue;
 
     const intent = spec.choices[0] ?? name;
-    const intentLabel = intent.replace(/_/g, " ");
+    const { name: intentName } = parseStreamNamespace(intent);
+    const intentLabel = intentName.replace(/_/g, " ");
 
     // Find linked outcome decision via graph edges: intent → outcome_flow → outcome
     const outcomeEdge = edges.find(

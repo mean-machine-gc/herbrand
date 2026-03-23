@@ -2,14 +2,7 @@
 name: herbrand-review
 user_invocable: true
 description: >-
-  Workflow for presenting the current model back to stakeholders as a review
-  checkpoint. Guides reading the full picture via get_user_stories and
-  get_pipeline_results, organizing decisions into process flows, producing a
-  plain-language narrative for each flow (who does it, what triggers it, what
-  information is needed, what can go wrong, what happens on success, recovery
-  flows), surfacing open scratchpad items and behavior-lint findings, and
-  listening for corrections or new discoveries. Includes strict language rules —
-  never expose framework terminology, always use the domain expert's vocabulary.
+  Workflow for presenting the current model back to stakeholders as a review checkpoint. Ensures all pending scratchpad entries are formalized by spawning the Spec Agent first, then reads the full picture via get_user_stories and get_pipeline_results, organizes decisions into process flows, produces a plain-language narrative for each flow (who does it, what triggers it, what information is needed, what can go wrong, what happens on success, recovery flows), surfaces open scratchpad items and behavior-lint findings, and listens for corrections or new discoveries. Includes strict language rules — never expose framework terminology, always use the domain expert's vocabulary.
 ---
 
 # Review Model
@@ -25,7 +18,17 @@ Use this skill when it's time to present the current understanding back to stake
 
 ## Workflow
 
+### Step 0: Formalize pending entries
+
+Before reviewing, check scratchpad files (both global `scratchpad/*.md` and context-specific `<context>/scratchpad/*.md`) for any decision cards with status `ready`. If any exist, spawn the `herbrand-spec-agent` subagent first and wait for it to complete. This ensures the review reflects the latest state of the model.
+
+Cards with status `raw` or `needs-clarification` don't block the review — note them as "still working on" items.
+
 ### Step 1: Read the full picture
+
+Reviews can be **scoped by context** or **full system**:
+- **Scoped:** Call `get_user_stories` and `get_pipeline_results` with `context: "ordering"` to review just one area. Useful for focused sessions or when presenting to a specific team.
+- **Full:** Call without context parameter for the complete system view, including cross-module integration checks.
 
 Call `get_user_stories` to see the business landscape — all decisions modeled so far, who's involved, what their goals are.
 

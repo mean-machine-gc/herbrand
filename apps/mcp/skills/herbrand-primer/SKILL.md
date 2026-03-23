@@ -54,9 +54,11 @@ The **rejection stream** (`rejected:${constraint}`) produced by outcome decision
 
 ### Streams
 
-- **Outcomes** — things that happened (past tense): `order_created`, `payment_captured`
-- **Intents** — things someone wants to do (imperative): `create_order`, `capture_payment`
-- **Rejections** — outcome decision failures: `rejected:payment_failed`
+- **Outcomes** — things that happened (past tense): `order_management:order_created`, `order_management:payment_captured`
+- **Intents** — things someone wants to do (imperative): `order_management:create_order`, `order_management:capture_payment`
+- **Rejections** — outcome decision failures: `rejected:order_management:payment_failed`
+
+Streams use the `module:stream_name` convention. The module prefix identifies which consistency boundary the signal belongs to. This makes cross-module communication explicit — when a spec in one module triggers on a stream from another module, the namespace makes the boundary crossing visible.
 
 All streams are declared in `project.hb.yaml`. Every reference in a spec is validated against these streams.
 
@@ -98,18 +100,19 @@ Decision procedures need information to compute. **Info units** are named pieces
 Boundaries emerge from the decision flow — never define them upfront.
 
 - **Aggregate** — transactional boundary. Named after processes: `order-processing`, not `order`.
-- **Module** — consistency boundary. Groups aggregates that need each other.
-- **Context** — semantic boundary. Defines the ubiquitous language.
+- **Module** — consistency boundary. Groups aggregates that need each other. **The module is the signal boundary** — streams are namespaced by module (`module:stream_name`). Signals within a module are internal; signals consumed from another module's namespace are cross-boundary.
+- **Context** — semantic boundary. Defines the ubiquitous language. **Contexts map to folders** — a folder containing a `specs/` subdirectory is a context. No declaration needed; folder existence is the declaration.
 
 ## The scratchpad
 
-Before formalizing anything into specs, capture raw observations in `scratchpad/*.md`. One file per topic or session. Write down:
-- Raw quotes from the domain expert
-- Possible decisions not yet ready to formalize
-- Open questions and ambiguities
-- Domain vocabulary and jargon
+Before formalizing anything into specs, capture raw observations in scratchpad files. There are two levels:
 
-A decision is ready for a spec only when you can answer: who decides, what triggers it, what can go wrong, and what it produces. If you can't answer all four, leave it in the scratchpad.
+- **Global scratchpad** (`scratchpad/`): strategic notes, DDD classification (core/supporting/generic contexts), cross-context questions, things that don't belong to one context yet.
+- **Context scratchpad** (`ordering/scratchpad/`, `warehousing/scratchpad/`): decisions within a specific context.
+
+Write down: raw quotes from the domain expert, decision cards not yet ready to formalize, open questions and ambiguities, domain vocabulary and jargon.
+
+A decision is ready for a spec only when you can answer: who decides, what triggers it, what can go wrong, and what it produces. If you can't answer all four, leave it in the scratchpad. When entries are ready, spawn the spec agent to formalize them — **never write spec files directly**.
 
 ## The deal
 
@@ -117,15 +120,19 @@ You write YAML specs. Herbrand does the rest — it reactively parses your specs
 
 ### `get_pipeline_results`
 
-Your primary feedback tool. Call this after every spec change. Returns:
-- `specCount` — how many specs exist
+Your primary feedback tool. Call this after every spec change. Accepts an optional `context` parameter:
+- No context → full system lint (all specs, including cross-module integration checks)
+- `context: "ordering"` → scoped lint (only specs from `ordering/specs/`, plus cross-module reference validation)
+
+Returns:
+- `specCount` — how many specs exist (scoped if context provided)
 - `specLint` — per-spec completeness issues (with spec names to fix)
 - `hasSpecErrors` — whether spec-lint has blocking errors
-- `behaviorLint` — system-level issues (orphans, dead ends, info gaps, unhandled rejections)
+- `behaviorLint` — system-level issues (orphans, dead ends, info gaps, unhandled rejections, cross-module integration gaps)
 
 ### `get_user_stories`
 
-Returns a summary list of all user stories that Herbrand has generated from your specs. Each entry has name, role, intent, business goal. Use this to understand the business domain landscape and to present the model back to stakeholders in their language.
+Returns a summary list of all user stories. Accepts an optional `context` parameter to filter by context. Each entry has name, role, intent, business goal. Use this to understand the business domain landscape and to present the model back to stakeholders in their language.
 
 ### `get_user_story`
 
@@ -144,42 +151,58 @@ Call `get_pipeline_results`. Understand the project state. Decide what to do.
 ### 2. DISCOVER
 
 Listen to the conversation. When a decision is clear:
-- Write the `.hb.yaml` spec file directly
-- Update `project.hb.yaml` if you introduced new outcomes, intents, info, or rejects
-- Call `get_pipeline_results` → check for errors
-- If errors → fix the file (the error tells you exactly what's wrong and what's valid), check again
-- If clean → continue conversation
+- Capture it as a decision card in the scratchpad (context-specific or global)
+- Mark as `ready` when all four readiness questions are answered
+- Spawn the `herbrand-spec-agent` to formalize ready entries into specs
+- **Never write spec files directly** — the spec agent handles formalization
 
 ### 3. REFINE
 
-Read the existing `.hb.yaml` file. Edit it. Call `get_pipeline_results` to validate.
+Read the existing spec via `get_user_story`. Capture the refinement in the scratchpad referencing the existing spec. Spawn the spec agent to apply the change.
 
 ### 4. REVIEW
 
-Call `get_user_stories` to see the landscape. Call `get_user_story` for specific decisions. Present back to the BA in **plain language** — never use framework terms.
+Call `get_user_stories` (optionally scoped by context) to see the landscape. Call `get_user_story` for specific decisions. Present back to the BA in **plain language** — never use framework terms.
 
 ### 5. CHALLENGE
 
-Read `behaviorLint` from `get_pipeline_results`. Translate findings into natural questions:
+Read `behaviorLint` from `get_pipeline_results` (optionally scoped by context). Translate findings into natural questions:
 - `orphan_outcome` → "Where does this come from?"
 - `dead_end_outcome` → "What happens after this?"
 - `unhandled_rejection` → "What if this fails?"
 - `info_never_written` → "Where does this information originate?"
 
+## Folder structure
+
+Contexts map to folders. A folder containing a `specs/` subdirectory is a context:
+
+```
+project.hb.yaml              ← global streams and boundaries
+scratchpad/                   ← global scratchpad (strategic notes, cross-context questions)
+ordering/
+  specs/                      ← ordering context specs
+  scratchpad/                 ← ordering scratchpad
+warehousing/
+  specs/                      ← warehousing context specs
+  scratchpad/                 ← warehousing scratchpad
+```
+
+No declaration needed — folder existence is the declaration. A spec in `ordering/specs/` must have `context: ordering`.
+
 ## Writing specs
 
 ### Project file: `project.hb.yaml`
 
-Declares all the streams and boundaries. Every value referenced in a spec must exist here.
+Declares all the streams and boundaries. Every value referenced in a spec must exist here. Streams use the `module:stream_name` convention:
 
 ```yaml
 outcomes:
-  - order_created
-  - order_confirmed
+  - order_management:order_created
+  - order_management:order_confirmed
 
 intents:
-  - create_order
-  - confirm_order
+  - order_management:create_order
+  - order_management:confirm_order
 
 info:
   - customer_info
@@ -187,7 +210,7 @@ info:
   - payment_status
 
 outcomeRejects:
-  - payment_failed
+  - order_management:payment_failed
 
 contexts:
   - ordering
@@ -199,7 +222,9 @@ aggregates:
   - order-processing
 ```
 
-### Intent decision: `specs/create-order.hb.yaml`
+Note: info units stay flat (global namespace). Only streams (outcomes, intents, outcomeRejects) are namespaced by module.
+
+### Intent decision: `ordering/specs/create-order.hb.yaml`
 
 ```yaml
 type: intent
@@ -213,7 +238,7 @@ businessGoal: purchase desired products
 description: A customer creates a new order by selecting products
 trigger:
   type: success
-  outcome: order_created
+  outcome: order_management:order_created
 preconditions:
   customer_info_provided:
     description: The customer has provided required contact and shipping information
@@ -228,14 +253,14 @@ preconditions:
     scenarios:
       - Customer selects a discontinued product
 producesIntent:
-  intent: create_order
+  intent: order_management:create_order
   description: A new order is created in draft state with the selected products
   requiredInfo:
     - customer_info
     - available_products
 ```
 
-### Outcome decision: `specs/confirm-order.hb.yaml`
+### Outcome decision: `ordering/specs/confirm-order.hb.yaml`
 
 ```yaml
 type: outcome
@@ -245,22 +270,22 @@ context: ordering
 module: order_management
 aggregate: order-processing
 description: The system confirms a submitted order after verifying payment and stock
-trigger: confirm_order
+trigger: order_management:confirm_order
 shouldFailWith:
-  payment_failed:
+  order_management:payment_failed:
     description: Payment could not be processed
     requiredInfo:
       - payment_status
     scenarios:
       - Credit card is declined
 shouldSucceedWith:
-  order_confirmed:
+  order_management:order_confirmed:
     condition: always
     description: The order is confirmed and ready for fulfillment
     requiredInfo:
       - payment_status
 shouldAssert:
-  order_confirmed:
+  order_management:order_confirmed:
     - tag: order_status_confirmed
       description: The order status transitions to confirmed
       affectedInfo:
@@ -271,32 +296,26 @@ shouldAssert:
         - payment_status
 ```
 
-### Machine intent (automation): `specs/auto-approve.hb.yaml`
+### Cross-module trigger (warehousing reacting to ordering):
 
 ```yaml
 type: intent
 agent:
-  kind: machine
-context: procurement
-module: purchasing
-aggregate: procurement-processing
-businessGoal: streamline low-value purchases by auto-approving below threshold
-description: The system automatically approves purchase orders below the auto-approval threshold
+  kind: human
+  role: warehouse_supervisor
+context: warehousing
+module: warehouse_management
+aggregate: order-fulfillment
+businessGoal: begin fulfillment of confirmed orders
+description: Supervisor assigns a confirmed order to a warehouse operator
 trigger:
   type: success
-  outcome: purchase_order_created
+  outcome: order_management:order_confirmed    # ← cross-module reference
 preconditions:
-  amount_below_threshold:
-    description: The purchase order amount is below the auto-approval threshold
-    requiredInfo:
-      - purchase_order_amount
-      - auto_approval_threshold
+  # ...
 producesIntent:
-  intent: approve_purchase_order
-  description: The purchase order is automatically approved without manager intervention
-  requiredInfo:
-    - purchase_order_amount
-    - auto_approval_threshold
+  intent: warehouse_management:assign_order     # ← own module namespace
+  # ...
 ```
 
 ### Rejection-triggered intent (recovery):
@@ -308,7 +327,7 @@ agent:
   role: customer_service
 trigger:
   type: reject
-  rejection: rejected:payment_failed
+  rejection: rejected:order_management:payment_failed
 # ... rest of the spec
 ```
 
@@ -329,12 +348,13 @@ Herbrand validates all of this for you. If you get it wrong, the error message t
 ## Golden rules
 
 - **Never expose the framework to the business analyst.** No YAML, no file names, no streams. Speak in the domain language.
-- **Scratchpad before specs.** Capture freeform first, formalize only when ready. Use `scratchpad/*.md`.
+- **Scratchpad before specs.** Capture freeform first, formalize only when ready. Never write spec files directly — spawn the spec agent.
 - **Process first, data later.** Decisions reveal structure. Entities don't.
-- **One decision, one file.** Always.
+- **One decision, one file.** Always. Specs live in their context folder (`ordering/specs/`).
 - **Preconditions are positive.** `customer_info_provided`, not `missing_customer_info`.
 - **Single outcomes use `condition: always`.** Multiple outcomes need at least one `always`.
 - **Rejections are events, skips are not.** Outcome failures enter the stream. Intent skips are silent.
-- **Call `get_pipeline_results` after every spec change.** Always validate.
+- **Namespace streams by module.** Use `module:stream_name` (e.g., `order_management:order_confirmed`). Info units stay flat.
+- **Call `get_pipeline_results` after every spec change.** Always validate. Use the context parameter for scoped feedback.
 - **Use `get_user_story` to understand the business.** The business view is generated for you.
 - **YAML is your friend.** No boilerplate, no imports, no type aliases. Just write the decision data and let Herbrand validate it.

@@ -21,14 +21,17 @@ startup(projectDir);
 server.addTool({
   name: "get_pipeline_results",
   description: "Returns the full reactive pipeline state — spec count, spec-lint results (with spec names to fix), and behavior-lint results (with references). Use this to understand the project state and drive the validation loops.",
-  parameters: z.object({}),
-  execute: async () => {
+  parameters: z.object({
+    context: z.string().optional().describe("Filter by context (folder name, e.g. 'ordering'). Omit for full system lint including cross-module integration checks."),
+  }),
+  execute: async (args) => {
     store.setSpecFiles(readSpecs(projectDir));
+    store.setContextFilter(args.context ?? null);
     return JSON.stringify({
-      specCount: store.specCount,
-      specLint: store.specLintResults,
-      hasSpecErrors: store.hasSpecErrors,
-      behaviorLint: store.behaviorLintResults,
+      specCount: args.context ? store.scopedSpecCount : store.specCount,
+      specLint: args.context ? store.scopedSpecLintResults : store.specLintResults,
+      hasSpecErrors: args.context ? store.scopedHasSpecErrors : store.hasSpecErrors,
+      behaviorLint: args.context ? store.scopedBehaviorLintResults : store.behaviorLintResults,
     }, null, 2);
   },
 });
@@ -36,10 +39,13 @@ server.addTool({
 server.addTool({
   name: "get_user_stories",
   description: "Returns a summary of all user stories derived from your specs — name, role, intent, business goal, and linked outcome status. Use this to understand the business domain landscape.",
-  parameters: z.object({}),
-  execute: async () => {
+  parameters: z.object({
+    context: z.string().optional().describe("Filter by context (folder name, e.g. 'ordering'). Omit for all stories."),
+  }),
+  execute: async (args) => {
     store.setSpecFiles(readSpecs(projectDir));
-    const stories = store.userStories;
+    store.setContextFilter(args.context ?? null);
+    const stories = args.context ? store.scopedUserStories : store.userStories;
     const list = Object.entries(stories).map(([name, s]) => ({
       name,
       role: s.role,

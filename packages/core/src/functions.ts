@@ -13,11 +13,11 @@ import { behaviorLint as behaviorLintImpl } from "./behavior-lint.js";
 
 export type ParseSpecs = (files: SpecFile[]) => ParsedSpecs
 
-export type SpecLint = (parsed: ParsedSpecs) => LintResult[]
+export type SpecLint = (parsed: ParsedSpecs, context?: string) => LintResult[]
 
 export type BuildDecisionGraph = (parsed: ParsedSpecs) => DecisionGraph
 
-export type BehaviorLint = (graph: DecisionGraph) => LintResult[]
+export type BehaviorLint = (graph: DecisionGraph, context?: string) => LintResult[]
 
 /// Implementations
 

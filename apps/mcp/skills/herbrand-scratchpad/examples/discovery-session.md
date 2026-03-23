@@ -12,15 +12,73 @@
 
 > "Customers should be able to cancel, but not after we've confirmed it."
 
-## Possible Decisions
+## Decision Cards
 
-| Who | Trigger | Produces | Rejects | Status |
-|-----|---------|----------|---------|--------|
-| customer | wants to order | create_order intent | missing info, bad product | formalized → create-order.hb.yaml |
-| system | order submitted | order_confirmed outcome | payment, stock | formalized → confirm-order.hb.yaml |
-| customer | wants to cancel | cancel_order intent | already confirmed | formalized → cancel-order.hb.yaml |
-| system | order confirmed | fulfill_order intent | ? | ready |
-| ? | payment fails | ? | ? | raw |
+### Create Order
+
+| Field | Value |
+|-------|-------|
+| Who decides? | Customer |
+| What triggers it? | Wants to order |
+| What can fail? | Missing info; product no longer available |
+| What it produces? | Order creation request |
+| Status | **formalized** |
+| Spec files | `create-order.hb.yaml` |
+
+- Customer picks products, fills in details, places order
+- Address and email must be provided
+- Products must be currently available (not discontinued)
+
+### Confirm Order
+
+| Field | Value |
+|-------|-------|
+| Who decides? | System (automatic) |
+| What triggers it? | Order submitted |
+| What can fail? | Payment fails; stock unavailable |
+| What it produces? | Order confirmed |
+| Status | **formalized** |
+| Spec files | `confirm-order.hb.yaml` |
+
+- System checks payment and stock after submission
+- If either fails, the order doesn't go through
+
+### Cancel Order
+
+| Field | Value |
+|-------|-------|
+| Who decides? | Customer |
+| What triggers it? | Wants to cancel |
+| What can fail? | Order already confirmed |
+| What it produces? | Order cancellation request |
+| Status | **formalized** |
+| Spec files | `cancel-order.hb.yaml` |
+
+- Customers can cancel, but not after confirmation
+
+### Start Fulfillment
+
+| Field | Value |
+|-------|-------|
+| Who decides? | System (automatic) |
+| What triggers it? | Order confirmed |
+| What can fail? | ? |
+| What it produces? | Fulfillment started |
+| Status | **ready** |
+
+- What happens after fulfillment is triggered? Need to clarify with warehouse team.
+
+### Payment Failure Recovery
+
+| Field | Value |
+|-------|-------|
+| Who decides? | ? |
+| What triggers it? | Payment fails |
+| What can fail? | ? |
+| What it produces? | ? |
+| Status | **raw** |
+
+- Domain expert said "the order doesn't go through" — but is that the end, or can the customer retry?
 
 ## Open Questions
 

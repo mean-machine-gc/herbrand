@@ -2,14 +2,7 @@
 name: herbrand-refine
 user_invocable: true
 description: >-
-  Workflow for refining an existing decision spec when conversation reveals new
-  detail. Covers when to refine (new failure modes, corrections, new scenarios,
-  sharper descriptions, changed roles or triggers), the step-by-step process
-  (read existing spec, capture in scratchpad, apply the change, check ripple
-  effects on related specs, validate with get_pipeline_results), and specific
-  patterns for adding preconditions, constraints, success outcomes, scenarios,
-  and assertions. Emphasizes one refinement at a time and checking downstream
-  impacts.
+  Workflow for refining an existing decision spec when conversation reveals new detail. The Conversation Agent captures the refinement in the scratchpad with status "ready" referencing the existing spec file, then spawns the Spec Agent to apply the change. Covers when to refine (new failure modes, corrections, new scenarios, sharper descriptions, changed roles or triggers), what to capture in the scratchpad, and specific patterns for adding preconditions, constraints, success outcomes, scenarios, and assertions. Emphasizes one refinement at a time and checking downstream impacts.
 ---
 
 # Refine Decision
@@ -30,67 +23,52 @@ Use this skill when the conversation reveals new detail about a decision that al
 
 ### Step 1: Read the existing spec
 
-Read the `.hb.yaml` file before making any changes. Understand the current state.
+Read the `.hb.yaml` file before making any changes. Understand the current state. Use `get_user_story` to see the business-friendly view.
 
-### Step 2: Capture in scratchpad first
+### Step 2: Capture the refinement in scratchpad
 
-Before modifying the spec, note the new information in `src/scratchpad/` with context — what was said, by whom, and why it matters. This creates a trail of how the model evolved.
+Create a decision card in `scratchpad/` that references the existing spec file:
 
-### Step 3: Apply the refinement
+```markdown
+### Refine: Decision Name
 
-**Adding a new precondition (intent decision):**
-- Add the new precondition tag to the spec's rejects/preconditions
-- Add the entry in `preconditions` with description, `requiredInfo`, and scenarios
-- Use a positive statement for the tag
-- Add new info units to the info list in `project.hb.yaml` if needed
+| Field | Value |
+|-------|-------|
+| Who decides? | (same as existing, or corrected role) |
+| What triggers it? | (same as existing, or corrected trigger) |
+| What can fail? | (existing failures + new failure modes) |
+| What it produces? | (same as existing, or new outcomes) |
+| Status | **ready** |
+| Existing spec | `existing-spec-name.hb.yaml` |
 
-**Adding a new constraint (outcome decision):**
-- Add the new constraint to the spec's rejects/preconditions
-- Add the entry in `shouldFailWith` with description, `requiredInfo`, and scenarios
-- Add the constraint to the outcomeRejects list in `project.hb.yaml`
+- What changed: description of the refinement
+- Domain expert quote that prompted it
+- Note any downstream specs that might be affected
+```
 
-**Adding a new success outcome (outcome decision):**
-- Add the new outcome to the spec's choices
-- Add entry in `shouldSucceedWith` — remember, at least one must have `condition: 'always'`
-- Add entry in `shouldAssert` with assertion tags and `affectedInfo`
-- Add the outcome to the outcomes list in `project.hb.yaml`
+The `Existing spec` row tells the spec agent this is a refinement, not a new decision.
 
-**Adding scenarios:**
-- Add concrete scenarios to `preconditions[x].scenarios`, `shouldFailWith[x].scenarios`, or `shouldSucceedWith[x].scenarios`
-- Scenarios are real-world situations: "Credit card is declined", "Customer has no shipping address"
-
-**Enriching descriptions:**
-- Sharpen descriptions to be more precise
-- Add new assertion tags to `shouldAssert` with `affectedInfo`
-- Add or refine `requiredInfo` on preconditions and constraints
-
-**Correcting the decision:**
-- Change the agent role if the wrong person was identified
-- Change the trigger if it was misidentified
-- Verify `requiredInfo` and `affectedInfo` still make sense after the correction
-- If a refinement fundamentally changes what the decision is, it's probably a new decision — use discover-decision instead
-
-### Step 4: Check ripple effects
+### Step 3: Note ripple effects
 
 A refinement can affect other decisions:
 - A new outcome might become the trigger for another decision
-- A new constraint on an outcome decision creates a rejection event (`rejected:${tag}`) — consider whether any intent decision should react to it
+- A new constraint creates a rejection event — consider whether any decision should react to it
 - A corrected trigger might disconnect a decision from its source
 
-Read related specs and update them if needed.
+Note any potentially affected specs in the decision card's bullet points so the spec agent can check them.
 
-### Step 5: Validate
+### Step 4: Spawn the spec agent
 
-Call `get_pipeline_results`. Check both loops:
-- **Spec-lint errors** → fix the spec, call again
-- **Spec-lint warnings** → address if relevant
-- **Behavior-lint warnings** → the refinement may have introduced new orphans, dead ends, or unhandled rejections
+Spawn the `herbrand-spec-agent` subagent. It will:
+- Read the existing spec and the scratchpad refinement card
+- Apply the changes
+- Check ripple effects on related specs
+- Validate with `get_pipeline_results`
+- Update scratchpad status to `formalized`
 
-A refinement is complete when spec-lint has no errors.
+### Step 5: Review results
 
-### Step 6: Update the scratchpad
-
-Mark the refinement as applied. Note any remaining open questions.
+After the spec agent completes, review the affected decision via `get_user_story` to confirm the refinement looks right.
 
 ## What to ask the BA
 
@@ -103,8 +81,32 @@ When refining, ask targeted questions:
 
 ## Rules
 
-- **Always read the spec before editing.** Understand before modifying.
+- **Always read the spec before capturing.** Understand before modifying.
 - **One refinement at a time.** Don't batch unrelated changes.
-- **Capture before modifying.** Write in the scratchpad first.
-- **Check ripple effects.** A change in one spec may affect others.
-- **Validate after every change.** Call `get_pipeline_results`.
+- **Capture before modifying.** Write in the scratchpad first, then spawn the spec agent.
+- **Note ripple effects.** A change in one spec may affect others.
+- **Never edit spec files directly.** The spec agent handles formalization.
+
+## Refinement patterns reference
+
+These describe what the spec agent will do — use them to write accurate scratchpad cards:
+
+**Adding a new precondition (intent decision):**
+- New precondition with description, requiredInfo, and scenarios
+- May need new info units in project.hb.yaml
+
+**Adding a new constraint (outcome decision):**
+- New failure mode in shouldFailWith with description, requiredInfo, scenarios
+- Adds to outcomeRejects in project.hb.yaml
+
+**Adding a new success outcome (outcome decision):**
+- New outcome in shouldSucceedWith — at least one must have `condition: always`
+- Assertions for the new outcome in shouldAssert
+- Adds to outcomes in project.hb.yaml
+
+**Adding scenarios:**
+- Concrete real-world situations added to preconditions, constraints, or outcomes
+
+**Correcting the decision:**
+- Changed agent role, trigger, or fundamental structure
+- If a refinement fundamentally changes what the decision is, it's probably a new decision — use discover instead

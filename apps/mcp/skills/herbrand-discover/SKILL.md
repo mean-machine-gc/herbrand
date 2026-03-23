@@ -2,14 +2,7 @@
 name: herbrand-discover
 user_invocable: true
 description: >-
-  Workflow for discovering and formalizing new decisions from conversation.
-  Guides recognition of decision signals (human intents, machine outcomes,
-  recovery flows), the four-question readiness test (who decides, what triggers,
-  what can fail, what it produces), step-by-step formalization (determine type,
-  identify streams, identify info units, write the spec files, validate with
-  get_pipeline_results), and domain-language questions to ask the business
-  analyst. Includes patterns for human/machine intent decisions, outcome
-  decisions with single or multiple outcomes, and naming conventions.
+  Workflow for discovering new decisions from conversation. Guides recognition of decision signals (human intents, machine outcomes, recovery flows), the four-question readiness test (who decides, what triggers, what can fail, what it produces), capturing decisions in the scratchpad with the right status, and domain-language questions to ask the business analyst. Formalization into spec files is handled by the herbrand-spec-agent subagent — discovery ends at the scratchpad.
 ---
 
 # Discover Decision
@@ -35,9 +28,13 @@ A decision is ready to formalize when you can answer all four:
 3. **What can go wrong?** At least one precondition (intent) or constraint (outcome).
 4. **What does it produce?** An intent (if triggered by outcome/rejection) or an outcome (if triggered by intent).
 
-If you can't answer all four → write to the scratchpad, keep probing.
+If you can't answer all four → write a decision card to the scratchpad with status `raw`, keep probing.
 
 ## How to formalize
+
+**IMPORTANT: Do NOT write spec files directly. Capture in the scratchpad, then spawn the spec agent.**
+
+Work through these steps mentally to understand the decision structure, then capture the result as a decision card.
 
 ### Step 1: Determine the decision type
 
@@ -47,38 +44,53 @@ If you can't answer all four → write to the scratchpad, keep probing.
 ### Step 2: Identify the streams
 
 For an intent decision:
-- What outcome or rejection triggers it? → add to outcomes list in `project.hb.yaml` if new
-- What intent does it produce? → add to intents list in `project.hb.yaml` if new
+- What outcome or rejection triggers it?
+- What intent does it produce?
 
 For an outcome decision:
-- What intent triggers it? → should already exist in `Intents`
-- What outcome does it produce? → add to outcomes list in `project.hb.yaml` if new
-- What constraints can fail? → add to outcomeRejects list in `project.hb.yaml` if new
+- What intent triggers it?
+- What outcome does it produce?
+- What constraints can fail?
 
 ### Step 3: Identify info units
 
-For each precondition/constraint: what info is needed to evaluate it? Add to info list in `project.hb.yaml` if new.
-For each assertion (outcome only): what info changes? Add to info list in `project.hb.yaml` if new.
+For each precondition/constraint: what info is needed to evaluate it?
+For each assertion (outcome only): what info changes?
 
 Remember: info units are inferred from the spec content:
 - A precondition `customer_info_provided` implies required info `customer_info`
 - An assertion `order_status_confirmed` implies affected info `order_status`
 
-### Step 4: Write the files
+### Step 4: Capture in scratchpad
 
-1. Update `project.hb.yaml` — add new entries to the streams
-2. Create `specs/{decision-name}.hb.yaml` — the decision spec in YAML format
+Create or update a scratchpad file at `scratchpad/<topic>.md`. Write a decision card:
 
-### Step 5: Validate
+```markdown
+### Decision Name
 
-Call `get_pipeline_results`. Check spec-lint:
-- **Errors** → fix the spec, call again
-- **Warnings** → note them, address later
-- **Clean** → continue conversation
+| Field | Value |
+|-------|-------|
+| Who decides? | Role or System |
+| What triggers it? | Event or action |
+| What can fail? | Failure modes |
+| What it produces? | Results |
+| Status | **ready** |
 
-### Step 6: Update the scratchpad
+- Detail bullet points
+- Domain expert quotes
+- Context and reasoning
+```
 
-Mark the entry as formalized. Note remaining open questions.
+Set status to `ready` if all four readiness questions are answered. Set to `raw` if not.
+
+### Step 5: Spawn the spec agent
+
+When one or more decision cards are marked `ready`, spawn the `herbrand-spec-agent` subagent. It will:
+- Read the scratchpad
+- Write the `.hb.yaml` spec files
+- Update `project.hb.yaml`
+- Validate with `get_pipeline_results`
+- Update scratchpad status to `formalized`
 
 ## What to ask the BA
 
@@ -125,13 +137,27 @@ Never ask about types, triggers, specs, or framework concepts.
 "The system sends an email and logs the audit trail."
 → Both outcomes have `condition: always`
 
+## Context folders
+
+When discovering decisions in a new area, create the context folder structure:
+```
+ordering/
+  specs/
+  scratchpad/
+```
+
+Specs go in `ordering/specs/`, scratchpad entries in `ordering/scratchpad/`. A spec in `ordering/specs/` must have `context: ordering`.
+
 ## Naming conventions
 
-- **Outcomes** — past tense: `order_created`, `payment_captured`
-- **Intents** — imperative: `create_order`, `capture_payment`
+- **Outcomes** — module-namespaced past tense: `order_management:order_created`, `order_management:payment_captured`
+- **Intents** — module-namespaced imperative: `order_management:create_order`, `order_management:capture_payment`
+- **Rejections** — `rejected:module:constraint`: `rejected:order_management:payment_failed`
 - **Preconditions** — positive statements: `customer_info_provided`, not `missing_customer_info`
 - **Constraints** — describe the failure: `payment_failed`, `stock_unavailable`
-- **Info units** — descriptive nouns: `order_status`, `payment_status`
+- **Info units** — descriptive nouns (flat, no namespace): `order_status`, `payment_status`
 - **Assertion tags** — snake_case descriptive: `order_status_confirmed`, `payment_captured`
 - **Spec files** — kebab-case: `create-order.hb.yaml`, `process-create-order.hb.yaml`
 - **Aggregates** — process names: `order-processing`, not `order`
+
+Streams (outcomes, intents, rejections) are namespaced by module. Info units stay flat (global). The module prefix makes cross-boundary signals visible.

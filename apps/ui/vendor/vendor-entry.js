@@ -18576,8 +18576,16 @@ var NEVER = INVALID;
 
 // ../../packages/core/dist/schemas.js
 var snakeCase = external_exports.string().regex(/^[a-z][a-z0-9_]*$/, "Must be snake_case");
+var namespacedSnakeCase = external_exports.string().regex(/^[a-z][a-z0-9_]*(?::[a-z][a-z0-9_]*)?$/, "Must be snake_case or module:snake_case");
 var kebabCase = external_exports.string().regex(/^[a-z][a-z0-9-]*$/, "Must be kebab-case");
 var nonEmpty = external_exports.string().min(1, "Must not be empty");
+function parseStreamNamespace(stream) {
+  const s = stream.startsWith("rejected:") ? stream.slice(9) : stream;
+  const idx = s.indexOf(":");
+  if (idx === -1)
+    return { module: null, name: s };
+  return { module: s.slice(0, idx), name: s.slice(idx + 1) };
+}
 var infoEntry = (infoEnum) => external_exports.object({
   description: nonEmpty.describe("What this precondition or constraint checks"),
   requiredInfo: external_exports.array(infoEnum).min(1, "Must require at least one info unit").describe("Info units needed to evaluate this check"),
@@ -18595,10 +18603,10 @@ var assertionEntry = (infoEnum) => external_exports.object({
   affectedInfo: external_exports.array(infoEnum).min(1, "Assertion must affect at least one info unit").describe("Info units that change as a side effect")
 }).describe("A post-condition that must hold after a successful outcome");
 var projectSchema = external_exports.object({
-  outcomes: external_exports.array(snakeCase).min(1, "Must have at least one outcome").describe("Things that happened \u2014 past tense domain events (e.g. order_created)"),
-  intents: external_exports.array(snakeCase).min(1, "Must have at least one intent").describe("Things someone wants to do \u2014 imperative commands (e.g. create_order)"),
+  outcomes: external_exports.array(namespacedSnakeCase).min(1, "Must have at least one outcome").describe("Things that happened \u2014 past tense domain events (e.g. order_management:order_created)"),
+  intents: external_exports.array(namespacedSnakeCase).min(1, "Must have at least one intent").describe("Things someone wants to do \u2014 imperative commands (e.g. order_management:create_order)"),
   info: external_exports.array(snakeCase).min(1, "Must have at least one info unit").describe("Named information units in the global information space"),
-  outcomeRejects: external_exports.array(snakeCase).describe("Failure constraints from outcome decisions that produce rejection events"),
+  outcomeRejects: external_exports.array(namespacedSnakeCase).describe("Failure constraints from outcome decisions that produce rejection events"),
   contexts: external_exports.array(snakeCase).min(1, "Must have at least one context").describe("Semantic and language boundaries"),
   modules: external_exports.array(snakeCase).min(1, "Must have at least one module").describe("Consistency boundaries \u2014 groups of aggregates"),
   aggregates: external_exports.array(kebabCase).min(1, "Must have at least one aggregate").describe("Transactional boundaries \u2014 named after processes, not entities")
@@ -18848,16 +18856,20 @@ function parseSpecs(files) {
     const raw = browser_default.parse(file.content);
     const result = decisionSchema.safeParse(raw);
     if (result.success) {
-      specs[name] = toParsedSpec(result.data);
+      const key = file.sourceContext ? `${file.sourceContext}/${name}` : name;
+      const parsed = toParsedSpec(result.data);
+      parsed.sourceContext = file.sourceContext;
+      specs[key] = parsed;
     }
   }
   return { specs, declaredInfos };
 }
 
 // ../../packages/core/dist/spec-lint.js
-function specLint(parsed) {
+function specLint(parsed, context) {
   const results = [];
-  const { specs, declaredInfos } = parsed;
+  const { specs: allSpecs, declaredInfos } = parsed;
+  const specs = context ? Object.fromEntries(Object.entries(allSpecs).filter(([, s]) => s.sourceContext === context)) : allSpecs;
   function warn2(rule, message, spec) {
     results.push({ level: "warning", rule, message, spec: spec ?? null });
   }
@@ -18917,6 +18929,17 @@ function specLint(parsed) {
     }
     for (const reject of spec.rejectsWithoutScenarios) {
       warn2("missing_scenarios", `Reject '${reject}' has no scenarios`, name);
+    }
+    if (spec.sourceContext && spec.context && spec.context !== spec.sourceContext) {
+      error("context_folder_mismatch", `Spec declares context '${spec.context}' but lives in '${spec.sourceContext}/specs/' \u2014 must match folder`, name);
+    }
+    if (spec.module) {
+      for (const choice of spec.choices) {
+        const { module: streamModule } = parseStreamNamespace(choice);
+        if (streamModule && streamModule !== spec.module) {
+          warn2("stream_namespace_mismatch", `Produced stream '${choice}' has module prefix '${streamModule}' but spec belongs to module '${spec.module}'`, name);
+        }
+      }
     }
   }
   const allUsedInfo = /* @__PURE__ */ new Set();
@@ -19029,9 +19052,10 @@ function buildDecisionGraph(parsed) {
 }
 
 // ../../packages/core/dist/behavior-lint.js
-function behaviorLint(graph) {
+function behaviorLint(graph, context) {
   const results = [];
-  const { nodes, edges, specs, declaredInfos } = graph;
+  const { nodes, edges, specs: allSpecs, declaredInfos } = graph;
+  const specs = context ? Object.fromEntries(Object.entries(allSpecs).filter(([, s]) => s.sourceContext === context)) : allSpecs;
   function warn2(rule, message, spec) {
     results.push({ level: "warning", rule, message, spec: spec ?? null });
   }
@@ -19178,6 +19202,37 @@ function behaviorLint(graph) {
         const bInfos = /* @__PURE__ */ new Set([...b.spec.requiredInfo, ...b.spec.affectedInfo]);
         if ([...aInfos].filter((x) => bInfos.has(x)).length === 0) {
           warn2("aggregate_no_shared_info", `'${a.name}' and '${b.name}' in aggregate '${agg}' share no info \u2014 do they belong together?`);
+        }
+      }
+    }
+  }
+  if (!context) {
+    const producedByModule = {};
+    const consumedFromModule = {};
+    for (const spec of Object.values(specs)) {
+      const specModule = spec.module;
+      if (!specModule)
+        continue;
+      for (const choice of spec.choices) {
+        const { module: streamModule } = parseStreamNamespace(choice);
+        if (streamModule === specModule) {
+          if (!producedByModule[streamModule])
+            producedByModule[streamModule] = /* @__PURE__ */ new Set();
+          producedByModule[streamModule].add(choice);
+        }
+      }
+      const { module: triggerModule } = parseStreamNamespace(spec.trigger);
+      if (triggerModule && triggerModule !== specModule) {
+        if (!consumedFromModule[triggerModule])
+          consumedFromModule[triggerModule] = /* @__PURE__ */ new Set();
+        consumedFromModule[triggerModule].add(spec.trigger);
+      }
+    }
+    for (const [mod, consumed] of Object.entries(consumedFromModule)) {
+      const produced = producedByModule[mod] ?? /* @__PURE__ */ new Set();
+      for (const stream of consumed) {
+        if (!produced.has(stream)) {
+          warn2("cross_module_consumed_not_published", `Stream '${stream}' is consumed from module '${mod}' but no spec in that module produces it`);
         }
       }
     }
@@ -20501,17 +20556,32 @@ function toReactFlowGraph(graph) {
   const g = new import_dagre.default.graphlib.Graph();
   g.setGraph({ rankdir: "LR", nodesep: 50, ranksep: 200, marginx: LANE_LABEL_WIDTH + 20, marginy: 20 });
   g.setDefaultEdgeLabel(() => ({}));
+  const dagEdgeTypes = /* @__PURE__ */ new Set(["intent_flow", "outcome_flow", "reject_flow"]);
   for (const n of graphNodes) {
-    g.setNode(n.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+    if (n.type !== "view")
+      g.setNode(n.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
   }
   for (const e of graphEdges) {
-    g.setEdge(e.from, e.to);
+    if (dagEdgeTypes.has(e.type))
+      g.setEdge(e.from, e.to);
   }
   import_dagre.default.layout(g);
   const dagreX = {};
   for (const n of graphNodes) {
-    const node = g.node(n.id);
-    dagreX[n.id] = node.x;
+    if (n.type !== "view") {
+      const node = g.node(n.id);
+      dagreX[n.id] = node.x;
+    }
+  }
+  const viewTarget = {};
+  for (const e of graphEdges) {
+    if (e.type === "view_to_intent")
+      viewTarget[e.from] = e.to;
+  }
+  for (const n of graphNodes) {
+    if (n.type === "view") {
+      dagreX[n.id] = dagreX[viewTarget[n.id]] ?? 0;
+    }
   }
   const humanRoles = /* @__PURE__ */ new Set();
   for (const n of graphNodes) {
@@ -20661,7 +20731,8 @@ function extractUserStories(graph) {
     if (spec.type !== "intent")
       continue;
     const intent = spec.choices[0] ?? name;
-    const intentLabel = intent.replace(/_/g, " ");
+    const { name: intentName } = parseStreamNamespace(intent);
+    const intentLabel = intentName.replace(/_/g, " ");
     const outcomeEdge = edges.find((e) => e.type === "outcome_flow" && e.from === intent);
     const outcomeSpecName = outcomeEdge?.spec;
     const outcomeSpec = outcomeSpecName ? specs[outcomeSpecName] : null;
@@ -20827,8 +20898,9 @@ function extractUserStories(graph) {
 // ../../packages/signals/dist/index.js
 import { signal, computed } from "@preact/signals-core";
 var HerbrandStore = class {
-  /// Root signal — consumers feed data via setSpecFiles()
+  /// Root signals — consumers feed data via setSpecFiles() and setContextFilter()
   _specFiles = signal([]);
+  _contextFilter = signal(null);
   /// Reactive pipeline — computed automatically when specFiles changes
   _parsedSpecs = computed(() => {
     const files = this._specFiles.value;
@@ -20869,9 +20941,41 @@ var HerbrandStore = class {
       return {};
     return extractUserStories(graph);
   });
+  /// Scoped pipeline — reacts to contextFilter changes
+  _scopedSpecLintResults = computed(() => {
+    const parsed = this._parsedSpecs.value;
+    const ctx = this._contextFilter.value;
+    if (Object.keys(parsed.specs).length === 0)
+      return [];
+    return specLint2(parsed, ctx ?? void 0);
+  });
+  _scopedBehaviorLintResults = computed(() => {
+    const graph = this._decisionGraph.value;
+    const ctx = this._contextFilter.value;
+    if (!graph)
+      return [];
+    return behaviorLint2(graph, ctx ?? void 0);
+  });
+  _scopedUserStories = computed(() => {
+    const stories = this._userStories.value;
+    const ctx = this._contextFilter.value;
+    if (!ctx)
+      return stories;
+    return Object.fromEntries(Object.entries(stories).filter(([, s]) => s.context === ctx));
+  });
+  _scopedSpecCount = computed(() => {
+    const specs = this._parsedSpecs.value.specs;
+    const ctx = this._contextFilter.value;
+    if (!ctx)
+      return Object.keys(specs).length;
+    return Object.values(specs).filter((s) => s.sourceContext === ctx).length;
+  });
   /// Setters
   setSpecFiles(files) {
     this._specFiles.value = files;
+  }
+  setContextFilter(context) {
+    this._contextFilter.value = context;
   }
   /// Getters
   get specFiles() {
@@ -20907,6 +21011,22 @@ var HerbrandStore = class {
   get nodeCount() {
     return this._decisionGraph.value?.nodes.length ?? 0;
   }
+  /// Scoped getters — filtered by contextFilter
+  get scopedSpecLintResults() {
+    return this._scopedSpecLintResults.value;
+  }
+  get scopedBehaviorLintResults() {
+    return this._scopedBehaviorLintResults.value;
+  }
+  get scopedUserStories() {
+    return this._scopedUserStories.value;
+  }
+  get scopedSpecCount() {
+    return this._scopedSpecCount.value;
+  }
+  get scopedHasSpecErrors() {
+    return this._scopedSpecLintResults.value.some((r) => r.level === "error");
+  }
   /// Raw signals — for UI frameworks that consume signals directly
   get signals() {
     return {
@@ -20929,6 +21049,7 @@ export {
   generateDecisionJsonSchema,
   generateProjectJsonSchema,
   parseSpecs2 as parseSpecs,
+  parseStreamNamespace,
   projectSchema,
   specLint2 as specLint,
   toReactFlowGraph

@@ -7,14 +7,19 @@
 ## What the agent captured in scratchpad
 
 ```markdown
-## Possible Decisions
+### Create Order
 
-| Who | Trigger | Produces | Rejects | Status |
-|-----|---------|----------|---------|--------|
-| customer | ? | create_order intent | missing info, bad product | raw |
+| Field | Value |
+|-------|-------|
+| Who decides? | Customer |
+| What triggers it? | ? |
+| What can fail? | Missing customer info; product discontinued |
+| What it produces? | Order creation request |
+| Status | **raw** |
 
-## Open Questions
-- What triggers the customer to create an order? Do they react to something, or initiate?
+- Customer picks products, fills in details, creates the order
+- Address and email are required
+- Discontinued products should be caught
 ```
 
 ## What the agent asked
@@ -32,21 +37,34 @@ Agent noted: This is an entry point — triggered by an initial outcome like `or
 3. **What can go wrong?** Missing customer info, invalid product ✓
 4. **What does it produce?** `create_order` intent ✓
 
-All four answered → ready to formalize.
+All four answered → updated status to `ready`.
 
-## What the agent wrote
+## Updated scratchpad card
 
-### 1. Updated `project.hb.yaml`
+```markdown
+### Create Order
 
-Added `order_created` to outcomes, `create_order` to intents, `customer_info` and `available_products` to info.
+| Field | Value |
+|-------|-------|
+| Who decides? | Customer |
+| What triggers it? | Entry point — customer comes to the site |
+| What can fail? | Missing customer info (address, email); product discontinued |
+| What it produces? | Order creation request |
+| Status | **ready** |
 
-### 2. Created `specs/create-order.hb.yaml`
+- Customer picks products, fills in details, creates the order
+- Address and email are required
+- Discontinued products should be caught
+- This is an entry point — no prior step triggers it
+```
 
-(See examples/intent-human.hb.yaml)
+## What the agent did next
 
-### 3. Validated
-
-Called `get_pipeline_results` → spec-lint clean, no errors.
+Spawned the `herbrand-spec-agent` subagent to formalize the scratchpad entry. The spec agent:
+1. Read the scratchpad card
+2. Created `specs/create-order.hb.yaml` and updated `project.hb.yaml`
+3. Validated with `get_pipeline_results` — clean
+4. Updated the scratchpad card status to `formalized` with spec file references
 
 ## What the agent said to the BA
 

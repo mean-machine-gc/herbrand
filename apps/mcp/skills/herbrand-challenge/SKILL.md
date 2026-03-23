@@ -2,15 +2,7 @@
 name: herbrand-challenge
 user_invocable: true
 description: >-
-  Workflow for stress-testing the current model by finding gaps, edge cases, and
-  implicit assumptions. Uses behavior-lint findings from get_pipeline_results as
-  the primary data source — translates orphan outcomes, dead ends, unhandled
-  rejections, info never written/read, duplicate views, and aggregate issues into
-  natural domain-language questions. Also covers patterns beyond lint: missing
-  failure modes, single-path decisions, missing roles, implicit timing gaps, and
-  missing reverse/compensation flows. Emphasizes framing challenges as curiosity
-  (not criticism), pacing one or two questions at a time, and routing answers to
-  discover, refine, or scratchpad.
+  Workflow for stress-testing the current model by finding gaps, edge cases, and implicit assumptions. Ensures pending scratchpad entries are formalized first by spawning the Spec Agent, then uses behavior-lint findings from get_pipeline_results as the primary data source — translates orphan outcomes, dead ends, unhandled rejections, info never written/read, duplicate views, and aggregate issues into natural domain-language questions. Also covers patterns beyond lint: missing failure modes, single-path decisions, missing roles, implicit timing gaps, and missing reverse/compensation flows. Emphasizes framing challenges as curiosity (not criticism), pacing one or two questions at a time, and routing answers to discover, refine, or scratchpad.
 ---
 
 # Challenge Model
@@ -21,7 +13,15 @@ Use this skill to stress-test the current model by finding gaps, edge cases, and
 
 A model that nobody questions is a model that nobody trusts. Challenging doesn't mean criticizing — it means making the model more robust before it drives implementation decisions.
 
+## Before challenging
+
+Check scratchpad files (both global `scratchpad/*.md` and context-specific `<context>/scratchpad/*.md`) for any decision cards with status `ready`. If any exist, spawn the `herbrand-spec-agent` subagent first and wait for it to complete. Challenging an incomplete model wastes effort — formalize pending entries first. Cards with status `raw` or `needs-clarification` should be noted but don't block the challenge.
+
 ## Your data source
+
+Challenges can be **scoped by context** or **full system**:
+- **Scoped:** Call `get_pipeline_results` with `context: "ordering"` to focus on one area's gaps.
+- **Full:** Call without context to see the entire system, including cross-module integration gaps (streams published but not consumed across modules, or consumed but not published).
 
 Call `get_pipeline_results` and read `behaviorLint`. These are your challenges — the system has already found them. Your job is to translate each finding into a natural question the domain expert can answer.
 

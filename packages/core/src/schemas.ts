@@ -2,8 +2,17 @@ import { z } from "zod";
 
 // Naming conventions
 const snakeCase = z.string().regex(/^[a-z][a-z0-9_]*$/, "Must be snake_case");
+const namespacedSnakeCase = z.string().regex(/^[a-z][a-z0-9_]*(?::[a-z][a-z0-9_]*)?$/, "Must be snake_case or module:snake_case");
 const kebabCase = z.string().regex(/^[a-z][a-z0-9-]*$/, "Must be kebab-case");
 const nonEmpty = z.string().min(1, "Must not be empty");
+
+/** Split a stream name into module prefix and base name. Handles rejected: prefix. */
+export function parseStreamNamespace(stream: string): { module: string | null; name: string } {
+  const s = stream.startsWith("rejected:") ? stream.slice(9) : stream;
+  const idx = s.indexOf(":");
+  if (idx === -1) return { module: null, name: s };
+  return { module: s.slice(0, idx), name: s.slice(idx + 1) };
+}
 
 // Reusable entry schemas (parameterized by project info enum)
 
@@ -31,10 +40,10 @@ const assertionEntry = (infoEnum: AnyZodEnum) => z.object({
 // Project schema — defines the streams and boundaries
 
 export const projectSchema = z.object({
-  outcomes: z.array(snakeCase).min(1, "Must have at least one outcome").describe("Things that happened — past tense domain events (e.g. order_created)"),
-  intents: z.array(snakeCase).min(1, "Must have at least one intent").describe("Things someone wants to do — imperative commands (e.g. create_order)"),
+  outcomes: z.array(namespacedSnakeCase).min(1, "Must have at least one outcome").describe("Things that happened — past tense domain events (e.g. order_management:order_created)"),
+  intents: z.array(namespacedSnakeCase).min(1, "Must have at least one intent").describe("Things someone wants to do — imperative commands (e.g. order_management:create_order)"),
   info: z.array(snakeCase).min(1, "Must have at least one info unit").describe("Named information units in the global information space"),
-  outcomeRejects: z.array(snakeCase).describe("Failure constraints from outcome decisions that produce rejection events"),
+  outcomeRejects: z.array(namespacedSnakeCase).describe("Failure constraints from outcome decisions that produce rejection events"),
   contexts: z.array(snakeCase).min(1, "Must have at least one context").describe("Semantic and language boundaries"),
   modules: z.array(snakeCase).min(1, "Must have at least one module").describe("Consistency boundaries — groups of aggregates"),
   aggregates: z.array(kebabCase).min(1, "Must have at least one aggregate").describe("Transactional boundaries — named after processes, not entities"),
