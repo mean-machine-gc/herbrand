@@ -1,5 +1,6 @@
 ---
 name: herbrand-refine
+user_invocable: true
 description: >-
   Workflow for refining an existing decision spec when conversation reveals new
   detail. Covers when to refine (new failure modes, corrections, new scenarios,

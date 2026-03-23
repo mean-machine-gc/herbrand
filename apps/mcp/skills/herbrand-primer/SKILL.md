@@ -1,5 +1,6 @@
 ---
 name: herbrand-primer
+user_invocable: true
 description: >-
   Reference primer for the Herbrand decision-first business analysis framework.
   Covers the core model (intent loop and outcome loop), decision procedures

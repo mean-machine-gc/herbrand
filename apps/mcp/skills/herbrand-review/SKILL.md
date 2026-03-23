@@ -1,5 +1,6 @@
 ---
 name: herbrand-review
+user_invocable: true
 description: >-
   Workflow for presenting the current model back to stakeholders as a review
   checkpoint. Guides reading the full picture via get_user_stories and

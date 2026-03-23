@@ -1,5 +1,6 @@
 ---
 name: herbrand-scratchpad
+user_invocable: true
 description: >-
   Workflow for using the scratchpad as working memory between conversation and
   formalization. Covers when to write (unclear decisions, unresolved

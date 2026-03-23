@@ -1,5 +1,6 @@
 ---
 name: herbrand-discover
+user_invocable: true
 description: >-
   Workflow for discovering and formalizing new decisions from conversation.
   Guides recognition of decision signals (human intents, machine outcomes,

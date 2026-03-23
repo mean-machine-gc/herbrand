@@ -1,5 +1,6 @@
 ---
 name: herbrand-challenge
+user_invocable: true
 description: >-
   Workflow for stress-testing the current model by finding gaps, edge cases, and
   implicit assumptions. Uses behavior-lint findings from get_pipeline_results as
