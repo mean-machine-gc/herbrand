@@ -2,6 +2,8 @@
 
 **Decision-first business analysis for information systems.**
 
+[Docs: ](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+
 Herbrand models business processes as chains of bounded decisions — typed, validated, and connected into a decision graph that generates user stories, acceptance criteria, decision tables, and scenarios automatically.
 
 Named after [Herbert Simon](https://en.wikipedia.org/wiki/Herbert_Simon) (bounded rationality in decision-making) and [Alberto Brandolini](https://www.eventstorming.com/) (collaborative domain discovery). Reconciles business analysis with CQRS and Event Sourcing.
