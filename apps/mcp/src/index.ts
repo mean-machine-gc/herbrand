@@ -1,6 +1,7 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { HerbrandStore } from "@herbrand/signals";
+import { watchSpecs } from "@herbrand/core/watcher";
 import { startup } from "./startup.js";
 
 // Project dir from CLI arg or env
@@ -13,8 +14,8 @@ const server = new FastMCP({
 
 const store = new HerbrandStore();
 
-// Startup: install skills, schemas, IDE config, launchers, watcher, UI
-store.watch(projectDir);
+// Watch specs and feed changes into the store
+watchSpecs(projectDir, (specs) => store.setSpecFiles(specs));
 startup(projectDir);
 
 // --- Tools ---

@@ -9,12 +9,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./watcher": {
+      "types": "./dist/watcher.d.ts",
+      "import": "./dist/watcher.js"
     }
   },
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
+    "chokidar": "^5.0.0",
     "dagre": "^0.8.5",
     "yaml": "2.7.0",
     "zod": "^3.25.0",

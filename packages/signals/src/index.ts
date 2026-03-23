@@ -1,6 +1,4 @@
 import { signal, computed } from "@preact/signals-core";
-import fs from "node:fs";
-import path from "node:path";
 import type {
   SpecFile,
   ParsedSpecs,
@@ -19,11 +17,9 @@ import {
 } from "@herbrand/core";
 
 export class HerbrandStore {
-  /// Root signal — set by filesystem watcher, vite plugin, or manually
+  /// Root signal — consumers feed data via setSpecFiles()
 
   private _specFiles = signal<SpecFile[]>([]);
-  private _watcher: fs.FSWatcher | null = null;
-  private _debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   /// Reactive pipeline — computed automatically when specFiles changes
 
@@ -69,85 +65,6 @@ export class HerbrandStore {
 
   setSpecFiles(files: SpecFile[]) {
     this._specFiles.value = files;
-  }
-
-  /// Filesystem watcher
-
-  private _projectDir: string | null = null;
-
-  private _readSpecsFromDisk(): SpecFile[] {
-    if (!this._projectDir) return [];
-    const projectDir = this._projectDir;
-    const files: SpecFile[] = [];
-
-    // Read project.hb.yaml from project root
-    const projectFile = path.join(projectDir, "project.hb.yaml");
-    if (fs.existsSync(projectFile)) {
-      files.push({ fileName: "project.hb.yaml", content: fs.readFileSync(projectFile, "utf-8") });
-    }
-
-    // Read specs/*.hb.yaml
-    const specsDir = path.join(projectDir, "specs");
-    if (fs.existsSync(specsDir)) {
-      for (const f of fs.readdirSync(specsDir)) {
-        if (f.endsWith(".hb.yaml")) {
-          files.push({ fileName: f, content: fs.readFileSync(path.join(specsDir, f), "utf-8") });
-        }
-      }
-    }
-
-    return files;
-  }
-
-  private _refresh() {
-    this.setSpecFiles(this._readSpecsFromDisk());
-  }
-
-  private _debouncedRefresh() {
-    if (this._debounceTimer) clearTimeout(this._debounceTimer);
-    this._debounceTimer = setTimeout(() => this._refresh(), 100);
-  }
-
-  watch(projectDir: string) {
-    this.stop();
-    this._projectDir = projectDir;
-
-    // Initial load
-    this._refresh();
-
-    // Watch project root for project.hb.yaml changes
-    this._watcher = fs.watch(projectDir, { recursive: false }, (_eventType, fileName) => {
-      if (fileName === "project.hb.yaml") {
-        this._debouncedRefresh();
-      }
-    });
-
-    // Watch specs dir for .hb.yaml changes
-    const specsDir = path.join(projectDir, "specs");
-    if (fs.existsSync(specsDir)) {
-      const specsWatcher = fs.watch(specsDir, { recursive: false }, (_eventType, fileName) => {
-        if (fileName && fileName.endsWith(".hb.yaml")) {
-          this._debouncedRefresh();
-        }
-      });
-      // Store original watcher close, chain both
-      const originalClose = this._watcher?.close.bind(this._watcher);
-      this._watcher = {
-        close: () => { originalClose?.(); specsWatcher.close(); },
-      } as fs.FSWatcher;
-    }
-  }
-
-  stop() {
-    if (this._watcher) {
-      this._watcher.close();
-      this._watcher = null;
-    }
-    if (this._debounceTimer) {
-      clearTimeout(this._debounceTimer);
-      this._debounceTimer = null;
-    }
-    this._projectDir = null;
   }
 
   /// Getters

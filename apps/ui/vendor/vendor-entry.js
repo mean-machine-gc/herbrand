@@ -2763,11 +2763,11 @@ var require_baseGet = __commonJS({
     "use strict";
     var castPath = require_castPath();
     var toKey = require_toKey();
-    function baseGet(object, path2) {
-      path2 = castPath(path2, object);
-      var index = 0, length = path2.length;
+    function baseGet(object, path) {
+      path = castPath(path, object);
+      var index = 0, length = path.length;
       while (object != null && index < length) {
-        object = object[toKey(path2[index++])];
+        object = object[toKey(path[index++])];
       }
       return index && index == length ? object : void 0;
     }
@@ -2780,8 +2780,8 @@ var require_get = __commonJS({
   "../../node_modules/lodash/get.js"(exports, module) {
     "use strict";
     var baseGet = require_baseGet();
-    function get(object, path2, defaultValue) {
-      var result = object == null ? void 0 : baseGet(object, path2);
+    function get(object, path, defaultValue) {
+      var result = object == null ? void 0 : baseGet(object, path);
       return result === void 0 ? defaultValue : result;
     }
     module.exports = get;
@@ -2809,11 +2809,11 @@ var require_hasPath = __commonJS({
     var isIndex = require_isIndex();
     var isLength = require_isLength();
     var toKey = require_toKey();
-    function hasPath(object, path2, hasFunc) {
-      path2 = castPath(path2, object);
-      var index = -1, length = path2.length, result = false;
+    function hasPath(object, path, hasFunc) {
+      path = castPath(path, object);
+      var index = -1, length = path.length, result = false;
       while (++index < length) {
-        var key = toKey(path2[index]);
+        var key = toKey(path[index]);
         if (!(result = object != null && hasFunc(object, key))) {
           break;
         }
@@ -2835,8 +2835,8 @@ var require_hasIn = __commonJS({
     "use strict";
     var baseHasIn = require_baseHasIn();
     var hasPath = require_hasPath();
-    function hasIn(object, path2) {
-      return object != null && hasPath(object, path2, baseHasIn);
+    function hasIn(object, path) {
+      return object != null && hasPath(object, path, baseHasIn);
     }
     module.exports = hasIn;
   }
@@ -2855,13 +2855,13 @@ var require_baseMatchesProperty = __commonJS({
     var toKey = require_toKey();
     var COMPARE_PARTIAL_FLAG = 1;
     var COMPARE_UNORDERED_FLAG = 2;
-    function baseMatchesProperty(path2, srcValue) {
-      if (isKey(path2) && isStrictComparable(srcValue)) {
-        return matchesStrictComparable(toKey(path2), srcValue);
+    function baseMatchesProperty(path, srcValue) {
+      if (isKey(path) && isStrictComparable(srcValue)) {
+        return matchesStrictComparable(toKey(path), srcValue);
       }
       return function(object) {
-        var objValue = get(object, path2);
-        return objValue === void 0 && objValue === srcValue ? hasIn(object, path2) : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
+        var objValue = get(object, path);
+        return objValue === void 0 && objValue === srcValue ? hasIn(object, path) : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
       };
     }
     module.exports = baseMatchesProperty;
@@ -2886,9 +2886,9 @@ var require_basePropertyDeep = __commonJS({
   "../../node_modules/lodash/_basePropertyDeep.js"(exports, module) {
     "use strict";
     var baseGet = require_baseGet();
-    function basePropertyDeep(path2) {
+    function basePropertyDeep(path) {
       return function(object) {
-        return baseGet(object, path2);
+        return baseGet(object, path);
       };
     }
     module.exports = basePropertyDeep;
@@ -2903,8 +2903,8 @@ var require_property = __commonJS({
     var basePropertyDeep = require_basePropertyDeep();
     var isKey = require_isKey();
     var toKey = require_toKey();
-    function property(path2) {
-      return isKey(path2) ? baseProperty(toKey(path2)) : basePropertyDeep(path2);
+    function property(path) {
+      return isKey(path) ? baseProperty(toKey(path)) : basePropertyDeep(path);
     }
     module.exports = property;
   }
@@ -2970,8 +2970,8 @@ var require_has = __commonJS({
     "use strict";
     var baseHas = require_baseHas();
     var hasPath = require_hasPath();
-    function has(object, path2) {
-      return object != null && hasPath(object, path2, baseHas);
+    function has(object, path) {
+      return object != null && hasPath(object, path, baseHas);
     }
     module.exports = has;
   }
@@ -5331,14 +5331,14 @@ var require_baseSet = __commonJS({
     var isIndex = require_isIndex();
     var isObject = require_isObject();
     var toKey = require_toKey();
-    function baseSet(object, path2, value, customizer) {
+    function baseSet(object, path, value, customizer) {
       if (!isObject(object)) {
         return object;
       }
-      path2 = castPath(path2, object);
-      var index = -1, length = path2.length, lastIndex = length - 1, nested = object;
+      path = castPath(path, object);
+      var index = -1, length = path.length, lastIndex = length - 1, nested = object;
       while (nested != null && ++index < length) {
-        var key = toKey(path2[index]), newValue = value;
+        var key = toKey(path[index]), newValue = value;
         if (key === "__proto__" || key === "constructor" || key === "prototype") {
           return object;
         }
@@ -5346,7 +5346,7 @@ var require_baseSet = __commonJS({
           var objValue = nested[key];
           newValue = customizer ? customizer(objValue, key, nested) : void 0;
           if (newValue === void 0) {
-            newValue = isObject(objValue) ? objValue : isIndex(path2[index + 1]) ? [] : {};
+            newValue = isObject(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {};
           }
         }
         assignValue(nested, key, newValue);
@@ -5368,9 +5368,9 @@ var require_basePickBy = __commonJS({
     function basePickBy(object, paths, predicate) {
       var index = -1, length = paths.length, result = {};
       while (++index < length) {
-        var path2 = paths[index], value = baseGet(object, path2);
-        if (predicate(value, path2)) {
-          baseSet(result, castPath(path2, object), value);
+        var path = paths[index], value = baseGet(object, path);
+        if (predicate(value, path)) {
+          baseSet(result, castPath(path, object), value);
         }
       }
       return result;
@@ -5386,8 +5386,8 @@ var require_basePick = __commonJS({
     var basePickBy = require_basePickBy();
     var hasIn = require_hasIn();
     function basePick(object, paths) {
-      return basePickBy(object, paths, function(value, path2) {
-        return hasIn(object, path2);
+      return basePickBy(object, paths, function(value, path) {
+        return hasIn(object, path);
       });
     }
     module.exports = basePick;
@@ -6458,15 +6458,15 @@ var require_parent_dummy_chains = __commonJS({
         var node = g.node(v);
         var edgeObj = node.edgeObj;
         var pathData = findPath(g, postorderNums, edgeObj.v, edgeObj.w);
-        var path2 = pathData.path;
+        var path = pathData.path;
         var lca = pathData.lca;
         var pathIdx = 0;
-        var pathV = path2[pathIdx];
+        var pathV = path[pathIdx];
         var ascending = true;
         while (v !== edgeObj.w) {
           node = g.node(v);
           if (ascending) {
-            while ((pathV = path2[pathIdx]) !== lca && g.node(pathV).maxRank < node.rank) {
+            while ((pathV = path[pathIdx]) !== lca && g.node(pathV).maxRank < node.rank) {
               pathIdx++;
             }
             if (pathV === lca) {
@@ -6474,10 +6474,10 @@ var require_parent_dummy_chains = __commonJS({
             }
           }
           if (!ascending) {
-            while (pathIdx < path2.length - 1 && g.node(pathV = path2[pathIdx + 1]).minRank <= node.rank) {
+            while (pathIdx < path.length - 1 && g.node(pathV = path[pathIdx + 1]).minRank <= node.rank) {
               pathIdx++;
             }
-            pathV = path2[pathIdx];
+            pathV = path[pathIdx];
           }
           g.setParent(v, pathV);
           v = g.successors(v)[0];
@@ -8072,17 +8072,17 @@ function visit(node, visitor) {
 visit.BREAK = BREAK;
 visit.SKIP = SKIP;
 visit.REMOVE = REMOVE;
-function visit_(key, node, visitor, path2) {
-  const ctrl = callVisitor(key, node, visitor, path2);
+function visit_(key, node, visitor, path) {
+  const ctrl = callVisitor(key, node, visitor, path);
   if (isNode(ctrl) || isPair(ctrl)) {
-    replaceNode(key, path2, ctrl);
-    return visit_(key, ctrl, visitor, path2);
+    replaceNode(key, path, ctrl);
+    return visit_(key, ctrl, visitor, path);
   }
   if (typeof ctrl !== "symbol") {
     if (isCollection(node)) {
-      path2 = Object.freeze(path2.concat(node));
+      path = Object.freeze(path.concat(node));
       for (let i = 0; i < node.items.length; ++i) {
-        const ci = visit_(i, node.items[i], visitor, path2);
+        const ci = visit_(i, node.items[i], visitor, path);
         if (typeof ci === "number")
           i = ci - 1;
         else if (ci === BREAK)
@@ -8093,13 +8093,13 @@ function visit_(key, node, visitor, path2) {
         }
       }
     } else if (isPair(node)) {
-      path2 = Object.freeze(path2.concat(node));
-      const ck = visit_("key", node.key, visitor, path2);
+      path = Object.freeze(path.concat(node));
+      const ck = visit_("key", node.key, visitor, path);
       if (ck === BREAK)
         return BREAK;
       else if (ck === REMOVE)
         node.key = null;
-      const cv = visit_("value", node.value, visitor, path2);
+      const cv = visit_("value", node.value, visitor, path);
       if (cv === BREAK)
         return BREAK;
       else if (cv === REMOVE)
@@ -8120,17 +8120,17 @@ async function visitAsync(node, visitor) {
 visitAsync.BREAK = BREAK;
 visitAsync.SKIP = SKIP;
 visitAsync.REMOVE = REMOVE;
-async function visitAsync_(key, node, visitor, path2) {
-  const ctrl = await callVisitor(key, node, visitor, path2);
+async function visitAsync_(key, node, visitor, path) {
+  const ctrl = await callVisitor(key, node, visitor, path);
   if (isNode(ctrl) || isPair(ctrl)) {
-    replaceNode(key, path2, ctrl);
-    return visitAsync_(key, ctrl, visitor, path2);
+    replaceNode(key, path, ctrl);
+    return visitAsync_(key, ctrl, visitor, path);
   }
   if (typeof ctrl !== "symbol") {
     if (isCollection(node)) {
-      path2 = Object.freeze(path2.concat(node));
+      path = Object.freeze(path.concat(node));
       for (let i = 0; i < node.items.length; ++i) {
-        const ci = await visitAsync_(i, node.items[i], visitor, path2);
+        const ci = await visitAsync_(i, node.items[i], visitor, path);
         if (typeof ci === "number")
           i = ci - 1;
         else if (ci === BREAK)
@@ -8141,13 +8141,13 @@ async function visitAsync_(key, node, visitor, path2) {
         }
       }
     } else if (isPair(node)) {
-      path2 = Object.freeze(path2.concat(node));
-      const ck = await visitAsync_("key", node.key, visitor, path2);
+      path = Object.freeze(path.concat(node));
+      const ck = await visitAsync_("key", node.key, visitor, path);
       if (ck === BREAK)
         return BREAK;
       else if (ck === REMOVE)
         node.key = null;
-      const cv = await visitAsync_("value", node.value, visitor, path2);
+      const cv = await visitAsync_("value", node.value, visitor, path);
       if (cv === BREAK)
         return BREAK;
       else if (cv === REMOVE)
@@ -8174,23 +8174,23 @@ function initVisitor(visitor) {
   }
   return visitor;
 }
-function callVisitor(key, node, visitor, path2) {
+function callVisitor(key, node, visitor, path) {
   if (typeof visitor === "function")
-    return visitor(key, node, path2);
+    return visitor(key, node, path);
   if (isMap(node))
-    return visitor.Map?.(key, node, path2);
+    return visitor.Map?.(key, node, path);
   if (isSeq(node))
-    return visitor.Seq?.(key, node, path2);
+    return visitor.Seq?.(key, node, path);
   if (isPair(node))
-    return visitor.Pair?.(key, node, path2);
+    return visitor.Pair?.(key, node, path);
   if (isScalar(node))
-    return visitor.Scalar?.(key, node, path2);
+    return visitor.Scalar?.(key, node, path);
   if (isAlias(node))
-    return visitor.Alias?.(key, node, path2);
+    return visitor.Alias?.(key, node, path);
   return void 0;
 }
-function replaceNode(key, path2, node) {
-  const parent = path2[path2.length - 1];
+function replaceNode(key, path, node) {
+  const parent = path[path.length - 1];
   if (isCollection(parent)) {
     parent.items[key] = node;
   } else if (isPair(parent)) {
@@ -8707,10 +8707,10 @@ function createNode(value, tagName, ctx) {
 }
 
 // ../../node_modules/yaml/browser/dist/nodes/Collection.js
-function collectionFromPath(schema4, path2, value) {
+function collectionFromPath(schema4, path, value) {
   let v = value;
-  for (let i = path2.length - 1; i >= 0; --i) {
-    const k = path2[i];
+  for (let i = path.length - 1; i >= 0; --i) {
+    const k = path[i];
     if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
       const a = [];
       a[k] = v;
@@ -8729,7 +8729,7 @@ function collectionFromPath(schema4, path2, value) {
     sourceObjects: /* @__PURE__ */ new Map()
   });
 }
-var isEmptyPath = (path2) => path2 == null || typeof path2 === "object" && !!path2[Symbol.iterator]().next().done;
+var isEmptyPath = (path) => path == null || typeof path === "object" && !!path[Symbol.iterator]().next().done;
 var Collection = class extends NodeBase {
   constructor(type, schema4) {
     super(type);
@@ -8759,11 +8759,11 @@ var Collection = class extends NodeBase {
    * be a Pair instance or a `{ key, value }` object, which may not have a key
    * that already exists in the map.
    */
-  addIn(path2, value) {
-    if (isEmptyPath(path2))
+  addIn(path, value) {
+    if (isEmptyPath(path))
       this.add(value);
     else {
-      const [key, ...rest] = path2;
+      const [key, ...rest] = path;
       const node = this.get(key, true);
       if (isCollection(node))
         node.addIn(rest, value);
@@ -8777,8 +8777,8 @@ var Collection = class extends NodeBase {
    * Removes a value from the collection.
    * @returns `true` if the item was found and removed.
    */
-  deleteIn(path2) {
-    const [key, ...rest] = path2;
+  deleteIn(path) {
+    const [key, ...rest] = path;
     if (rest.length === 0)
       return this.delete(key);
     const node = this.get(key, true);
@@ -8792,8 +8792,8 @@ var Collection = class extends NodeBase {
    * scalar values from their surrounding node; to disable set `keepScalar` to
    * `true` (collections are always returned intact).
    */
-  getIn(path2, keepScalar) {
-    const [key, ...rest] = path2;
+  getIn(path, keepScalar) {
+    const [key, ...rest] = path;
     const node = this.get(key, true);
     if (rest.length === 0)
       return !keepScalar && isScalar(node) ? node.value : node;
@@ -8811,8 +8811,8 @@ var Collection = class extends NodeBase {
   /**
    * Checks if the collection includes a value with the key `key`.
    */
-  hasIn(path2) {
-    const [key, ...rest] = path2;
+  hasIn(path) {
+    const [key, ...rest] = path;
     if (rest.length === 0)
       return this.has(key);
     const node = this.get(key, true);
@@ -8822,8 +8822,8 @@ var Collection = class extends NodeBase {
    * Sets a value in this collection. For `!!set`, `value` needs to be a
    * boolean to add/remove the item from the set.
    */
-  setIn(path2, value) {
-    const [key, ...rest] = path2;
+  setIn(path, value) {
+    const [key, ...rest] = path;
     if (rest.length === 0) {
       this.set(key, value);
     } else {
@@ -10951,9 +10951,9 @@ var Document = class _Document {
       this.contents.add(value);
   }
   /** Adds a value to the document. */
-  addIn(path2, value) {
+  addIn(path, value) {
     if (assertCollection(this.contents))
-      this.contents.addIn(path2, value);
+      this.contents.addIn(path, value);
   }
   /**
    * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -11028,14 +11028,14 @@ var Document = class _Document {
    * Removes a value from the document.
    * @returns `true` if the item was found and removed.
    */
-  deleteIn(path2) {
-    if (isEmptyPath(path2)) {
+  deleteIn(path) {
+    if (isEmptyPath(path)) {
       if (this.contents == null)
         return false;
       this.contents = null;
       return true;
     }
-    return assertCollection(this.contents) ? this.contents.deleteIn(path2) : false;
+    return assertCollection(this.contents) ? this.contents.deleteIn(path) : false;
   }
   /**
    * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -11050,10 +11050,10 @@ var Document = class _Document {
    * scalar values from their surrounding node; to disable set `keepScalar` to
    * `true` (collections are always returned intact).
    */
-  getIn(path2, keepScalar) {
-    if (isEmptyPath(path2))
+  getIn(path, keepScalar) {
+    if (isEmptyPath(path))
       return !keepScalar && isScalar(this.contents) ? this.contents.value : this.contents;
-    return isCollection(this.contents) ? this.contents.getIn(path2, keepScalar) : void 0;
+    return isCollection(this.contents) ? this.contents.getIn(path, keepScalar) : void 0;
   }
   /**
    * Checks if the document includes a value with the key `key`.
@@ -11064,10 +11064,10 @@ var Document = class _Document {
   /**
    * Checks if the document includes a value at `path`.
    */
-  hasIn(path2) {
-    if (isEmptyPath(path2))
+  hasIn(path) {
+    if (isEmptyPath(path))
       return this.contents !== void 0;
-    return isCollection(this.contents) ? this.contents.hasIn(path2) : false;
+    return isCollection(this.contents) ? this.contents.hasIn(path) : false;
   }
   /**
    * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -11084,13 +11084,13 @@ var Document = class _Document {
    * Sets a value in this document. For `!!set`, `value` needs to be a
    * boolean to add/remove the item from the set.
    */
-  setIn(path2, value) {
-    if (isEmptyPath(path2)) {
+  setIn(path, value) {
+    if (isEmptyPath(path)) {
       this.contents = value;
     } else if (this.contents == null) {
-      this.contents = collectionFromPath(this.schema, Array.from(path2), value);
+      this.contents = collectionFromPath(this.schema, Array.from(path), value);
     } else if (assertCollection(this.contents)) {
-      this.contents.setIn(path2, value);
+      this.contents.setIn(path, value);
     }
   }
   /**
@@ -12881,9 +12881,9 @@ function visit2(cst, visitor) {
 visit2.BREAK = BREAK2;
 visit2.SKIP = SKIP2;
 visit2.REMOVE = REMOVE2;
-visit2.itemAtPath = (cst, path2) => {
+visit2.itemAtPath = (cst, path) => {
   let item = cst;
-  for (const [field, index] of path2) {
+  for (const [field, index] of path) {
     const tok = item?.[field];
     if (tok && "items" in tok) {
       item = tok.items[index];
@@ -12892,23 +12892,23 @@ visit2.itemAtPath = (cst, path2) => {
   }
   return item;
 };
-visit2.parentCollection = (cst, path2) => {
-  const parent = visit2.itemAtPath(cst, path2.slice(0, -1));
-  const field = path2[path2.length - 1][0];
+visit2.parentCollection = (cst, path) => {
+  const parent = visit2.itemAtPath(cst, path.slice(0, -1));
+  const field = path[path.length - 1][0];
   const coll = parent?.[field];
   if (coll && "items" in coll)
     return coll;
   throw new Error("Parent collection not found");
 };
-function _visit(path2, item, visitor) {
-  let ctrl = visitor(item, path2);
+function _visit(path, item, visitor) {
+  let ctrl = visitor(item, path);
   if (typeof ctrl === "symbol")
     return ctrl;
   for (const field of ["key", "value"]) {
     const token = item[field];
     if (token && "items" in token) {
       for (let i = 0; i < token.items.length; ++i) {
-        const ci = _visit(Object.freeze(path2.concat([[field, i]])), token.items[i], visitor);
+        const ci = _visit(Object.freeze(path.concat([[field, i]])), token.items[i], visitor);
         if (typeof ci === "number")
           i = ci - 1;
         else if (ci === BREAK2)
@@ -12919,10 +12919,10 @@ function _visit(path2, item, visitor) {
         }
       }
       if (typeof ctrl === "function" && field === "key")
-        ctrl = ctrl(item, path2);
+        ctrl = ctrl(item, path);
     }
   }
-  return typeof ctrl === "function" ? ctrl(item, path2) : ctrl;
+  return typeof ctrl === "function" ? ctrl(item, path) : ctrl;
 }
 
 // ../../node_modules/yaml/browser/dist/parse/cst.js
@@ -14162,14 +14162,14 @@ var Parser = class {
         case "scalar":
         case "single-quoted-scalar":
         case "double-quoted-scalar": {
-          const fs2 = this.flowScalar(this.type);
+          const fs = this.flowScalar(this.type);
           if (atNextItem || it.value) {
-            map2.items.push({ start, key: fs2, sep: [] });
+            map2.items.push({ start, key: fs, sep: [] });
             this.onKeyLine = true;
           } else if (it.sep) {
-            this.stack.push(fs2);
+            this.stack.push(fs);
           } else {
-            Object.assign(it, { key: fs2, sep: [] });
+            Object.assign(it, { key: fs, sep: [] });
             this.onKeyLine = true;
           }
           return;
@@ -14287,13 +14287,13 @@ var Parser = class {
         case "scalar":
         case "single-quoted-scalar":
         case "double-quoted-scalar": {
-          const fs2 = this.flowScalar(this.type);
+          const fs = this.flowScalar(this.type);
           if (!it || it.value)
-            fc.items.push({ start: [], key: fs2, sep: [] });
+            fc.items.push({ start: [], key: fs, sep: [] });
           else if (it.sep)
-            this.stack.push(fs2);
+            this.stack.push(fs);
           else
-            Object.assign(it, { key: fs2, sep: [] });
+            Object.assign(it, { key: fs, sep: [] });
           return;
         }
         case "flow-map-end":
@@ -15011,8 +15011,8 @@ function getErrorMap() {
 
 // ../../node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path2, errorMaps, issueData } = params;
-  const fullPath = [...path2, ...issueData.path || []];
+  const { data, path, errorMaps, issueData } = params;
+  const fullPath = [...path, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -15128,11 +15128,11 @@ var errorUtil;
 
 // ../../node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path2, key) {
+  constructor(parent, value, path, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path2;
+    this._path = path;
     this._key = key;
   }
   get path() {
@@ -20826,13 +20826,9 @@ function extractUserStories(graph) {
 
 // ../../packages/signals/dist/index.js
 import { signal, computed } from "@preact/signals-core";
-import fs from "fs";
-import path from "path";
 var HerbrandStore = class {
-  /// Root signal — set by filesystem watcher, vite plugin, or manually
+  /// Root signal — consumers feed data via setSpecFiles()
   _specFiles = signal([]);
-  _watcher = null;
-  _debounceTimer = null;
   /// Reactive pipeline — computed automatically when specFiles changes
   _parsedSpecs = computed(() => {
     const files = this._specFiles.value;
@@ -20876,71 +20872,6 @@ var HerbrandStore = class {
   /// Setters
   setSpecFiles(files) {
     this._specFiles.value = files;
-  }
-  /// Filesystem watcher
-  _projectDir = null;
-  _readSpecsFromDisk() {
-    if (!this._projectDir)
-      return [];
-    const projectDir = this._projectDir;
-    const files = [];
-    const projectFile = path.join(projectDir, "project.hb.yaml");
-    if (fs.existsSync(projectFile)) {
-      files.push({ fileName: "project.hb.yaml", content: fs.readFileSync(projectFile, "utf-8") });
-    }
-    const specsDir = path.join(projectDir, "specs");
-    if (fs.existsSync(specsDir)) {
-      for (const f of fs.readdirSync(specsDir)) {
-        if (f.endsWith(".hb.yaml")) {
-          files.push({ fileName: f, content: fs.readFileSync(path.join(specsDir, f), "utf-8") });
-        }
-      }
-    }
-    return files;
-  }
-  _refresh() {
-    this.setSpecFiles(this._readSpecsFromDisk());
-  }
-  _debouncedRefresh() {
-    if (this._debounceTimer)
-      clearTimeout(this._debounceTimer);
-    this._debounceTimer = setTimeout(() => this._refresh(), 100);
-  }
-  watch(projectDir) {
-    this.stop();
-    this._projectDir = projectDir;
-    this._refresh();
-    this._watcher = fs.watch(projectDir, { recursive: false }, (_eventType, fileName) => {
-      if (fileName === "project.hb.yaml") {
-        this._debouncedRefresh();
-      }
-    });
-    const specsDir = path.join(projectDir, "specs");
-    if (fs.existsSync(specsDir)) {
-      const specsWatcher = fs.watch(specsDir, { recursive: false }, (_eventType, fileName) => {
-        if (fileName && fileName.endsWith(".hb.yaml")) {
-          this._debouncedRefresh();
-        }
-      });
-      const originalClose = this._watcher?.close.bind(this._watcher);
-      this._watcher = {
-        close: () => {
-          originalClose?.();
-          specsWatcher.close();
-        }
-      };
-    }
-  }
-  stop() {
-    if (this._watcher) {
-      this._watcher.close();
-      this._watcher = null;
-    }
-    if (this._debounceTimer) {
-      clearTimeout(this._debounceTimer);
-      this._debounceTimer = null;
-    }
-    this._projectDir = null;
   }
   /// Getters
   get specFiles() {

@@ -1,29 +1,14 @@
 import type { Plugin } from "vite";
-import fs from "node:fs";
 import path from "node:path";
-import fg from "fast-glob";
+import { readSpecs, watchSpecs } from "@herbrand/core/watcher";
+import type { SpecFile } from "@herbrand/core";
 
 const VIRTUAL_MODULE_ID = "virtual:herbrand-specs";
 const RESOLVED_ID = "\0" + VIRTUAL_MODULE_ID;
 
 export function herbrandSpecsPlugin(): Plugin {
   let projectFolder = process.env.HERBRAND_FOLDER || process.cwd();
-
-  function loadSpecs(): Array<{ fileName: string; content: string }> {
-    const files: Array<{ fileName: string; content: string }> = [];
-
-    const projectFile = path.join(projectFolder, "project.hb.yaml");
-    if (fs.existsSync(projectFile)) {
-      files.push({ fileName: "project.hb.yaml", content: fs.readFileSync(projectFile, "utf-8") });
-    }
-
-    const specFiles = fg.sync(path.join(projectFolder, "specs", "*.hb.yaml"));
-    for (const filePath of specFiles) {
-      files.push({ fileName: path.basename(filePath), content: fs.readFileSync(filePath, "utf-8") });
-    }
-
-    return files;
-  }
+  let specs: SpecFile[] = [];
 
   return {
     name: "herbrand-specs",
@@ -32,6 +17,8 @@ export function herbrandSpecsPlugin(): Plugin {
       if (process.env.HERBRAND_FOLDER) {
         projectFolder = path.resolve(process.env.HERBRAND_FOLDER);
       }
+      // Initial read — works for both dev and build
+      specs = readSpecs(projectFolder);
     },
 
     resolveId(id) {
@@ -40,28 +27,19 @@ export function herbrandSpecsPlugin(): Plugin {
 
     load(id) {
       if (id === RESOLVED_ID) {
-        const specs = loadSpecs();
         return `export const specs = ${JSON.stringify(specs)};`;
       }
     },
 
     configureServer(server) {
-      server.watcher.add(projectFolder);
-      const specsDir = path.join(projectFolder, "specs");
-      server.watcher.add(specsDir);
-
-      const reload = (filePath: string) => {
-        if (filePath.endsWith(".hb.yaml")) {
-          const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-          if (mod) {
-            server.moduleGraph.invalidateModule(mod);
-            server.ws.send({ type: "full-reload" });
-          }
+      watchSpecs(projectFolder, (newSpecs) => {
+        specs = newSpecs;
+        const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
+        if (mod) {
+          server.moduleGraph.invalidateModule(mod);
+          server.ws.send({ type: "full-reload" });
         }
-      };
-
-      server.watcher.on("change", reload);
-      server.watcher.on("add", reload);
+      });
     },
   };
 }
