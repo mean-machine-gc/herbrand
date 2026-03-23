@@ -126,48 +126,57 @@ function createLaunchers(projectDir: string) {
 
   if (os === "darwin") {
     const appPath = path.join(projectDir, "Open Herbrand.app");
-    if (!fs.existsSync(appPath)) {
-      const contentsDir = path.join(appPath, "Contents");
-      const macosDir = path.join(contentsDir, "MacOS");
+    const contentsDir = path.join(appPath, "Contents");
+    const macosDir = path.join(contentsDir, "MacOS");
 
-      fs.mkdirSync(macosDir, { recursive: true });
+    fs.mkdirSync(macosDir, { recursive: true });
 
-      // Info.plist — minimal app manifest
-      fs.writeFileSync(path.join(contentsDir, "Info.plist"), [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
-        '<plist version="1.0">',
-        '<dict>',
-        '  <key>CFBundleName</key>',
-        '  <string>Open Herbrand</string>',
-        '  <key>CFBundleExecutable</key>',
-        '  <string>launch</string>',
-        '  <key>CFBundleIdentifier</key>',
-        '  <string>com.herbrand.launcher</string>',
-        '  <key>CFBundleVersion</key>',
-        '  <string>1.0</string>',
-        '  <key>CFBundlePackageType</key>',
-        '  <string>APPL</string>',
-        '  <key>LSUIElement</key>',
-        '  <true/>',
-        '</dict>',
-        '</plist>',
-      ].join("\n"));
+    // Info.plist — minimal app manifest
+    fs.writeFileSync(path.join(contentsDir, "Info.plist"), [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+      '<plist version="1.0">',
+      '<dict>',
+      '  <key>CFBundleName</key>',
+      '  <string>Open Herbrand</string>',
+      '  <key>CFBundleExecutable</key>',
+      '  <string>launch</string>',
+      '  <key>CFBundleIdentifier</key>',
+      '  <string>com.herbrand.launcher</string>',
+      '  <key>CFBundleVersion</key>',
+      '  <string>1.0</string>',
+      '  <key>CFBundlePackageType</key>',
+      '  <string>APPL</string>',
+      '  <key>LSUIElement</key>',
+      '  <true/>',
+      '</dict>',
+      '</plist>',
+    ].join("\n"));
 
-      // Launch script — validates project exists before launching
-      const scriptPath = path.join(macosDir, "launch");
-      fs.writeFileSync(scriptPath, [
-        "#!/bin/bash",
-        `PROJECT_DIR="${projectDir}"`,
-        'if [ ! -f "$PROJECT_DIR/project.hb.yaml" ]; then',
-        '  osascript -e \'display dialog "Herbrand project not found at:\\n\\n\'$PROJECT_DIR\'\\n\\nThe project may have been moved." with title "Herbrand" buttons {"OK"} default button "OK" with icon caution\'',
-        "  exit 1",
-        "fi",
-        'cd "$PROJECT_DIR"',
-        "npx herbrand-ui --folder .",
-      ].join("\n"));
-      fs.chmodSync(scriptPath, 0o755);
-    }
+    // Launch script — source shell profile for PATH (nvm/volta/brew),
+    // then validate project exists before launching
+    const scriptPath = path.join(macosDir, "launch");
+    fs.writeFileSync(scriptPath, [
+      "#!/bin/bash",
+      "",
+      "# Inherit the user's shell environment so npx/node are on PATH",
+      'if [ -f "$HOME/.zshrc" ]; then',
+      '  source "$HOME/.zshrc" 2>/dev/null',
+      'elif [ -f "$HOME/.bashrc" ]; then',
+      '  source "$HOME/.bashrc" 2>/dev/null',
+      'elif [ -f "$HOME/.bash_profile" ]; then',
+      '  source "$HOME/.bash_profile" 2>/dev/null',
+      "fi",
+      "",
+      `PROJECT_DIR="${projectDir}"`,
+      'if [ ! -f "$PROJECT_DIR/project.hb.yaml" ]; then',
+      '  osascript -e \'display dialog "Herbrand project not found at:\\n\\n\'$PROJECT_DIR\'\\n\\nThe project may have been moved." with title "Herbrand" buttons {"OK"} default button "OK" with icon caution\'',
+      "  exit 1",
+      "fi",
+      'cd "$PROJECT_DIR"',
+      "npx herbrand-ui --folder .",
+    ].join("\n"));
+    fs.chmodSync(scriptPath, 0o755);
   } else if (os === "win32") {
     // Write icon file
     const icoPath = path.join(herbrandDir, "herbrand.ico");
