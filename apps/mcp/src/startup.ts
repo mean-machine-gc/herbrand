@@ -4,7 +4,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { platform } from "node:os";
 import YAML from "yaml";
-import { projectSchema, generateProjectJsonSchema, generateDecisionJsonSchema } from "@herbrand/core";
+import { projectSchema, generateProjectJsonSchema, generateDecisionJsonSchema } from "herbrand-core";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -232,12 +232,10 @@ function createLaunchers(projectDir: string) {
 // --- UI ---
 
 function launchUI(projectDir: string) {
-  const uiCli = path.resolve(__dirname, "../../ui/bin/cli.js");
-  if (!fs.existsSync(uiCli)) return;
-
-  const child = spawn("node", [uiCli, "--folder", projectDir], {
+  const child = spawn("npx", ["herbrand-ui", "--folder", projectDir], {
     detached: true,
     stdio: "ignore",
+    shell: true,
   });
 
   child.unref();

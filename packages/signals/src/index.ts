@@ -8,7 +8,7 @@ import type {
   LintResult,
   ReactFlowGraph,
   UserStory,
-} from "@herbrand/core";
+} from "herbrand-core";
 import {
   parseSpecs,
   specLint,
@@ -16,7 +16,7 @@ import {
   behaviorLint,
   toReactFlowGraph,
   extractUserStories,
-} from "@herbrand/core";
+} from "herbrand-core";
 
 export class HerbrandStore {
   /// Root signal — set by filesystem watcher, vite plugin, or manually
