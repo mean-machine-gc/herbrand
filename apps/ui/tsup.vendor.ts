@@ -7,4 +7,5 @@ export default defineConfig({
   dts: false,
   noExternal: [/@herbrand\/.*/],
   external: ["@preact/signals-core"],
+  platform: "browser",
 });
