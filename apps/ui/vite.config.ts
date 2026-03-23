@@ -16,10 +16,12 @@ const alias = fs.existsSync(vendorFile) ? {
 } : {};
 
 // Use pre-built plugin (npm) or source (monorepo dev)
+// Both paths use variables so esbuild can't statically analyze and bundle them.
 const distPlugin = path.resolve(__dirname, "dist", "vite-plugin.js");
+const srcPlugin = path.resolve(__dirname, "src", "vite-plugin.js");
 const { herbrandSpecsPlugin } = fs.existsSync(distPlugin)
   ? await import(distPlugin)
-  : await import("./src/vite-plugin.js");
+  : await import(srcPlugin);
 
 export default defineConfig({
   plugins: [
