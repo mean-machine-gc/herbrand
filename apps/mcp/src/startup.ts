@@ -241,13 +241,10 @@ function createLaunchers(projectDir: string) {
 // --- UI ---
 
 function launchUI(projectDir: string) {
-  const child = spawn("npx", ["herbrand-ui", "--folder", projectDir], {
-    detached: true,
+  spawn("npx", ["herbrand-ui", "--folder", projectDir], {
     stdio: "ignore",
     shell: true,
   });
-
-  child.unref();
 }
 
 // --- Main startup ---
