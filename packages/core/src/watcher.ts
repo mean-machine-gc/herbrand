@@ -1,7 +1,13 @@
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, basename } from "node:path";
 import { watch } from "chokidar";
 import type { SpecFile } from "./types.js";
+
+const IGNORED_DIRS = new Set([
+  "node_modules", "scratchpad", ".git", ".herbrand", ".vscode",
+  ".claude", ".opencode", ".github", ".cursor",
+  "src", "dist", "build",
+]);
 
 const EXCLUDED_DIRS = new Set([
   "node_modules", "scratchpad", "src", "dist", "build", "specs",
@@ -57,14 +63,16 @@ export function watchSpecs(
   projectDir: string,
   onChange: (specs: SpecFile[]) => void,
 ): () => void {
-  const watcher = watch(
-    [
-      join(projectDir, "project.hb.yaml"),
-      join(projectDir, "specs", "*.hb.yaml"),
-      join(projectDir, "*", "specs", "*.hb.yaml"),
-    ],
-    { ignoreInitial: true },
-  );
+  const watcher = watch(projectDir, {
+    ignoreInitial: true,
+    depth: 5,
+    ignored: (filePath, stats) => {
+      if (stats?.isDirectory()) {
+        return IGNORED_DIRS.has(basename(filePath));
+      }
+      return !filePath.endsWith(".hb.yaml");
+    },
+  });
 
   // Initial load (synchronous, before watcher is ready)
   onChange(readSpecs(projectDir));
