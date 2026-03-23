@@ -7,20 +7,25 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// When installed from npm, @herbrand/signals and @herbrand/core
-// aren't in node_modules — they're pre-bundled in vendor/index.js
+// When installed from npm, @herbrand/* packages aren't in node_modules.
+// The vendor/index.js (created by prepublishOnly) provides them.
+// In monorepo dev, workspace symlinks handle resolution — no alias needed.
 const vendorFile = path.resolve(__dirname, "vendor", "index.js");
-const useVendor = fs.existsSync(vendorFile);
+const alias = fs.existsSync(vendorFile) ? {
+  "@herbrand/signals": vendorFile,
+  "@herbrand/core": vendorFile,
+} : {};
 
 export default defineConfig({
   plugins: [
     react(),
     herbrandSpecsPlugin(),
   ],
-  resolve: useVendor ? {
-    alias: {
-      "@herbrand/signals": vendorFile,
-      "@herbrand/core": vendorFile,
-    },
-  } : {},
+  resolve: { alias },
+  optimizeDeps: {
+    include: [
+      "@herbrand/signals",
+      "@herbrand/core",
+    ],
+  },
 });

@@ -12,13 +12,11 @@ export function herbrandSpecsPlugin(): Plugin {
   function loadSpecs(): Array<{ fileName: string; content: string }> {
     const files: Array<{ fileName: string; content: string }> = [];
 
-    // Load project.hb.yaml from project root
     const projectFile = path.join(projectFolder, "project.hb.yaml");
     if (fs.existsSync(projectFile)) {
       files.push({ fileName: "project.hb.yaml", content: fs.readFileSync(projectFile, "utf-8") });
     }
 
-    // Load specs/*.hb.yaml
     const specFiles = fg.sync(path.join(projectFolder, "specs", "*.hb.yaml"));
     for (const filePath of specFiles) {
       files.push({ fileName: path.basename(filePath), content: fs.readFileSync(filePath, "utf-8") });
@@ -48,9 +46,7 @@ export function herbrandSpecsPlugin(): Plugin {
     },
 
     configureServer(server) {
-      // Watch project root for project.hb.yaml
       server.watcher.add(projectFolder);
-      // Watch specs folder
       const specsDir = path.join(projectFolder, "specs");
       server.watcher.add(specsDir);
 

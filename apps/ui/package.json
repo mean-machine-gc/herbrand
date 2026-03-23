@@ -21,6 +21,8 @@
     "prepublishOnly": "npm run vendor"
   },
   "dependencies": {
+    "@herbrand/core": "0.1.0",
+    "@herbrand/signals": "0.1.0",
     "@mantine/core": "^7.17.0",
     "@mantine/hooks": "^7.17.0",
     "@phosphor-icons/react": "^2.1.10",

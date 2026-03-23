@@ -17,6 +17,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@herbrand/core": "0.1.0",
+    "@herbrand/signals": "0.1.0",
     "fastmcp": "^3.0.0"
   },
   "devDependencies": {
