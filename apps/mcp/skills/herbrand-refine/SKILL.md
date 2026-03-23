@@ -1,3 +1,16 @@
+---
+name: herbrand-refine
+description: >-
+  Workflow for refining an existing decision spec when conversation reveals new
+  detail. Covers when to refine (new failure modes, corrections, new scenarios,
+  sharper descriptions, changed roles or triggers), the step-by-step process
+  (read existing spec, capture in scratchpad, apply the change, check ripple
+  effects on related specs, validate with get_pipeline_results), and specific
+  patterns for adding preconditions, constraints, success outcomes, scenarios,
+  and assertions. Emphasizes one refinement at a time and checking downstream
+  impacts.
+---
+
 # Refine Decision
 
 Use this skill when the conversation reveals new detail about a decision that already has a spec.

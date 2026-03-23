@@ -1,3 +1,16 @@
+---
+name: herbrand-discover
+description: >-
+  Workflow for discovering and formalizing new decisions from conversation.
+  Guides recognition of decision signals (human intents, machine outcomes,
+  recovery flows), the four-question readiness test (who decides, what triggers,
+  what can fail, what it produces), step-by-step formalization (determine type,
+  identify streams, identify info units, write the spec files, validate with
+  get_pipeline_results), and domain-language questions to ask the business
+  analyst. Includes patterns for human/machine intent decisions, outcome
+  decisions with single or multiple outcomes, and naming conventions.
+---
+
 # Discover Decision
 
 Use this skill when the conversation reveals a new decision that doesn't exist as a spec yet.

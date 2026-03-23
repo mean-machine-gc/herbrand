@@ -1,3 +1,16 @@
+---
+name: herbrand-primer
+description: >-
+  Reference primer for the Herbrand decision-first business analysis framework.
+  Covers the core model (intent loop and outcome loop), decision procedures
+  (preconditions, constraints, assertions), information context (info units,
+  requiredInfo, affectedInfo), the three boundaries (aggregate, module, context),
+  spec structure for intent and outcome decisions in .hb.yaml, validation rules,
+  the scratchpad workflow, and the MCP tools (get_pipeline_results,
+  get_user_stories, get_user_story). Load this skill to understand how Herbrand
+  works and how to write and validate decision specs.
+---
+
 # Herbrand Framework Primer
 
 Herbrand is a decision-first business analysis framework for information system modelling. The name combines Herbert Simon — the economist who argued that decision-making is the fundamental act of organizational behavior — and Alberto Brandolini — the creator of EventStorming who pioneered collaborative domain discovery. Herbrand reconciles business analysis with established architectural patterns such as CQRS and Event Sourcing, providing a formal method that bridges the gap between domain discovery and system design.

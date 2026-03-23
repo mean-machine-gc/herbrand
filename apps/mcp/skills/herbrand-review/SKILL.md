@@ -1,3 +1,16 @@
+---
+name: herbrand-review
+description: >-
+  Workflow for presenting the current model back to stakeholders as a review
+  checkpoint. Guides reading the full picture via get_user_stories and
+  get_pipeline_results, organizing decisions into process flows, producing a
+  plain-language narrative for each flow (who does it, what triggers it, what
+  information is needed, what can go wrong, what happens on success, recovery
+  flows), surfacing open scratchpad items and behavior-lint findings, and
+  listening for corrections or new discoveries. Includes strict language rules —
+  never expose framework terminology, always use the domain expert's vocabulary.
+---
+
 # Review Model
 
 Use this skill when it's time to present the current understanding back to stakeholders. The review is a checkpoint — it lets the BA and domain experts confirm, correct, or expand what's been captured.

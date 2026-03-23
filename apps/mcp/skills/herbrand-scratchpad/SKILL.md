@@ -1,3 +1,17 @@
+---
+name: herbrand-scratchpad
+description: >-
+  Workflow for using the scratchpad as working memory between conversation and
+  formalization. Covers when to write (unclear decisions, unresolved
+  contradictions, ambiguous triggers), what to capture (raw domain expert quotes,
+  possible decisions in a who/trigger/produces/rejects table with status
+  tracking, open questions, domain vocabulary with disambiguation), the
+  four-question readiness test for promoting entries to specs, post-formalization
+  bookkeeping (mark status, link to spec file, preserve open questions), and file
+  naming conventions. The scratchpad lives at scratchpad/*.md, one file per topic
+  or session.
+---
+
 # Scratchpad
 
 The scratchpad is your working memory between conversation and formalization. It lives at `src/scratchpad/*.md` — one file per topic or session.

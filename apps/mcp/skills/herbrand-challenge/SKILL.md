@@ -1,3 +1,17 @@
+---
+name: herbrand-challenge
+description: >-
+  Workflow for stress-testing the current model by finding gaps, edge cases, and
+  implicit assumptions. Uses behavior-lint findings from get_pipeline_results as
+  the primary data source — translates orphan outcomes, dead ends, unhandled
+  rejections, info never written/read, duplicate views, and aggregate issues into
+  natural domain-language questions. Also covers patterns beyond lint: missing
+  failure modes, single-path decisions, missing roles, implicit timing gaps, and
+  missing reverse/compensation flows. Emphasizes framing challenges as curiosity
+  (not criticism), pacing one or two questions at a time, and routing answers to
+  discover, refine, or scratchpad.
+---
+
 # Challenge Model
 
 Use this skill to stress-test the current model by finding gaps, edge cases, and implicit assumptions — then surface them as natural questions for the domain expert.
