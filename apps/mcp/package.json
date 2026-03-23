@@ -1,6 +1,6 @@
 {
   "name": "herbrand-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Herbrand MCP server — decision-first business analysis for information systems",
   "type": "module",
   "bin": {
