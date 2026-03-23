@@ -3,10 +3,12 @@
   "private": true,
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
+    "build": "npm run build -w @herbrand/core && npm run build -w @herbrand/signals",
+    "publish:all": "npm run build && cd apps/mcp && npm publish && cd ../ui && npm publish",
     "herbrand": "npm run herbrand -w packages/poc",
     "specs": "npm run specs -w packages/poc",
     "graph": "npm run graph -w packages/poc",
-    "ui": "HERBRAND_FOLDER=$PWD/packages/yaml-poc npm run dev -w apps/ui",
-"ui:poc": "HERBRAND_FOLDER=$PWD/packages/poc npm run dev -w apps/ui"
+    "ui": "HERBRAND_FOLDER=$PWD/packages/yaml-poc npm run dev -w herbrand-ui",
+    "ui:poc": "HERBRAND_FOLDER=$PWD/packages/poc npm run dev -w herbrand-ui"
   }
 }
