@@ -1,0 +1,8 @@
+#!/bin/bash
+PROJECT_DIR="/Users/giovanni/PROJ/buispecs"
+if [ ! -f "$PROJECT_DIR/project.hb.yaml" ]; then
+  osascript -e 'display dialog "Herbrand project not found at:\n\n'$PROJECT_DIR'\n\nThe project may have been moved." with title "Herbrand" buttons {"OK"} default button "OK" with icon caution'
+  exit 1
+fi
+cd "$PROJECT_DIR"
+npx herbrand-ui --folder .

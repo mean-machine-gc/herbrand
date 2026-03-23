@@ -1,7 +1,7 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { HerbrandStore } from "@herbrand/signals";
-import { watchSpecs } from "@herbrand/core/watcher";
+import { readSpecs } from "@herbrand/core/watcher";
 import { startup } from "./startup.js";
 
 // Project dir from CLI arg or env
@@ -14,8 +14,6 @@ const server = new FastMCP({
 
 const store = new HerbrandStore();
 
-// Watch specs and feed changes into the store
-watchSpecs(projectDir, (specs) => store.setSpecFiles(specs));
 startup(projectDir);
 
 // --- Tools ---
@@ -25,6 +23,7 @@ server.addTool({
   description: "Returns the full reactive pipeline state — spec count, spec-lint results (with spec names to fix), and behavior-lint results (with references). Use this to understand the project state and drive the validation loops.",
   parameters: z.object({}),
   execute: async () => {
+    store.setSpecFiles(readSpecs(projectDir));
     return JSON.stringify({
       specCount: store.specCount,
       specLint: store.specLintResults,
@@ -39,6 +38,7 @@ server.addTool({
   description: "Returns a summary of all user stories derived from your specs — name, role, intent, business goal, and linked outcome status. Use this to understand the business domain landscape.",
   parameters: z.object({}),
   execute: async () => {
+    store.setSpecFiles(readSpecs(projectDir));
     const stories = store.userStories;
     const list = Object.entries(stories).map(([name, s]) => ({
       name,
@@ -58,6 +58,7 @@ server.addTool({
     name: z.string().describe("User story name (the intent decision spec name), e.g. 'create-order'"),
   }),
   execute: async (args) => {
+    store.setSpecFiles(readSpecs(projectDir));
     const story = store.userStories[args.name];
     if (!story) return "User story not found";
     return JSON.stringify(story, null, 2);

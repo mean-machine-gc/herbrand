@@ -64,15 +64,17 @@ export function toReactFlowGraph(graph: DecisionGraph): ReactFlowGraph {
   const { nodes: graphNodes, edges: graphEdges } = graph;
 
   // Step 1: Run dagre LR to get horizontal rank positions (X only)
+  // Exclude view nodes — they'll be pinned above their target intent instead.
   const g = new dagre.graphlib.Graph();
   g.setGraph({ rankdir: "LR", nodesep: 50, ranksep: 200, marginx: LANE_LABEL_WIDTH + 20, marginy: 20 });
   g.setDefaultEdgeLabel(() => ({}));
 
+  const dagEdgeTypes = new Set(["intent_flow", "outcome_flow", "reject_flow"]);
   for (const n of graphNodes) {
-    g.setNode(n.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+    if (n.type !== "view") g.setNode(n.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
   }
   for (const e of graphEdges) {
-    g.setEdge(e.from, e.to);
+    if (dagEdgeTypes.has(e.type)) g.setEdge(e.from, e.to);
   }
 
   dagre.layout(g);
@@ -80,8 +82,21 @@ export function toReactFlowGraph(graph: DecisionGraph): ReactFlowGraph {
   // Extract only X from dagre — we'll compute Y ourselves based on lanes
   const dagreX: Record<string, number> = {};
   for (const n of graphNodes) {
-    const node = g.node(n.id);
-    dagreX[n.id] = node.x;
+    if (n.type !== "view") {
+      const node = g.node(n.id);
+      dagreX[n.id] = node.x;
+    }
+  }
+
+  // Pin each view's X to the X of its target intent
+  const viewTarget: Record<string, string> = {};
+  for (const e of graphEdges) {
+    if (e.type === "view_to_intent") viewTarget[e.from] = e.to;
+  }
+  for (const n of graphNodes) {
+    if (n.type === "view") {
+      dagreX[n.id] = dagreX[viewTarget[n.id]] ?? 0;
+    }
   }
 
   // Step 2: Assign lanes — views on top, human roles in middle, automations at bottom
