@@ -85,3 +85,13 @@ After addressing challenges, call `get_business_view` again and present the upda
 - **Cross-context data coupling** — `book.lent` updates `book.available` which the reservation-policy reads. If the lend happens in LMS but the reservation check also runs in LMS, that's fine — but what if they were in different contexts?
 - **Missing timeout/retry patterns** — reservations are held for 48 hours with no expiry process. Notifications have no retry if the service is down.
 - **Circular side effects** — `book.lent` updates `book.available` and `member.active.loans`, both of which are in `view:lend-operation`. The lint catches this as a warning.
+
+## Documentation Reference
+
+- [Overview](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+- [Getting Started](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/getting-started/)
+- [Skills](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/skills/)
+- [MCP Tools](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/mcp-tools/)
+- [Workbench](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/workbench/)
+- [Validation Rules](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/validation/)
+- [Graph Analysis](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/analysis/)

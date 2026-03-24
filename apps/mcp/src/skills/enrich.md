@@ -93,3 +93,13 @@ Here's how structured data becomes prose:
 - **Describe failures as real scenarios.** "If the member's account is suspended — perhaps due to unpaid fines — the lending request cannot proceed" not "constraint member-not-suspended fails."
 - **Use info point names in backticks** when referencing specific data: "The system checks `book.available` to ensure..."
 - **Keep one document per process.** Don't merge processes into a single document.
+
+## Documentation Reference
+
+- [Overview](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+- [Getting Started](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/getting-started/)
+- [Skills](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/skills/)
+- [MCP Tools](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/mcp-tools/)
+- [Workbench](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/workbench/)
+- [Validation Rules](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/validation/)
+- [Graph Analysis](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/analysis/)

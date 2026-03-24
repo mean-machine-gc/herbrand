@@ -116,3 +116,13 @@ Here's how a process exploration might go:
 - **Conditional outcomes are bonus events**, not alternative paths. The unconditional outcome always happens on success. Conditional outcomes happen *in addition* when their condition is met.
 - **Cross-process signals are powerful.** The return-operation produces `reserved.book.available` which triggers the reservation fulfillment process — this is how processes interact without being coupled.
 - **A decision can belong to multiple processes.** The late-fee-policy participates in both `book-return` and `late-fee-collection` — it's triggered by `book.returned` which is the entry signal for both.
+
+## Documentation Reference
+
+- [Overview](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+- [Getting Started](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/getting-started/)
+- [Skills](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/skills/)
+- [MCP Tools](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/mcp-tools/)
+- [Workbench](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/workbench/)
+- [Validation Rules](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/validation/)
+- [Graph Analysis](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/analysis/)

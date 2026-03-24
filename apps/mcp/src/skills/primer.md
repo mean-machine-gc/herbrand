@@ -289,3 +289,13 @@ Use `/review-system` for birds-eye analysis after processes are defined.
 - **Views are derived** — never author views, they emerge from precondition/constraint reads
 - **Human decisions are user stories, automated decisions are automations** — the business view distinguishes them based on actor type
 - **Fix lint errors before moving on** — the pipeline gates: spec errors block graph building, system errors block analysis
+
+## Documentation Reference
+
+- [Overview](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+- [Getting Started](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/getting-started/)
+- [Skills](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/skills/)
+- [MCP Tools](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/mcp-tools/)
+- [Workbench](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/workbench/)
+- [Validation Rules](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/validation/)
+- [Graph Analysis](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/analysis/)

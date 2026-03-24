@@ -76,3 +76,13 @@ If missing decisions are identified:
 
 If the model is validated:
 - Move to `/enrich` for documentation
+
+## Documentation Reference
+
+- [Overview](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/overview/)
+- [Getting Started](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/getting-started/)
+- [Skills](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/skills/)
+- [MCP Tools](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/mcp-tools/)
+- [Workbench](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/workbench/)
+- [Validation Rules](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/validation/)
+- [Graph Analysis](https://mean-machine-gc.github.io/ubi-framework/toolkit/herbrand/analysis/)
