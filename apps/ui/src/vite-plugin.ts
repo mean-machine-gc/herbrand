@@ -34,11 +34,7 @@ export function herbrandSpecsPlugin(): Plugin {
     configureServer(server) {
       watchSpecs(projectFolder, (newSpecs) => {
         specs = newSpecs;
-        const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-        if (mod) {
-          server.moduleGraph.invalidateModule(mod);
-          server.ws.send({ type: "full-reload" });
-        }
+        server.ws.send({ type: "custom", event: "herbrand:specs-update", data: newSpecs });
       });
     },
   };
