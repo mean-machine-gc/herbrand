@@ -2,107 +2,61 @@
 name: herbrand-review
 user_invocable: true
 description: >-
-  Workflow for presenting the current model back to stakeholders as a review checkpoint. Ensures all pending scratchpad entries are formalized by spawning the Spec Agent first, then reads the full picture via get_user_stories and get_pipeline_results, organizes decisions into process flows, produces a plain-language narrative for each flow (who does it, what triggers it, what information is needed, what can go wrong, what happens on success, recovery flows), surfaces open scratchpad items and behavior-lint findings, and listens for corrections or new discoveries. Includes strict language rules — never expose framework terminology, always use the domain expert's vocabulary.
+  Workflow for presenting the current decision model back to stakeholders as a review
+  checkpoint. Reads the full picture via get_user_stories and get_pipeline_results,
+  organizes decisions into process flows, produces a plain-language narrative for each
+  flow, surfaces open scratchpad items and behavior-lint findings, and listens for
+  corrections or new discoveries.
 ---
 
-# Review Model
+# Review
 
-Use this skill when it's time to present the current understanding back to stakeholders. The review is a checkpoint — it lets the BA and domain experts confirm, correct, or expand what's been captured.
+Present the current model back to the domain expert in **plain business language**. This is a checkpoint — you're asking "does this match how your business works?"
 
-## When to review
+## Before reviewing
 
-- After a discovery session — "here's what I understood"
-- Before moving to a new area of the domain — confirm what we have so far
-- When the BA asks "what do we have?" or "show me what we've modeled"
-- When behavior-lint is mostly clean and the model feels stable enough to present
+1. Check scratchpad for unfomalized notes. If there's rich domain knowledge that hasn't been formalized yet, spawn the spec agent first.
+2. Call `get_pipeline_results` to understand the current system state.
+3. Call `get_user_stories` to get the full list of decisions.
+4. Call `get_user_story` for individual decisions you want to present in detail.
 
-## Workflow
+## How to present
 
-### Step 0: Formalize pending entries
+Organize decisions into **process flows** — sequences of related decisions that tell a story. Present each flow as a narrative:
 
-Before reviewing, check scratchpad files (both global `scratchpad/*.md` and context-specific `<context>/scratchpad/*.md`) for any decision cards with status `ready`. If any exist, spawn the `herbrand-spec-agent` subagent first and wait for it to complete. This ensures the review reflects the latest state of the model.
+**Example:**
 
-Cards with status `raw` or `needs-clarification` don't block the review — note them as "still working on" items.
+> **Placing an order**: A customer browses the catalog and adds products to their basket. The system checks stock — if an item is out of stock, it can't be added. The customer can adjust quantities or remove items. When ready, they confirm the basket and provide their shipping address and payment details. The system calculates the total and processes the payment. If the card is declined, the customer can retry with a different card. Once payment goes through, the order is confirmed and the stock is reserved.
 
-### Step 1: Read the full picture
+For each flow, cover:
+- **Who does it** — the roles involved
+- **What triggers it** — how it starts
+- **What information is needed** — what the decision-maker needs to see
+- **What can go wrong** — failure cases and recovery
+- **What happens on success** — what changes, who is notified
 
-Reviews can be **scoped by context** or **full system**:
-- **Scoped:** Call `get_user_stories` and `get_pipeline_results` with `context: "ordering"` to review just one area. Useful for focused sessions or when presenting to a specific team.
-- **Full:** Call without context parameter for the complete system view, including cross-module integration checks.
+## Surfacing gaps
 
-Call `get_user_stories` to see the business landscape — all decisions modeled so far, who's involved, what their goals are.
+After presenting the flows, raise any findings from `behaviorLint`:
 
-Call `get_pipeline_results` to see:
-- Any remaining spec-lint warnings (incomplete areas)
-- Behavior-lint warnings (gaps in the system)
-- These inform what to flag as "still working on" during the review
+- **Orphan outcomes** → "This event happens but I don't see what triggers it. Is it external?"
+- **Dead end outcomes** → "After this happens, nothing else reacts. Is the process done here?"
+- **Unhandled rejections** → "If this fails, what happens? Does someone step in?"
+- **Info never written** → "This information is needed but I don't see where it comes from."
+- **Info never read** → "This information is recorded but nobody seems to use it."
 
-### Step 2: Organize by process flow
+Frame these as curiosity, not criticism. The domain expert knows their business — you're checking your understanding.
 
-Group user stories into flows — sequences of decisions that chain together. Present them in the order they happen, not alphabetically.
+## After the review
 
-For example:
-- **Order lifecycle:** create → submit → confirm (or cancel) → fulfill
-- **Procurement lifecycle:** create PO → approve (or reject)
-
-Call `get_user_story` for each key decision to get the full business details.
-
-### Step 3: Present in plain language
-
-For each flow, produce a narrative:
-
-- A one-paragraph summary of the process end to end
-- For each decision in the flow:
-  - Who does it and what triggers it
-  - What information they need (from the views)
-  - What can go wrong (preconditions and constraints, in domain language)
-  - What happens when it succeeds
-  - What we're certain must be true afterwards (assertions)
-  - What happens when it fails (recovery flows, if any)
-- Open questions from the scratchpad related to this flow
-
-At the end:
-- Scratchpad items not yet formalized
-- Behavior-lint findings translated to plain language
-- Suggested areas to explore next
-
-### Step 4: Listen
-
-After presenting, listen carefully for:
-
-- **"That's not quite right"** → refine-decision
-- **"You're missing X"** → discover-decision or scratchpad
-- **"Actually those are the same thing"** → merge decisions (refine one, delete the other)
-- **"That reminds me..."** → new scratchpad entry
-
-## Language rules
-
-- **Never say:** spec, aggregate, module, context, union, decision type, precondition, constraint, assertion, info unit, intent decision, outcome decision, trigger
-- **Instead say:** process, step, check, rule, result, guarantee, information, decision, action, event, role
-- **Use the domain expert's vocabulary.** If they say "purchase request" not "purchase order", mirror their language.
-- **Present failures as natural scenarios.** "If the payment doesn't go through..." not "when constraint payment_failed fires..."
-- **Present assertions as guarantees.** "After this, we know that..." not "the assertion order_status_confirmed affects..."
-- **Flag uncertainty honestly.** "I'm not sure about X — can you clarify?"
-
-## Example review narrative
-
-> Here's what I understand about how orders work. Let me know where I've got it wrong.
->
-> A customer starts by creating an order — they pick their products and provide their details. This needs their contact info and valid products. If anything's missing or a product isn't available, the order isn't created.
->
-> Once the order exists, the customer can submit it for processing. The order needs to have items and be in draft. After submission, the system automatically checks payment and stock. If payment fails or items are out of stock, it doesn't go through. If everything checks out, the order is confirmed — payment is charged and stock is reserved.
->
-> At any point before confirmation, the customer can cancel. But not after confirmation.
->
-> After confirmation, the system starts fulfillment — picking, packing, shipping.
->
-> Things I'm still working on:
-> - What happens when fulfillment fails? Does the customer get notified?
-> - Can the system cancel an order, or only the customer?
+Listen for corrections and new discoveries. Route them:
+- **Correction to existing decision** → capture refinement in scratchpad, spawn spec agent (use the refine workflow)
+- **New process or decision** → capture in scratchpad (use the discover workflow)
+- **Out of scope for now** → note in scratchpad with rationale
 
 ## Rules
 
-- **Use `get_user_story`, not spec files.** The user story has everything you need in business-friendly format.
-- **Keep it conversational.** This is a checkpoint, not a document.
-- **Ask one or two questions at a time.** Don't overwhelm with twenty gaps.
-- **Read the scratchpad before reviewing.** Open questions are your agenda.
+- **Never use framework terminology.** No "intent decisions," "outcome streams," "assertions," "preconditions." Use domain language: "the customer decides," "the system checks," "if this fails," "what changes."
+- **Present flows, not individual specs.** The domain expert thinks in processes, not isolated decisions.
+- **One or two flows at a time.** Don't dump everything at once.
+- **Listen more than talk.** The review is for catching what you got wrong, not showing off what you got right.

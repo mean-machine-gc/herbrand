@@ -2,111 +2,60 @@
 name: herbrand-refine
 user_invocable: true
 description: >-
-  Workflow for refining an existing decision spec when conversation reveals new detail. The Conversation Agent captures the refinement in the scratchpad with status "ready" referencing the existing spec file, then spawns the Spec Agent to apply the change. Covers when to refine (new failure modes, corrections, new scenarios, sharper descriptions, changed roles or triggers), what to capture in the scratchpad, and specific patterns for adding preconditions, constraints, success outcomes, scenarios, and assertions. Emphasizes one refinement at a time and checking downstream impacts.
+  Workflow for refining existing decisions when conversation reveals new detail.
+  The conversation agent captures refinements in the scratchpad in plain language,
+  then spawns the spec agent to apply changes. Covers when to refine, what to
+  capture, and checking downstream impacts.
 ---
 
-# Refine Decision
+# Refine
 
-Use this skill when the conversation reveals new detail about a decision that already has a spec.
+When conversation reveals new detail about an existing decision — a failure mode you didn't know about, a business rule that's more nuanced than you thought, a role correction — capture it and let the spec agent apply the change.
 
 ## When to refine
 
-- A new way things can go wrong: "oh, and what if the supplier is blacklisted?"
-- A correction: "actually, only managers can do that, not any employee"
-- New scenarios that illustrate edge cases
-- A more precise description of an existing precondition or constraint
-- New assertions that must hold after a successful outcome
-- A change in who makes the decision or what triggers it
-- Discovery that a rejection should trigger a recovery flow
+- **New failure mode**: "Oh, and the payment can also fail if the billing address doesn't match the card."
+- **Corrected role**: "Actually, it's the team lead who approves that, not the operator."
+- **New business rule**: "We also check that the order total is above the minimum — we don't ship orders under $10."
+- **Sharper description**: "It's not just 'checking stock' — we check both warehouse stock and supplier availability."
+- **Changed trigger**: "That actually happens after the packing, not after the payment."
+- **New outcome path**: "If the address is international, we handle it differently — different courier, different timeline."
 
-## Workflow
+## How to capture
 
-### Step 1: Read the existing spec
-
-Read the `.hb.yaml` file before making any changes. Understand the current state. Use `get_user_story` to see the business-friendly view.
-
-### Step 2: Capture the refinement in scratchpad
-
-Create a decision card in `scratchpad/` that references the existing spec file:
+Write the refinement in the scratchpad in plain language. Reference what's being refined so the spec agent can find it.
 
 ```markdown
-### Refine: Decision Name
+## Payment refinement — 2026-03-24
 
-| Field | Value |
-|-------|-------|
-| Who decides? | (same as existing, or corrected role) |
-| What triggers it? | (same as existing, or corrected trigger) |
-| What can fail? | (existing failures + new failure modes) |
-| What it produces? | (same as existing, or new outcomes) |
-| Status | **ready** |
-| Existing spec | `existing-spec-name.hb.yaml` |
+The domain expert mentioned that payment can also fail if the billing address
+doesn't match the card's registered address. This is separate from a card
+decline — the card might be valid but the address check fails.
 
-- What changed: description of the refinement
-- Domain expert quote that prompted it
-- Note any downstream specs that might be affected
+This applies to the payment processing step — both first attempt and retries.
 ```
 
-The `Existing spec` row tells the spec agent this is a refinement, not a new decision.
+Don't structure this as a decision card or template. Write what you learned, in the domain expert's words.
 
-### Step 3: Note ripple effects
+## Spawning the spec agent
 
-A refinement can affect other decisions:
-- A new outcome might become the trigger for another decision
-- A new constraint creates a rejection event — consider whether any decision should react to it
-- A corrected trigger might disconnect a decision from its source
+After capturing the refinement, spawn the `herbrand-spec-agent` subagent. In the prompt:
+- Point to the scratchpad file with the refinement
+- Mention which existing decision area is affected (in domain terms)
+- The spec agent will identify the right spec to modify
 
-Note any potentially affected specs in the decision card's bullet points so the spec agent can check them.
+## After refinement
 
-### Step 4: Spawn the spec agent
+Call `get_pipeline_results` to check for downstream impacts:
+- Did adding a new failure mode create an unhandled rejection?
+- Did changing information requirements break an info flow?
+- Did the refinement reveal a gap in a related decision?
 
-Spawn the `herbrand-spec-agent` subagent. It will:
-- Read the existing spec and the scratchpad refinement card
-- Apply the changes
-- Check ripple effects on related specs
-- Validate with `get_pipeline_results`
-- Update scratchpad status to `formalized`
-
-### Step 5: Review results
-
-After the spec agent completes, review the affected decision via `get_user_story` to confirm the refinement looks right.
-
-## What to ask the BA
-
-When refining, ask targeted questions:
-
-- "You mentioned [new failure case] — does that apply to [this decision] or somewhere else?"
-- "Is [new precondition] always checked, or only in certain situations?"
-- "After [correction], does anything downstream change?"
-- "Can you give me a concrete example of when [reject/precondition] would happen?"
+If so, discuss with the domain expert — new refinements may be needed.
 
 ## Rules
 
-- **Always read the spec before capturing.** Understand before modifying.
-- **One refinement at a time.** Don't batch unrelated changes.
-- **Capture before modifying.** Write in the scratchpad first, then spawn the spec agent.
-- **Note ripple effects.** A change in one spec may affect others.
-- **Never edit spec files directly.** The spec agent handles formalization.
-
-## Refinement patterns reference
-
-These describe what the spec agent will do — use them to write accurate scratchpad cards:
-
-**Adding a new precondition (intent decision):**
-- New precondition with description, requiredInfo, and scenarios
-- May need new info units in project.hb.yaml
-
-**Adding a new constraint (outcome decision):**
-- New failure mode in shouldFailWith with description, requiredInfo, scenarios
-- Adds to outcomeRejects in project.hb.yaml
-
-**Adding a new success outcome (outcome decision):**
-- New outcome in shouldSucceedWith — at least one must have `condition: always`
-- Assertions for the new outcome in shouldAssert
-- Adds to outcomes in project.hb.yaml
-
-**Adding scenarios:**
-- Concrete real-world situations added to preconditions, constraints, or outcomes
-
-**Correcting the decision:**
-- Changed agent role, trigger, or fundamental structure
-- If a refinement fundamentally changes what the decision is, it's probably a new decision — use discover instead
+- **One refinement at a time.** Don't batch multiple changes. Each refinement should be a clean, traceable update.
+- **Write what changed, not framework details.** The spec agent handles the mapping.
+- **Check downstream.** Refinements can cascade — a new failure mode might need a recovery flow.
+- **Never modify spec files directly.** Always go through the spec agent.

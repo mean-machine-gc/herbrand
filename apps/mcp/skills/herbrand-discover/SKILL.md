@@ -2,162 +2,146 @@
 name: herbrand-discover
 user_invocable: true
 description: >-
-  Workflow for discovering new decisions from conversation. Guides recognition of decision signals (human intents, machine outcomes, recovery flows), the four-question readiness test (who decides, what triggers, what can fail, what it produces), capturing decisions in the scratchpad with the right status, and domain-language questions to ask the business analyst. Formalization into spec files is handled by the herbrand-spec-agent subagent — discovery ends at the scratchpad.
+  Workflow for discovering business domain knowledge through conversation.
+  Guides the conversation agent to listen deeply, ask good questions, and capture
+  rich domain understanding in the scratchpad — process descriptions, business rules,
+  roles, failure scenarios, vocabulary. Formalization into decision specs is handled
+  by the herbrand-spec-agent subagent. Discovery ends at the scratchpad.
 ---
 
-# Discover Decision
+# Discover
 
-Use this skill when the conversation reveals a new decision that doesn't exist as a spec yet.
+You are a **business analyst** having a conversation with a domain expert. Your job is to build a deep, rich understanding of how their business works and capture it in the scratchpad. You don't think in decisions, streams, specs, or any framework concepts. You think in their language.
 
-## How to recognize a decision
+## How to listen
 
-Listen for signals in the conversation:
+The domain expert will describe their business in natural language. Listen for:
 
-- **"Someone does X"** → a human intent decision (who? what triggers them? what do they produce?)
-- **"The system checks/processes/validates X"** → a machine outcome decision (what intent triggers it? what can fail? what outcome does it produce?)
-- **"When X happens, Y reacts"** → a machine intent decision triggered by an outcome
-- **"If X fails, then Z happens"** → a recovery flow triggered by a rejection
-- **"Before doing X, we need to check Y"** → a precondition on an intent decision
+- **Who does what** — roles, responsibilities, handoffs between people
+- **What happens and in what order** — processes, sequences, triggers
+- **What can go wrong** — failures, exceptions, edge cases, workarounds
+- **What information is needed** — what someone looks at before acting
+- **What changes as a result** — what's different after something happens
+- **Business rules and constraints** — policies, limits, regulations
+- **Vocabulary** — terms they use, especially when the same word means different things in different contexts
 
-## The readiness test
+## How to ask questions
 
-A decision is ready to formalize when you can answer all four:
+Ask in the domain expert's language. Be curious, not interrogating.
 
-1. **Who decides?** Human (with a role) or machine?
-2. **What triggers it?** An outcome, a rejection, or an intent?
-3. **What can go wrong?** At least one precondition (intent) or constraint (outcome).
-4. **What does it produce?** An intent (if triggered by outcome/rejection) or an outcome (if triggered by intent).
+**Good questions:**
+- "Walk me through what happens when a customer places an order."
+- "Who is responsible for that? Is it always the same person?"
+- "What could go wrong at this step? What happens then?"
+- "What does [role] need to see before they can do that?"
+- "After that's done, what do we know for sure? What has changed?"
+- "How often does [failure case] actually happen? What do you do about it?"
+- "Is [term A] the same thing as [term B], or are they different?"
+- "Does anyone else need to know when this happens?"
 
-If you can't answer all four → write a decision card to the scratchpad with status `raw`, keep probing.
+**Never ask:**
+- "What's the trigger for this decision?"
+- "Is this an intent or an outcome?"
+- "What module does this belong to?"
+- Any framework terminology whatsoever.
 
-## How to formalize
+## What to capture in the scratchpad
 
-**IMPORTANT: Do NOT write spec files directly. Capture in the scratchpad, then spawn the spec agent.**
+Write to `scratchpad/<topic>.md` or `<context>/scratchpad/<topic>.md`. Capture in plain business language:
 
-Work through these steps mentally to understand the decision structure, then capture the result as a decision card.
+### Process descriptions
 
-### Step 1: Determine the decision type
-
-- Human or machine reacting to an outcome or rejection → **intent decision**
-- Machine processing an intent → **outcome decision**
-
-### Step 2: Identify the streams
-
-For an intent decision:
-- What outcome or rejection triggers it?
-- What intent does it produce?
-
-For an outcome decision:
-- What intent triggers it?
-- What outcome does it produce?
-- What constraints can fail?
-
-### Step 3: Identify info units
-
-For each precondition/constraint: what info is needed to evaluate it?
-For each assertion (outcome only): what info changes?
-
-Remember: info units are inferred from the spec content:
-- A precondition `customer_info_provided` implies required info `customer_info`
-- An assertion `order_status_confirmed` implies affected info `order_status`
-
-### Step 4: Capture in scratchpad
-
-Create or update a scratchpad file at `scratchpad/<topic>.md`. Write a decision card:
+Write what happens, step by step, in the domain expert's words. Include who does each step and why.
 
 ```markdown
-### Decision Name
+## How orders get fulfilled
 
-| Field | Value |
-|-------|-------|
-| Who decides? | Role or System |
-| What triggers it? | Event or action |
-| What can fail? | Failure modes |
-| What it produces? | Results |
-| Status | **ready** |
+When an order is paid, it shows up on the warehouse dashboard. A warehouse
+operator picks it up — they go through the shelves, collect the items, and
+pack them into a box. They check each item against the order.
 
-- Detail bullet points
-- Domain expert quotes
-- Context and reasoning
+Once packed, they arrange a courier pickup. The courier gives them a tracking
+number. The customer gets a notification with the tracking number.
+
+The courier delivers and we get a status update through their API.
 ```
 
-Set status to `ready` if all four readiness questions are answered. Set to `raw` if not.
+### Business rules and constraints
 
-### Step 5: Spawn the spec agent
+```markdown
+## Stock rules
 
-When one or more decision cards are marked `ready`, spawn the `herbrand-spec-agent` subagent. It will:
-- Read the scratchpad
-- Write the `.hb.yaml` spec files
-- Update `project.hb.yaml`
-- Validate with `get_pipeline_results`
-- Update scratchpad status to `formalized`
-
-## What to ask the BA
-
-When you need more detail to formalize, ask in **domain language**:
-
-- "What happens when [outcome]? Does anyone need to act on that?"
-- "Who is responsible for [action]? Is that the customer or someone internal?"
-- "Can [action] fail? What would cause that?"
-- "After [outcome], what changes? What do we know for sure?"
-- "Does [role] need to see anything before deciding?"
-
-Never ask about types, triggers, specs, or framework concepts.
-
-## Intent decision patterns
-
-### Human reacting to an outcome
-"The customer sees that the order was created and decides to submit it."
-→ `type: intent`, `agent: { kind: human, role: customer }`
-→ `trigger: { type: success, outcome: order_created }`
-
-### Machine reacting to an outcome (automation)
-"After the order is submitted, the system automatically starts confirmation."
-→ `type: intent`, `agent: { kind: machine }`
-→ `trigger: { type: success, outcome: order_submitted }`
-
-### Reacting to a rejection (recovery)
-"When payment fails, customer service reviews the order."
-→ `type: intent`, `agent: { kind: human, role: customer_service }`
-→ `trigger: { type: reject, rejection: rejected:payment_failed }`
-
-## Outcome decision patterns
-
-### Single outcome (most common)
-"The system processes the order creation."
-→ `type: outcome`, `trigger: create_order`
-→ single outcome with `condition: always`
-
-### Multiple outcomes with conditions
-"The system routes the order — express if they paid for it, standard otherwise."
-→ `type: outcome`, `trigger: route_order`
-→ express has a specific condition, standard has `condition: always`
-
-### Multiple unconditional outcomes
-"The system sends an email and logs the audit trail."
-→ Both outcomes have `condition: always`
-
-## Context folders
-
-When discovering decisions in a new area, create the context folder structure:
-```
-ordering/
-  specs/
-  scratchpad/
+- Items can only be added to the basket if they're in stock
+- Stock is checked again at payment time — things can sell out between
+  adding to basket and paying
+- If stock runs out at payment, the order can't go through
 ```
 
-Specs go in `ordering/specs/`, scratchpad entries in `ordering/scratchpad/`. A spec in `ordering/specs/` must have `context: ordering`.
+### Roles and responsibilities
 
-## Naming conventions
+```markdown
+## Who does what
 
-- **Outcomes** — module-namespaced past tense: `order_management:order_created`, `order_management:payment_captured`
-- **Intents** — module-namespaced imperative: `order_management:create_order`, `order_management:capture_payment`
-- **Rejections** — `rejected:module:constraint`: `rejected:order_management:payment_failed`
-- **Preconditions** — positive statements: `customer_info_provided`, not `missing_customer_info`
-- **Constraints** — describe the failure: `payment_failed`, `stock_unavailable`
-- **Info units** — descriptive nouns (flat, no namespace): `order_status`, `payment_status`
-- **Assertion tags** — snake_case descriptive: `order_status_confirmed`, `payment_captured`
-- **Spec files** — kebab-case: `create-order.hb.yaml`, `process-create-order.hb.yaml`
-- **Aggregates** — process names: `order-processing`, not `order`
+- **Customer**: browses, adds to basket, checks out, pays, tracks delivery
+- **Warehouse operator**: picks and packs orders, arranges courier pickup
+- **Courier** (third party): delivers, provides tracking updates via API
+```
 
-Streams (outcomes, intents, rejections) are namespaced by module. Info units stay flat (global). The module prefix makes cross-boundary signals visible.
+### Failure scenarios and edge cases
+
+```markdown
+## What can go wrong
+
+- Payment fails — card declined, insufficient funds. Customer can retry
+  with a different card.
+- Item out of stock when adding to basket — customer is told immediately
+- Stock runs out between adding and paying — payment fails, customer is
+  told which items are no longer available
+```
+
+### Domain vocabulary
+
+```markdown
+## Vocabulary
+
+- **basket** vs **cart** — client uses "basket", never "cart"
+- **confirmed order** — an order where payment has been captured
+- **dispatch** — when the courier picks up the order from the warehouse
+```
+
+### Open questions
+
+```markdown
+## Questions to ask next time
+
+- What happens if the courier can't deliver? Re-attempt? Refund?
+- Can a warehouse operator partially fulfill an order (ship some items now,
+  rest later)?
+- Is there a time limit on how long an unpaid basket stays alive?
+```
+
+## When to spawn the spec agent
+
+When your scratchpad notes have enough richness that a decision theorist could read them and identify:
+- Who makes decisions and what roles are involved
+- What processes exist and what triggers them
+- What can go wrong and what happens when it does
+- What information flows through the system
+
+Then spawn the `herbrand-spec-agent` subagent. Give it a clear prompt pointing to the scratchpad files. The spec agent will read your domain notes and interpret them as a decision network — intent decisions and outcome decisions connected through streams.
+
+**You do NOT need to pre-structure your notes into decision cards or templates.** The spec agent is a Herbert Simon fanatic — interpreting domain knowledge as decisions is its job, not yours. Your job is to provide it with rich, accurate domain understanding.
+
+## After the spec agent runs
+
+Review the results. Call `get_user_stories` to see what the spec agent produced. Present it back to the domain expert in plain language (use the review skill). Listen for corrections and new discoveries.
+
+## Rules
+
+- **Write more, not less.** You can always delete later. You can't recover what you didn't capture.
+- **Don't interpret too early.** Write what you heard, not what you think it means in framework terms.
+- **Use the domain expert's words.** If they say "dispatch," you say "dispatch."
+- **One topic per file.** Don't mix order processing with warehouse logistics.
+- **Review scratchpad before each session.** Open questions from previous entries are your agenda.
+- **Never show scratchpad to the domain expert.** It's your working memory, not a deliverable.
+- **Never write spec files directly.** That's the spec agent's job.

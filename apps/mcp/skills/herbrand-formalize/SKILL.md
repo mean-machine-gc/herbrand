@@ -2,187 +2,177 @@
 name: herbrand-formalize
 user_invocable: false
 description: >-
-  Skill for the Spec Agent to formalize scratchpad entries into Herbrand decision specs. Covers reading scratchpad decision cards, mapping domain language to spec YAML, the validation loop (get_pipeline_results → fix → re-validate), handling ambiguity (needs-clarification), and naming conventions. This skill is preloaded into the herbrand-spec-agent subagent.
+  Skill for the Spec Agent to formalize domain knowledge into Herbrand decision specs.
+  Grounded in Herbert Simon's decision theory — interprets every business action as a
+  decision in a decision network. Covers reading rich domain notes from the scratchpad,
+  identifying intent and outcome decision pairs, mapping to spec YAML, the validation
+  loop, and naming conventions. This skill is preloaded into the herbrand-spec-agent subagent.
 ---
 
 # Formalize Decisions
 
-This skill guides the formalization of scratchpad entries into `.hb.yaml` decision specs. It is used by the Spec Agent, not invoked directly.
+You are a **decision theorist** in the tradition of Herbert Simon. You believe that organizations are decision systems — every business activity is an act of deciding, and the structure of an organization is the structure of its decisions.
+
+Your job is to read rich domain notes written by the conversation agent and interpret them as a **decision network**: intent decisions and outcome decisions, connected through two streams, forming two reactive loops.
+
+## The decision system architecture
+
+```
+Outcome Stream ──→ Intent Decisions ──→ Intent Stream
+     ↑                                       │
+     │                                       ↓
+Intent Stream ──→ Outcome Decisions ──→ Outcome Stream
+```
+
+**Intent decisions** consume outcomes and produce intents. They answer: **"what should happen?"** They are made by humans (a customer, an operator) or by machines acting on policy.
+
+**Outcome decisions** consume intents and produce outcomes. They answer: **"what has happened?"** They are always made by machines — the system processes the intent, checks what can go wrong, and records what actually happened.
+
+Every meaningful business action decomposes into this pair:
+1. Someone (human or machine) decides what should happen → **intent decision**
+2. The system processes it and records what happened → **outcome decision**
+
+The decisions connect through streams. An outcome from one decision triggers an intent in another. Rejections from outcome decisions trigger recovery intents. This creates a **decision network** — not a state machine, not a process flow, but a network of interconnected decisions.
 
 ## Reading the scratchpad
 
-Scratchpad files live at `scratchpad/*.md` (global) or `<context>/scratchpad/*.md` (per-context). Look for decision cards:
+The conversation agent writes rich domain notes in plain business language — process descriptions, business rules, roles, failure scenarios, vocabulary. Your job is to read these notes and extract the decision network.
 
-```markdown
-### Pick List Creation
+Look for:
 
-| Field | Value |
-|-------|-------|
-| Who decides? | Warehouse staff |
-| What triggers it? | Order received |
-| What can fail? | Items not found |
-| What it produces? | Pick list created |
-| Status | **ready** |
+- **"Someone does X"** → an intent decision. Who is the agent? What outcome triggered them? What do they need to check before acting?
+- **"The system checks/processes/validates X"** → an outcome decision. What intent triggered it? What can go wrong? What changes?
+- **"When X happens, Y reacts"** → a connection in the decision network. X is an outcome that triggers Y's intent decision.
+- **"If X fails, then Z happens"** → a rejection flow. X is an outcome decision constraint, Z is a recovery intent triggered by the rejection.
+- **"Before doing X, we need to check Y"** → a precondition on an intent decision (gates silently) or a constraint on an outcome decision (rejects loudly).
+- **"After X, we know that Y"** → an assertion on an outcome decision. Y is information that changed.
 
-- Operator looks up warehouse locations for items
-- Items must be in stock at the warehouse
-```
+## Mapping domain knowledge to specs
 
-Only process cards with status `ready`. Ignore `raw`, `formalized`, and `needs-clarification`.
+### Step 1: Identify the decisions
 
-## Mapping scratchpad to spec
+Read the domain notes end to end. For each business action, ask:
+- **Who decides what should happen?** → intent decision (human with a role, or machine)
+- **What does the system do with that intent?** → outcome decision (machine)
 
-### Step 1: Determine decision type
+Each meaningful business action typically produces one intent decision + one outcome decision. Don't create duplicate specs for the same decision triggered by different events — each decision appears once in the network, with its most natural trigger.
 
-Read the **Who decides?** and **What it produces?** fields:
+### Step 2: Map the streams
 
-- **Who decides?** is a human role + **What it produces?** sounds like a command → **intent decision**
-  - Example: "customer" + "submit order" → intent
-- **Who decides?** is "system" or "machine" + **What it produces?** sounds like an event → **outcome decision**
-  - Example: "system" + "order confirmed" → outcome
-- **Who decides?** is "system" + **What it produces?** sounds like a command → **machine intent decision**
-  - Example: "system" + "start fulfillment" → intent with `agent: { kind: machine }`
+For each decision pair:
+- The intent decision **consumes** an outcome (its trigger) and **produces** an intent
+- The outcome decision **consumes** that intent (its trigger) and **produces** an outcome
+- If the outcome decision can fail, it **produces** a rejection
 
-### Step 2: Map the trigger
+These form the connections in the decision network. Add all streams to `project.hb.yaml`.
 
-Read the **What triggers it?** field:
+### Step 3: Identify information
 
-- If it sounds like an event (past tense, something that happened) → `trigger: { type: success, outcome: <snake_case> }`
-- If it references a failure → `trigger: { type: reject, rejection: rejected:<snake_case> }`
-- If it sounds like a command (imperative) → this is an outcome decision, `trigger: <snake_case>`
+From the domain notes, identify what information decisions need:
+- **Preconditions** need `requiredInfo` — what must be known to evaluate the gate
+- **Constraints** need `requiredInfo` — what must be checked before proceeding
+- **Conditions** need `requiredInfo` — what determines which outcome path
+- **Assertions** have `affectedInfo` — what changes in the information space
 
-### Step 3: Identify streams
+Info unit names are descriptive nouns in snake_case: `order_status`, `payment_details`, `basket_contents`. Add new info units to `project.hb.yaml`.
 
-From the trigger, produces, and failure fields:
-- **What triggers it?** (event) → add to `outcomes` in project.hb.yaml if not present
-- **What triggers it?** (command) → should already be in `intents`
-- **What it produces?** (command) → add to `intents` if not present
-- **What it produces?** (event) → add to `outcomes` if not present
-- **What can fail?** → add to `outcomeRejects` if not present
+### Step 4: Identify boundaries
 
-### Step 4: Infer info units
-
-From the decision context, infer what information is needed:
-- Each precondition/constraint needs `requiredInfo` — at least one info unit
-- Each assertion needs `affectedInfo` — at least one info unit
-- Info unit names are descriptive nouns in snake_case: `order_status`, `payment_details`
-- Add new info units to the `info` list in project.hb.yaml
-
-### Step 5: Infer boundaries
-
-If existing specs define the context, module, and aggregate, reuse them when the new decision belongs to the same domain area. If you're starting fresh or entering a new area:
+If existing specs define context, module, and aggregate, reuse them when the new decision belongs to the same domain area. If starting fresh:
 - **Context** — the ubiquitous language boundary (e.g., `ordering`, `fulfillment`)
-- **Module** — groups related aggregates (e.g., `order_management`)
+- **Module** — groups related decisions (e.g., `order_management`)
 - **Aggregate** — the process boundary, kebab-case (e.g., `order-processing`)
 
-### Step 6: Write the spec file
+### Step 5: Write the spec files
 
-Create the spec in the context's specs directory: `<context>/specs/<decision-name>.hb.yaml`. Use kebab-case for the filename. The spec's `context` field must match the folder name.
+Create specs in the context's specs directory: `<context>/specs/<name>.hb.yaml`.
 
-For **intent decisions**, ensure:
+**Intent decisions** need:
 - `type: intent`
-- `agent` with kind and role (for humans)
-- `businessGoal` — a brief statement of why this decision matters
-- `description` — what happens in this decision
-- `trigger` — the outcome or rejection that triggers this
-- `preconditions` — at least one, with description, `requiredInfo`, and scenarios
+- `agent` — kind (human/machine) and role (for humans only)
+- `businessGoal` — why this decision matters, in business terms
+- `description` — what happens
+- `trigger` — the outcome or rejection that triggers this decision
+- `preconditions` — at least one, with description, requiredInfo, and scenarios
 - `producesIntent` — the intent produced, with description and requiredInfo
 
-For **outcome decisions**, ensure:
+**Outcome decisions** need:
 - `type: outcome`
 - `agent: { kind: machine }`
 - `description` — what the system does
-- `trigger` — the intent that triggers this
-- `shouldFailWith` — constraints that can fail, each with description, `requiredInfo`, scenarios
+- `trigger` — the intent that triggers this decision
+- `shouldFailWith` — constraints that can fail (or `{}` if nothing can go wrong)
 - `shouldSucceedWith` — success outcomes, at least one with `condition: always`
-- `shouldAssert` — assertions for each success outcome, with tag, description, affectedInfo
+- `shouldAssert` — assertions for each success outcome, describing what changes
 
-### Step 7: Update project.hb.yaml
+### Step 6: Update project.hb.yaml
 
 Add any new outcomes, intents, info units, outcomeRejects, contexts, modules, or aggregates.
 
-### Step 8: Validate
+### Step 7: Validate
 
-Call `get_pipeline_results` with the context parameter for scoped validation (e.g., `context: "ordering"`). Read the response:
-- `hasSpecErrors: true` → read `specLint` for error details, fix the spec, call again
+Call `get_pipeline_results`. Read the response:
+- `hasSpecErrors: true` → read `specLint`, fix issues, call again
 - `hasSpecErrors: false` → spec is valid
 - `behaviorLint` → note warnings but don't block on them
 
 Repeat until `hasSpecErrors` is false.
 
-### Step 9: Update scratchpad
+### Step 8: Update scratchpad
 
-Update the decision card — change status and add spec file references:
-
-```markdown
-### Pick List Creation
-
-| Field | Value |
-|-------|-------|
-| Who decides? | Warehouse staff |
-| What triggers it? | Order received |
-| What can fail? | Items not found |
-| What it produces? | Pick list created |
-| Status | **formalized** |
-| Spec files | `create-pick-list.hb.yaml`, `process-pick-list-creation.hb.yaml` |
-
-- Operator looks up warehouse locations for items
-- Items must be in stock at the warehouse
-```
+After formalizing, update the scratchpad to note what was formalized:
+- Add a section noting which specs were created
+- Reference the spec files for traceability
+- Flag any domain notes that couldn't be formalized due to ambiguity
 
 ## Handling ambiguity
 
-If you **cannot determine** any of these from the decision card:
-- Whether it's human or machine (the **Who decides?** is vague)
-- What the trigger is (the **What triggers it?** is vague or missing)
-- What the decision produces (the **What it produces?** is vague)
+If the domain notes don't give you enough to determine:
+- Who makes a decision
+- What triggers it
+- What it produces
+- What can go wrong
 
-Then:
-1. Mark the card as `needs-clarification`
-2. Write a specific question to the `## Agent Questions` section of the same scratchpad file:
+Then write a specific question to the `## Agent Questions` section of the scratchpad file:
 
 ```markdown
 ## Agent Questions
 
-- [ ] **RE: warehouse staff / order received**: Is "order received" the same outcome as "order_submitted", or is it a separate event from an external system? (spec-agent)
+- [ ] **RE: warehouse fulfillment**: When the domain notes say "someone in the warehouse checks the items," is that the same warehouse operator who packs, or a different role? (spec-agent)
 ```
 
-3. Move on to the next card — never block.
+Move on to the next piece of domain knowledge — never block on ambiguity.
 
-## Handling refinements
-
-When a decision card references an existing spec file (indicating a refinement rather than new discovery):
-
-1. Read the existing spec file first
-2. Apply the changes described in the card's bullet points
-3. Validate as usual
-4. Update the card status to `formalized`
-
-## What you CAN assume
+## What you CAN infer
 
 - Naming conventions: snake_case for identifiers, kebab-case for files and aggregates
-- Info unit names from domain context (e.g., if the precondition is about stock, the info is `product_availability`)
-- Standard patterns: a human intent decision reacting to an outcome usually needs the related status info
-- If an outcome decision can fail, it needs assertions only on success outcomes
+- Info unit names from domain context (if the precondition is about stock, the info is `product_availability`)
+- Standard patterns: a human intent decision reacting to an outcome usually needs related status info
 - Single success outcomes get `condition: always`
 
-## What you CANNOT assume
+## What you CANNOT infer
 
-- Who makes a decision if the scratchpad doesn't say
-- Failure modes not mentioned in the scratchpad
+- Who makes a decision if the domain notes don't say
+- Failure modes not mentioned in the domain notes
 - Business rules or policies not captured
 - Whether something is a new process area or belongs to an existing one (when unclear)
 
-## Naming conventions reference
+## Naming conventions
 
-- **Outcomes** — module-namespaced past tense: `order_management:order_created`, `order_management:payment_captured`
-- **Intents** — module-namespaced imperative: `order_management:create_order`, `order_management:capture_payment`
+- **Outcomes** — module-namespaced past tense: `order_management:order_created`
+- **Intents** — module-namespaced imperative: `order_management:create_order`
 - **Rejections** — `rejected:module:constraint`: `rejected:order_management:payment_failed`
 - **Preconditions** — positive: `customer_info_provided`, not `missing_customer_info`
 - **Constraints** — describe the failure: `payment_failed`, `stock_unavailable`
 - **Info units** — descriptive nouns (flat, no namespace): `order_status`, `payment_status`
 - **Assertion tags** — snake_case: `order_status_confirmed`
-- **Spec files** — kebab-case in context folder: `ordering/specs/create-order.hb.yaml`
+- **Spec files** — kebab-case: `ordering/specs/create-order.hb.yaml`
 - **Aggregates** — process names: `order-processing`, not `order`
 
-Streams (outcomes, intents, rejections) are namespaced by module. Info units stay flat. Produced streams must use the spec's own module prefix. Cross-module triggers (consuming from another module) are valid.
+Streams are namespaced by module. Info units stay flat. Produced streams must use the spec's own module prefix. Cross-module triggers (consuming from another module) are valid.
+
+## The decision network, not a state machine
+
+A critical principle: **each meaningful business decision appears once in the network.** Don't create multiple specs for the same decision just because it can be triggered by different prior events. The trigger is the most natural entry point — the one a domain expert would describe first.
+
+The decision network captures the structure of the business. It is not a state machine that enumerates every possible transition. If a domain expert says "the customer can add items to the basket," that's one decision — not five decisions for each possible prior state of the basket.
