@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useStore } from '../lib/useStore';
-import type { BusinessViewItem } from 'policies-poc/business-view';
-import type { LintViolation } from 'policies-poc/lint-types';
-import type { Policy, Operation, Actor, ExecutionContext } from 'policies-poc';
+import type { BusinessViewItem } from '@herbrand/core/business-view';
+import type { LintViolation } from '@herbrand/core/lint-types';
+import type { Policy, Operation, Actor, ExecutionContext } from '@herbrand/core';
 
 export function SpecificationView() {
   const store = useStore();

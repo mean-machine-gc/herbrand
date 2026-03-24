@@ -1,6 +1,6 @@
-declare module "virtual:herbrand-specs" {
+declare module 'virtual:herbrand-specs' {
   export type SpecFile = {
-    fileName: string;
+    path: string;
     content: string;
   };
   export const specs: SpecFile[];

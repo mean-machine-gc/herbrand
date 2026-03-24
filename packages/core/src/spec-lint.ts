@@ -1,132 +1,159 @@
-import type { ParsedSpecs, LintResult } from "./types.js";
-import { parseStreamNamespace } from "./schemas.js";
+/**
+ * Spec-level lint checks — pure functions, single decision in isolation.
+ *
+ * Each function takes a single Policy or Operation and returns violations.
+ * No system context needed.
+ */
 
-export function specLint(parsed: ParsedSpecs, context?: string): LintResult[] {
-  const results: LintResult[] = [];
-  const { specs: allSpecs, declaredInfos } = parsed;
+import type { Policy, Operation } from './index.js';
+import type { LintViolation } from './lint-types.js';
 
-  // Filter by context if provided
-  const specs = context
-    ? Object.fromEntries(Object.entries(allSpecs).filter(([, s]) => s.sourceContext === context))
-    : allSpecs;
+// ── Helpers ─────────────────────────────────────────────────
 
-  function warn(rule: string, message: string, spec?: string) {
-    results.push({ level: "warning", rule, message, spec: spec ?? null });
+function isPolicy(d: Policy | Operation): d is Policy {
+  return 'emits' in d;
+}
+
+function isOperation(d: Policy | Operation): d is Operation {
+  return 'unconditionalOutcome' in d;
+}
+
+// ── Identity & structure ────────────────────────────────────
+
+export function checkDecisionHasDescription(decision: Policy | Operation): LintViolation[] {
+  if (!decision.description || decision.description.trim() === '') {
+    return [{ ruleId: 'spec/decision-has-description', level: 'warning', target: decision.id,
+      message: 'missing description' }];
   }
+  return [];
+}
 
-  function error(rule: string, message: string, spec?: string) {
-    results.push({ level: "error", rule, message, spec: spec ?? null });
+export function checkDecisionHasContext(decision: Policy | Operation): LintViolation[] {
+  if (!decision.context || decision.context.trim() === '') {
+    return [{ ruleId: 'spec/decision-has-context', level: 'error', target: decision.id,
+      message: 'missing execution context reference' }];
   }
+  return [];
+}
 
-  for (const [name, spec] of Object.entries(specs)) {
-    // Missing trigger
-    if (!spec.trigger) {
-      error("missing_trigger", "Decision has no trigger defined", name);
-    }
+// ── Policy-specific ─────────────────────────────────────────
 
-    // No choices
-    if (spec.choices.length === 0) {
-      error("missing_choices", "Decision has no success choices defined", name);
-    }
+export function checkPolicyHasActivation(decision: Policy | Operation): LintViolation[] {
+  if (!isPolicy(decision)) return [];
+  if (decision.activatedBy.length === 0) {
+    return [{ ruleId: 'spec/policy-has-activation', level: 'error', target: decision.id,
+      message: 'not activated by any outcome — will never fire' }];
+  }
+  return [];
+}
 
-    // No rejects
-    if (spec.rejects.length === 0) {
-      warn("no_rejects", "Decision has no rejection paths — is nothing able to go wrong?", name);
-    }
+export function checkPolicyHasEmits(decision: Policy | Operation): LintViolation[] {
+  if (!isPolicy(decision)) return [];
+  if (!decision.emits || decision.emits.trim() === '') {
+    return [{ ruleId: 'spec/policy-has-emits', level: 'error', target: decision.id,
+      message: 'does not declare what intent it emits' }];
+  }
+  return [];
+}
 
-    // Missing description
-    if (!spec.description) {
-      warn("missing_description", "Decision has no description", name);
-    }
+export function checkPolicyHasPreconditions(decision: Policy | Operation): LintViolation[] {
+  if (!isPolicy(decision)) return [];
+  if (decision.preconditions.length === 0) {
+    return [{ ruleId: 'spec/policy-has-preconditions', level: 'info', target: decision.id,
+      message: 'has no preconditions — will always fire when activated' }];
+  }
+  return [];
+}
 
-    // Missing context
-    if (!spec.context) {
-      warn("missing_context", "Decision has no context assigned", name);
-    }
-
-    // Missing module
-    if (!spec.module) {
-      warn("missing_module", "Decision has no module assigned", name);
-    }
-
-    // Missing aggregate
-    if (!spec.aggregate) {
-      warn("missing_aggregate", "Decision has no aggregate assigned", name);
-    }
-
-    // Missing role on intent decisions
-    if (spec.type === "intent" && !spec.role) {
-      warn("missing_role", "Intent decision has no agent role — who decides?", name);
-    }
-
-    // Missing businessGoal on intent decisions
-    if (spec.type === "intent" && !spec.businessGoal) {
-      warn("missing_business_goal", "Intent decision has no business goal — why does the actor want this?", name);
-    }
-
-    // Outcome decision condition rules:
-    // - Single outcome must have condition: 'always'
-    // - Multiple outcomes must have at least one condition: 'always'
-    if (spec.type === "outcome" && spec.choices.length > 0) {
-      for (const choice of spec.choices) {
-        const det = spec.choiceDetails[choice];
-        if (spec.choices.length === 1 && (!det || det.condition !== "always")) {
-          error("single_outcome_not_always", `Outcome decision has one success outcome '${choice}' — it must have condition 'always'`, name);
-        }
-      }
-      if (spec.choices.length > 1) {
-        const hasAlways = spec.choices.some((choice) => {
-          const det = spec.choiceDetails[choice];
-          return det && det.condition === "always";
-        });
-        if (!hasAlways) {
-          error("missing_default_condition", `Outcome decision has ${spec.choices.length} success outcomes but none has condition 'always'`, name);
-        }
-      }
-    }
-
-    // Intent decisions without requiredInfo
-    if (spec.type === "intent" && spec.requiredInfo.length === 0) {
-      warn("missing_required_info", "Intent decision has no requiredInfo — how is it deciding?", name);
-    }
-
-    // Outcome decisions without affectedInfo
-    if (spec.type === "outcome" && spec.affectedInfo.length === 0) {
-      warn("missing_affected_info", "Outcome decision has no affectedInfo — what state does it change?", name);
-    }
-
-    // Rejects without scenarios
-    for (const reject of spec.rejectsWithoutScenarios) {
-      warn("missing_scenarios", `Reject '${reject}' has no scenarios`, name);
-    }
-
-    // Context folder mismatch: spec in ordering/specs/ must have context: ordering
-    if (spec.sourceContext && spec.context && spec.context !== spec.sourceContext) {
-      error("context_folder_mismatch", `Spec declares context '${spec.context}' but lives in '${spec.sourceContext}/specs/' — must match folder`, name);
-    }
-
-    // Stream namespace mismatch: produced streams should use the spec's module as prefix
-    if (spec.module) {
-      for (const choice of spec.choices) {
-        const { module: streamModule } = parseStreamNamespace(choice);
-        if (streamModule && streamModule !== spec.module) {
-          warn("stream_namespace_mismatch", `Produced stream '${choice}' has module prefix '${streamModule}' but spec belongs to module '${spec.module}'`, name);
-        }
-      }
+export function checkPreconditionHasReads(decision: Policy | Operation): LintViolation[] {
+  if (!isPolicy(decision)) return [];
+  const violations: LintViolation[] = [];
+  for (const pre of decision.preconditions) {
+    if (pre.reads.length === 0) {
+      violations.push({ ruleId: 'spec/precondition-has-reads', level: 'warning', target: decision.id,
+        message: `precondition "${pre.id}" does not declare any info points it reads` });
     }
   }
+  return violations;
+}
 
-  // Declared info never used in any spec
-  const allUsedInfo = new Set<string>();
-  for (const spec of Object.values(specs)) {
-    for (const i of spec.requiredInfo) allUsedInfo.add(i);
-    for (const i of spec.affectedInfo) allUsedInfo.add(i);
-  }
-  for (const info of declaredInfos) {
-    if (!allUsedInfo.has(info)) {
-      warn("info_declared_unused", `Info '${info}' is declared in the Info union but never referenced by any spec`);
+export function checkPreconditionHasDescription(decision: Policy | Operation): LintViolation[] {
+  if (!isPolicy(decision)) return [];
+  const violations: LintViolation[] = [];
+  for (const pre of decision.preconditions) {
+    if (!pre.description || pre.description.trim() === '') {
+      violations.push({ ruleId: 'spec/precondition-has-description', level: 'warning', target: decision.id,
+        message: `precondition "${pre.id}" is missing a description` });
     }
   }
+  return violations;
+}
 
-  return results;
+// ── Operation-specific ──────────────────────────────────────
+
+export function checkOperationHasActivation(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  if (decision.activatedBy.length === 0) {
+    return [{ ruleId: 'spec/operation-has-activation', level: 'error', target: decision.id,
+      message: 'not activated by any intent — will never execute' }];
+  }
+  return [];
+}
+
+export function checkOperationHasUnconditionalOutcome(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  if (!decision.unconditionalOutcome || !decision.unconditionalOutcome.kind || decision.unconditionalOutcome.kind.trim() === '') {
+    return [{ ruleId: 'spec/operation-has-unconditional-outcome', level: 'error', target: decision.id,
+      message: 'missing unconditional outcome' }];
+  }
+  return [];
+}
+
+export function checkOperationHasConstraints(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  if (decision.constraints.length === 0) {
+    return [{ ruleId: 'spec/operation-has-constraints', level: 'info', target: decision.id,
+      message: 'has no constraints — will always succeed when activated' }];
+  }
+  return [];
+}
+
+export function checkConstraintHasReads(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  const violations: LintViolation[] = [];
+  for (const c of decision.constraints) {
+    if (c.reads.length === 0) {
+      violations.push({ ruleId: 'spec/constraint-has-reads', level: 'warning', target: decision.id,
+        message: `constraint "${c.id}" does not declare any info points it reads` });
+    }
+  }
+  return violations;
+}
+
+export function checkConditionalOutcomeHasConditionReads(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  const violations: LintViolation[] = [];
+  for (const co of decision.conditionalOutcomes) {
+    if (co.condition.reads.length === 0) {
+      violations.push({ ruleId: 'spec/conditional-outcome-has-condition-reads', level: 'warning', target: decision.id,
+        message: `conditional outcome "${co.outcome.kind}" condition does not declare any info points it reads` });
+    }
+  }
+  return violations;
+}
+
+export function checkOutcomeHasDescription(decision: Policy | Operation): LintViolation[] {
+  if (!isOperation(decision)) return [];
+  const violations: LintViolation[] = [];
+  if (!decision.unconditionalOutcome.description || decision.unconditionalOutcome.description.trim() === '') {
+    violations.push({ ruleId: 'spec/outcome-has-description', level: 'warning', target: decision.id,
+      message: `unconditional outcome "${decision.unconditionalOutcome.kind}" is missing a description` });
+  }
+  for (const co of decision.conditionalOutcomes) {
+    if (!co.outcome.description || co.outcome.description.trim() === '') {
+      violations.push({ ruleId: 'spec/outcome-has-description', level: 'warning', target: decision.id,
+        message: `conditional outcome "${co.outcome.kind}" is missing a description` });
+    }
+  }
+  return violations;
 }

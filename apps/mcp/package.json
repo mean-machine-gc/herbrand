@@ -1,6 +1,6 @@
 {
   "name": "herbrand-mcp",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Herbrand MCP server — decision-first business analysis for information systems",
   "type": "module",
   "bin": {
@@ -8,23 +8,20 @@
   },
   "files": [
     "dist/",
-    "skills/"
+    "src/skills/"
   ],
   "scripts": {
+    "start": "npx tsx src/index.ts",
     "build": "tsc",
-    "bundle": "tsup",
-    "prepublishOnly": "npm run bundle",
-    "start": "node dist/index.js"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "chokidar": "^4.0.0",
+    "@herbrand/core": "*",
     "fastmcp": "^3.0.0"
   },
   "devDependencies": {
-    "@herbrand/core": "0.1.0",
-    "@herbrand/signals": "0.1.0",
     "@types/node": "^22.0.0",
-    "tsup": "^8.5.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.9.3"
   },
   "keywords": ["herbrand", "mcp", "business-analysis", "decision-modelling", "cqrs", "event-sourcing"],
@@ -32,9 +29,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/mean-machine-gc/herbrand"
-  },
-  "homepage": "https://github.com/mean-machine-gc/herbrand",
-  "bugs": {
-    "url": "https://github.com/mean-machine-gc/herbrand/issues"
   }
 }

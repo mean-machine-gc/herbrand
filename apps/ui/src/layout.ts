@@ -7,8 +7,8 @@
 
 import Dagre from '@dagrejs/dagre';
 import type { Node, Edge } from '@xyflow/react';
-import type { DecisionGraph, GraphNode as CoreGraphNode, GraphEdge as CoreGraphEdge, SignalNode, PolicyNode, OperationNode, ViewNode } from 'policies-poc/graph';
-import type { Actor, ExecutionContext } from 'policies-poc';
+import type { DecisionGraph, GraphNode as CoreGraphNode, GraphEdge as CoreGraphEdge, SignalNode, PolicyNode, OperationNode, ViewNode } from '@herbrand/core/graph';
+import type { Actor, ExecutionContext } from '@herbrand/core';
 
 // Re-export node types for CustomNode / SwimlaneNode
 export type GraphNode = CoreGraphNode;

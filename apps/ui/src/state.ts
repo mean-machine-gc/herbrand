@@ -1,14 +1,32 @@
-import { specs as rawSpecs } from "virtual:herbrand-specs";
-import { HerbrandStore } from "@herbrand/signals";
+/**
+ * Client-side state — wires the virtual module + HMR to the HerbrandStore.
+ *
+ * The store is injected with rule sets and analysis map here,
+ * keeping the store itself free of graphology and heavy dependencies.
+ */
 
-export const store = new HerbrandStore();
+import { specs } from 'virtual:herbrand-specs';
+import { HerbrandStore } from '@herbrand/core/store';
+import { specLintRules } from '@herbrand/core/spec-linting-rules';
+import { systemLintRules } from '@herbrand/core/system-linting-rules';
+import { graphLintRules } from '@herbrand/core/graph-linting-rules';
+import { graphAnalysisMap } from '@herbrand/core/graph-analysis-map';
 
-// Feed the virtual module specs into the store
-store.setSpecFiles(rawSpecs);
+export const store = new HerbrandStore({
+  specLintRules,
+  systemLintRules,
+  graphLintRules,
+  graphAnalysisMap,
+});
 
-// Accept live spec updates from the vite plugin's file watcher
+// Initial load from virtual module
+store.setFiles(specs);
+console.log(`[herbrand] initial load: ${specs.length} files, status: ${store.pipelineStatus}`);
+
+// HMR: receive updates from Vite plugin
 if (import.meta.hot) {
-  import.meta.hot.on("herbrand:specs-update", (newSpecs) => {
-    store.setSpecFiles(newSpecs);
+  import.meta.hot.on('herbrand:specs-update', (newFiles: typeof specs) => {
+    store.setFiles(newFiles);
+    console.log(`[herbrand] updated: ${newFiles.length} files, status: ${store.pipelineStatus}`);
   });
 }

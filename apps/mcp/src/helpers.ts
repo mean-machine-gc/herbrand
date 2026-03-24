@@ -6,7 +6,7 @@
 
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import type { HerbrandStore, StoreFile } from 'policies-poc/store';
+import type { HerbrandStore, StoreFile } from '@herbrand/core/store';
 
 export function collectProjectFiles(dir: string, base: string = ''): StoreFile[] {
   const files: StoreFile[] = [];

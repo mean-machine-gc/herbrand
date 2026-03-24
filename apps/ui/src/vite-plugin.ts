@@ -1,25 +1,69 @@
-import type { Plugin } from "vite";
-import path from "node:path";
-import { readSpecs, watchSpecs } from "@herbrand/core/watcher";
-import type { SpecFile } from "@herbrand/core";
+/**
+ * Vite plugin: watches YAML spec files and pushes updates to the UI via WebSocket.
+ *
+ * - Reads all .yaml files from the project folder
+ * - Serves initial data via a virtual module
+ * - On file change, re-reads and sends update via Vite's built-in WebSocket
+ */
 
-const VIRTUAL_MODULE_ID = "virtual:herbrand-specs";
-const RESOLVED_ID = "\0" + VIRTUAL_MODULE_ID;
+import type { Plugin, ViteDevServer } from 'vite';
+import { watch } from 'chokidar';
+import { readFileSync, readdirSync, statSync } from 'fs';
+import { join, relative } from 'path';
+
+export type SpecFilePayload = {
+  path: string;
+  content: string;
+};
+
+const VIRTUAL_MODULE_ID = 'virtual:herbrand-specs';
+const RESOLVED_ID = '\0' + VIRTUAL_MODULE_ID;
+
+function collectProjectFiles(dir: string, base: string = ''): SpecFilePayload[] {
+  const files: SpecFilePayload[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const rel = base ? join(base, entry) : entry;
+    if (statSync(full).isDirectory()) {
+      files.push(...collectProjectFiles(full, rel));
+    } else if (entry.endsWith('.yaml') || entry.endsWith('.md')) {
+      files.push({ path: rel, content: readFileSync(full, 'utf-8') });
+    }
+  }
+  return files;
+}
 
 export function herbrandSpecsPlugin(): Plugin {
-  let projectFolder = process.env.HERBRAND_FOLDER || process.cwd();
-  let specs: SpecFile[] = [];
+  const projectFolder = process.env.HERBRAND_FOLDER || join(process.cwd(), '..', '..', 'packages', 'core', 'example');
+  let server: ViteDevServer | null = null;
+  let currentFiles: SpecFilePayload[] = [];
+
+  function refresh() {
+    try {
+      currentFiles = collectProjectFiles(projectFolder);
+    } catch {
+      currentFiles = [];
+    }
+  }
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  function debouncedRefresh() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      refresh();
+      if (server) {
+        server.ws.send({
+          type: 'custom',
+          event: 'herbrand:specs-update',
+          data: currentFiles,
+        });
+      }
+      console.log(`[herbrand] ${currentFiles.length} files updated`);
+    }, 100);
+  }
 
   return {
-    name: "herbrand-specs",
-
-    configResolved() {
-      if (process.env.HERBRAND_FOLDER) {
-        projectFolder = path.resolve(process.env.HERBRAND_FOLDER);
-      }
-      // Initial read — works for both dev and build
-      specs = readSpecs(projectFolder);
-    },
+    name: 'herbrand-specs',
 
     resolveId(id) {
       if (id === VIRTUAL_MODULE_ID) return RESOLVED_ID;
@@ -27,15 +71,26 @@ export function herbrandSpecsPlugin(): Plugin {
 
     load(id) {
       if (id === RESOLVED_ID) {
-        return `export const specs = ${JSON.stringify(specs)};`;
+        refresh();
+        return `export const specs = ${JSON.stringify(currentFiles)};`;
       }
     },
 
-    configureServer(server) {
-      watchSpecs(projectFolder, (newSpecs) => {
-        specs = newSpecs;
-        server.ws.send({ type: "custom", event: "herbrand:specs-update", data: newSpecs });
+    configureServer(srv) {
+      server = srv;
+      refresh();
+
+      const watcher = watch(projectFolder, {
+        ignoreInitial: true,
+        depth: 5,
+        ignored: ['**/node_modules/**', '**/.git/**'],
       });
+
+      watcher.on('change', debouncedRefresh);
+      watcher.on('add', debouncedRefresh);
+      watcher.on('unlink', debouncedRefresh);
+
+      console.log(`[herbrand] watching ${projectFolder}`);
     },
   };
 }

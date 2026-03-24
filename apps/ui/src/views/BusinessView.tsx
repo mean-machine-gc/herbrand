@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../lib/useStore';
-import type { BusinessViewItem } from 'policies-poc/business-view';
+import type { BusinessViewItem } from '@herbrand/core/business-view';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 
 export function BusinessView() {

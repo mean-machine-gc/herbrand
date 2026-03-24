@@ -1,33 +1,41 @@
 {
   "name": "@herbrand/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./watcher": {
-      "types": "./dist/watcher.d.ts",
-      "import": "./dist/watcher.js"
-    }
+    ".": "./src/index.ts",
+    "./store": "./src/store.ts",
+    "./schemas": "./src/schemas.ts",
+    "./graph": "./src/graph.ts",
+    "./lint-types": "./src/lint-types.ts",
+    "./spec-linting-rules": "./src/spec-linting-rules.ts",
+    "./system-linting-rules": "./src/system-linting-rules.ts",
+    "./graph-linting-rules": "./src/graph-linting-rules.ts",
+    "./graph-analysis-map": "./src/graph-analysis-map.ts",
+    "./graph-analysis": "./src/graph-analysis.ts",
+    "./business-view": "./src/business-view.ts",
+    "./system-summary": "./src/system-summary.ts"
   },
   "scripts": {
-    "build": "tsc"
-  },
-  "dependencies": {
-    "chokidar": "^5.0.0",
-    "dagre": "^0.8.5",
-    "yaml": "2.7.0",
-    "zod": "^3.25.0",
-    "zod-to-json-schema": "^3.25.0"
+    "typecheck": "tsc --noEmit",
+    "example": "npx tsx src/load-example.ts"
   },
   "devDependencies": {
-    "@types/dagre": "^0.7.0",
-    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@preact/signals-core": "^1.14.0",
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
+    "graphology-components": "^1.5.4",
+    "graphology-dag": "^0.4.1",
+    "graphology-metrics": "^2.4.0",
+    "graphology-shortest-path": "^2.1.0",
+    "graphology-traversal": "^0.3.1",
+    "graphology-types": "^0.24.8",
+    "yaml": "^2.7.0",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.1"
   }
 }
