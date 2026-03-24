@@ -2,8 +2,8 @@
  * Shared lint types used across all lint scopes.
  */
 
-import type { Policy, Operation, System } from './index.js';
-import type { DecisionGraph } from './graph.js';
+import type { Policy, Operation, System } from '../index.js';
+import type { DecisionGraph } from '../graph/graph.js';
 
 export type LintLevel = 'info' | 'warning' | 'error';
 

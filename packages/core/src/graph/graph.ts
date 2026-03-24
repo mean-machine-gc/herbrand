@@ -15,7 +15,7 @@
  *   - effects:   signal → info point (outcome modifies info state — optional deeper level)
  */
 
-import type { System, Policy, Operation } from './index.js';
+import type { System, Policy, Operation } from '../index.js';
 
 // ============================================================
 // Node types

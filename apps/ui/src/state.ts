@@ -7,10 +7,10 @@
 
 import { specs } from 'virtual:herbrand-specs';
 import { HerbrandStore } from '@herbrand/core/store';
-import { specLintRules } from '@herbrand/core/spec-linting-rules';
-import { systemLintRules } from '@herbrand/core/system-linting-rules';
-import { graphLintRules } from '@herbrand/core/graph-linting-rules';
-import { graphAnalysisMap } from '@herbrand/core/graph-analysis-map';
+import { specLintRules } from '@herbrand/core/lint/spec-rules';
+import { systemLintRules } from '@herbrand/core/lint/system-rules';
+import { graphLintRules } from '@herbrand/core/lint/graph-rules';
+import { graphAnalysisMap } from '@herbrand/core/graph/analysis-map';
 
 export const store = new HerbrandStore({
   specLintRules,

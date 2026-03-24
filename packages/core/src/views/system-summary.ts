@@ -5,9 +5,9 @@
  * what exists and how to ask for details.
  */
 
-import type { System } from './index.js';
+import type { System } from '../index.js';
 import type { BusinessViewItem } from './business-view.js';
-import type { LintViolation } from './lint-types.js';
+import type { LintViolation } from '../lint/lint-types.js';
 
 export type SystemSummary = {
   readonly status: string;

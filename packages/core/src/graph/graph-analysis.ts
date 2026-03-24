@@ -5,7 +5,7 @@
  */
 
 import { UndirectedGraph } from 'graphology';
-import type { System } from './index.js';
+import type { System } from '../index.js';
 import type { DecisionGraph } from './graph.js';
 import { toGraphology, nodesOfType, edgesOfType } from './graphology-adapter.js';
 import { bfsFromNode } from 'graphology-traversal';

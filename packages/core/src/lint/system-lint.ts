@@ -4,7 +4,7 @@
  * If any of these fail, the graph should not be built.
  */
 
-import type { Policy, Operation, System } from './index.js';
+import type { Policy, Operation, System } from '../index.js';
 import type { LintViolation } from './lint-types.js';
 
 export function checkUniqueDecisionIds(system: System): LintViolation[] {

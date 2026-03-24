@@ -5,10 +5,10 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { resolve, join } from 'path';
 import { HerbrandStore, type StoreFile } from './store.js';
-import { specLintRules } from './spec-linting-rules.js';
-import { systemLintRules } from './system-linting-rules.js';
-import { graphLintRules } from './graph-linting-rules.js';
-import { graphAnalysisMap } from './graph-analysis-map.js';
+import { specLintRules } from './lint/spec-linting-rules.js';
+import { systemLintRules } from './lint/system-linting-rules.js';
+import { graphLintRules } from './lint/graph-linting-rules.js';
+import { graphAnalysisMap } from './graph/graph-analysis-map.js';
 
 const exampleDir = resolve(process.cwd(), 'example');
 

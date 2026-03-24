@@ -13,7 +13,7 @@ import { CustomNode } from '../CustomNode';
 import { SwimlaneNode } from '../SwimlaneNode';
 import { useStore } from '../lib/useStore';
 import { useTheme } from '../lib/theme';
-import type { LintViolation } from '@herbrand/core/lint-types';
+import type { LintViolation } from '@herbrand/core/lint/types';
 import { processSubgraph } from '@herbrand/core/graph';
 import { ChevronUp, PanelRightOpen, PanelRightClose } from 'lucide-react';
 

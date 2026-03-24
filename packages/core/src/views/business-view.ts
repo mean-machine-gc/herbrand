@@ -11,10 +11,10 @@
  *   "When [trigger outcome], [actor] at [context] [intent] so that [business goal]"
  */
 
-import type { System, Policy, Operation } from './index.js';
+import type { System, Policy, Operation } from '../index.js';
 import type {
   DecisionGraph, PolicyNode, OperationNode, ViewNode,
-} from './graph.js';
+} from '../graph/graph.js';
 
 // ============================================================
 // Types

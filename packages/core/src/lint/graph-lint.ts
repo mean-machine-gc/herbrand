@@ -5,10 +5,10 @@
  * Internally converts to graphology for algorithm support.
  */
 
-import type { System } from './index.js';
-import type { DecisionGraph, SignalNode, ViewNode, PolicyNode, OperationNode } from './graph.js';
+import type { System } from '../index.js';
+import type { DecisionGraph, SignalNode, ViewNode, PolicyNode, OperationNode } from '../graph/graph.js';
 import type { LintViolation } from './lint-types.js';
-import { toGraphology, nodesOfType, edgesOfType } from './graphology-adapter.js';
+import { toGraphology, nodesOfType, edgesOfType } from '../graph/graphology-adapter.js';
 import { bfsFromNode } from 'graphology-traversal';
 import { hasCycle } from 'graphology-dag';
 

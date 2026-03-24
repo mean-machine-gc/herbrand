@@ -5,7 +5,7 @@
  * No system context needed.
  */
 
-import type { Policy, Operation } from './index.js';
+import type { Policy, Operation } from '../index.js';
 import type { LintViolation } from './lint-types.js';
 
 // ── Helpers ─────────────────────────────────────────────────

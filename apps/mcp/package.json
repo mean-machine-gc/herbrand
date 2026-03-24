@@ -12,15 +12,17 @@
   ],
   "scripts": {
     "start": "npx tsx src/index.ts",
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "bundle": "tsup && chmod +x dist/index.js && cp -r src/skills dist/skills",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run bundle"
   },
   "dependencies": {
-    "@herbrand/core": "*",
     "fastmcp": "^3.0.0"
   },
   "devDependencies": {
+    "@herbrand/core": "*",
     "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3"
   },
