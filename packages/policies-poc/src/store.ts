@@ -29,6 +29,7 @@ import type { BusinessViewItem } from './business-view.js';
 import { deriveBusinessView } from './business-view.js';
 import type { LintViolation, SpecLintRule, SystemLintRule, GraphLintRule } from './lint-types.js';
 import type { AnalysisInsight, GraphAnalysis } from './graph-analysis.js';
+import { deriveSystemSummary, type SystemSummary } from './system-summary.js';
 
 // ============================================================
 // Types
@@ -277,6 +278,14 @@ export class HerbrandStore {
     if (this.hasSystemErrors) return 'system-errors';
     if (this.hasGraphErrors) return 'graph-errors';
     return 'clean';
+  }
+
+  // ── System summary — birds-eye index for scoped requests ──
+
+  get systemSummary(): SystemSummary | null {
+    const system = this._system.value;
+    if (!system) return null;
+    return deriveSystemSummary(system, this._businessView.value, this.allViolations, this.pipelineStatus);
   }
 
   // ── Scoped views — imperative helpers ─────────────────────

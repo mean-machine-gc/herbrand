@@ -13,7 +13,8 @@
     "./graph-linting-rules": "./src/graph-linting-rules.ts",
     "./graph-analysis-map": "./src/graph-analysis-map.ts",
     "./graph-analysis": "./src/graph-analysis.ts",
-    "./business-view": "./src/business-view.ts"
+    "./business-view": "./src/business-view.ts",
+    "./system-summary": "./src/system-summary.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -2,7 +2,7 @@ import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../lib/theme';
 import { cn } from '../lib/utils';
 
-type View = 'specification' | 'graph' | 'business';
+type View = 'specification' | 'graph' | 'business' | 'document';
 
 export function Navbar({ view, onViewChange }: { view: View; onViewChange: (v: View) => void }) {
   const { theme, toggle } = useTheme();
@@ -26,6 +26,9 @@ export function Navbar({ view, onViewChange }: { view: View; onViewChange: (v: V
         </NavLink>
         <NavLink active={view === 'business'} onClick={() => onViewChange('business')}>
           Business
+        </NavLink>
+        <NavLink active={view === 'document'} onClick={() => onViewChange('document')}>
+          Document
         </NavLink>
 
         <div className="w-px h-4 bg-border mx-2" />

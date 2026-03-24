@@ -19,14 +19,14 @@ export type SpecFilePayload = {
 const VIRTUAL_MODULE_ID = 'virtual:herbrand-specs';
 const RESOLVED_ID = '\0' + VIRTUAL_MODULE_ID;
 
-function collectYamlFiles(dir: string, base: string = ''): SpecFilePayload[] {
+function collectProjectFiles(dir: string, base: string = ''): SpecFilePayload[] {
   const files: SpecFilePayload[] = [];
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     const rel = base ? join(base, entry) : entry;
     if (statSync(full).isDirectory()) {
-      files.push(...collectYamlFiles(full, rel));
-    } else if (entry.endsWith('.yaml')) {
+      files.push(...collectProjectFiles(full, rel));
+    } else if (entry.endsWith('.yaml') || entry.endsWith('.md')) {
       files.push({ path: rel, content: readFileSync(full, 'utf-8') });
     }
   }
@@ -40,7 +40,7 @@ export function herbrandSpecsPlugin(): Plugin {
 
   function refresh() {
     try {
-      currentFiles = collectYamlFiles(projectFolder);
+      currentFiles = collectProjectFiles(projectFolder);
     } catch {
       currentFiles = [];
     }

@@ -4,8 +4,9 @@ import { ThemeProvider } from './lib/theme';
 import { GraphView } from './views/GraphView';
 import { SpecificationView } from './views/SpecificationView';
 import { BusinessView } from './views/BusinessView';
+import { DocumentView } from './views/DocumentView';
 
-type View = 'specification' | 'graph' | 'business';
+type View = 'specification' | 'graph' | 'business' | 'document';
 
 export function App() {
   const [view, setView] = useState<View>('graph');
@@ -17,6 +18,7 @@ export function App() {
         {view === 'graph' && <GraphView />}
         {view === 'specification' && <SpecificationView />}
         {view === 'business' && <BusinessView />}
+        {view === 'document' && <DocumentView />}
       </div>
     </ThemeProvider>
   );
