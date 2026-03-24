@@ -1,0 +1,197 @@
+{
+  "$ref": "#/definitions/HerbrandOperation",
+  "definitions": {
+    "HerbrandOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "operation",
+          "description": "Discriminator for YAML file type"
+        },
+        "description": {
+          "type": "string"
+        },
+        "context": {
+          "type": "string",
+          "description": "Execution context ID where this operation runs"
+        },
+        "actor": {
+          "type": "string",
+          "description": "Actor ID who executes this operation"
+        },
+        "activatedBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Intent kinds that activate this operation"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "reads": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Info points this constraint needs to evaluate"
+              }
+            },
+            "required": [
+              "id",
+              "description",
+              "reads"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Success constraints — ALL must pass"
+        },
+        "unconditionalOutcome": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "effects": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "point": {
+                    "type": "string",
+                    "description": "Which info point is affected"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "How the info point is modified"
+                  }
+                },
+                "required": [
+                  "point",
+                  "description"
+                ],
+                "additionalProperties": false
+              },
+              "description": "Info points this outcome creates or modifies"
+            }
+          },
+          "required": [
+            "kind",
+            "description",
+            "effects"
+          ],
+          "additionalProperties": false,
+          "description": "Always emitted on success"
+        },
+        "conditionalOutcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "reads": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Info points the condition needs to evaluate"
+                  }
+                },
+                "required": [
+                  "description",
+                  "reads"
+                ],
+                "additionalProperties": false
+              },
+              "outcome": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "effects": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "point": {
+                          "type": "string",
+                          "description": "Which info point is affected"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "How the info point is modified"
+                        }
+                      },
+                      "required": [
+                        "point",
+                        "description"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Info points this outcome creates or modifies"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "description",
+                  "effects"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "condition",
+              "outcome"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Conditionally emitted on success"
+        },
+        "processes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Business processes this decision participates in"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "description",
+        "context",
+        "activatedBy",
+        "constraints",
+        "unconditionalOutcome",
+        "conditionalOutcomes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

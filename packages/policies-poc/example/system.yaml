@@ -1,0 +1,43 @@
+contexts:
+  - type: institutional
+    id: library-desk
+    description: Front desk where librarians serve members
+    kind: role-authority
+
+  - type: software
+    id: lms
+    description: Library Management System — core lending platform
+    boundary: internal
+
+  - type: software
+    id: billing-service
+    description: External billing and payments service
+    boundary: external
+
+actors:
+  - type: human
+    id: librarian
+    role: Librarian
+
+  - type: llm
+    id: catalog-bot
+    description: AI assistant for catalog operations
+
+  - type: machine
+    id: lending-engine
+    description: Deterministic lending transaction processor
+
+  - type: machine
+    id: fee-engine
+    description: Deterministic fee calculation engine
+
+processes:
+  - id: lending
+    description: A member requests a book and it is lent to them
+    startsWith: [book.requested]
+    endsWith: [book.lent, member.loan.limit.reached]
+
+  - id: late-fee-collection
+    description: A book is returned late and a fee is applied
+    startsWith: [book.returned]
+    endsWith: [late.fee.applied]

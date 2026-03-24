@@ -1,0 +1,18 @@
+id: lending-policy
+type: policy
+description: When a book is requested, attempt to lend it
+businessGoal: members can borrow books from the library
+context: library-desk
+actor: librarian
+activatedBy: [book.requested]
+emits: lend.book
+processes: [lending]
+
+preconditions:
+  - id: book-exists
+    description: The requested book must exist in the catalog
+    reads: [book.exists]
+
+  - id: member-exists
+    description: The requesting member must exist
+    reads: [member.exists]

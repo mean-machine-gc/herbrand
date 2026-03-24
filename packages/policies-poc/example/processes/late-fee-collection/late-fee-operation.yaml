@@ -1,0 +1,18 @@
+id: late-fee-operation
+type: operation
+description: Apply a late fee to a member
+context: billing-service
+actor: fee-engine
+activatedBy: [apply.late.fee]
+processes: [late-fee-collection]
+
+constraints: []
+
+unconditionalOutcome:
+  kind: late.fee.applied
+  description: A late fee has been charged
+  effects:
+    - point: member.balance
+      description: Debited by fee amount
+
+conditionalOutcomes: []

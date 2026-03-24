@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herbrand — System View</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent-policy: #7c6fe0;
+    --accent-operation: #2dd4bf;
+    --accent-outcome: #f0883e;
+    --accent-intent: #58a6ff;
+    --accent-info: #3fb950;
+    --accent-human: #f0883e;
+    --accent-llm: #a371f7;
+    --accent-machine: #79c0ff;
+    --accent-context: #ffa657;
+    --accent-ctx-software: #79c0ff;
+    --accent-ctx-external: #f47067;
+    --accent-ctx-institutional: #ffa657;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 2rem;
+  }
+
+  h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+  .header { margin-bottom: 2.5rem; }
+  .header p { color: var(--text-dim); font-size: 0.9rem; }
+
+  .section { margin-bottom: 2.5rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    border-left: 3px solid var(--border);
+  }
+  .card-policy { border-left-color: var(--accent-policy); }
+  .card-operation { border-left-color: var(--accent-operation); }
+  .card-actor { border-left-color: var(--accent-human); }
+  .card-info { border-left-color: var(--accent-info); }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .card-title code {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .card-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+  }
+  .card-row-label {
+    color: var(--text-dim);
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+  .card-row-value {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .tag-outcome { color: var(--accent-outcome); border-color: color-mix(in srgb, var(--accent-outcome) 30%, transparent); }
+  .tag-intent { color: var(--accent-intent); border-color: color-mix(in srgb, var(--accent-intent) 30%, transparent); }
+  .tag-info { color: var(--accent-info); border-color: color-mix(in srgb, var(--accent-info) 30%, transparent); }
+  .tag-effect { color: var(--accent-operation); border-color: color-mix(in srgb, var(--accent-operation) 30%, transparent); }
+
+  .actor-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .actor-human { background: color-mix(in srgb, var(--accent-human) 15%, transparent); color: var(--accent-human); }
+  .actor-llm { background: color-mix(in srgb, var(--accent-llm) 15%, transparent); color: var(--accent-llm); }
+  .actor-machine { background: color-mix(in srgb, var(--accent-machine) 15%, transparent); color: var(--accent-machine); }
+
+  .precondition, .constraint {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+    border-left: 2px solid var(--border);
+  }
+  .precondition { border-left-color: var(--accent-policy); }
+  .constraint { border-left-color: var(--accent-operation); }
+  .precondition code, .constraint code { color: var(--accent-info); font-size: 0.75rem; }
+
+  .outcome-block {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.6rem;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+    border-left: 2px solid var(--accent-outcome);
+  }
+  .outcome-block.conditional { border-left-color: var(--text-dim); border-left-style: dashed; }
+  .outcome-block code { font-size: 0.75rem; }
+  .outcome-label { font-weight: 600; color: var(--accent-outcome); }
+  .outcome-label.conditional { color: var(--text-dim); }
+
+  .chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .chain-step {
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .chain-arrow {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    padding: 0 0.25rem;
+  }
+  .chain-outcome { background: color-mix(in srgb, var(--accent-outcome) 12%, transparent); color: var(--accent-outcome); }
+  .chain-policy { background: color-mix(in srgb, var(--accent-policy) 12%, transparent); color: var(--accent-policy); }
+  .chain-intent { background: color-mix(in srgb, var(--accent-intent) 12%, transparent); color: var(--accent-intent); }
+  .chain-operation { background: color-mix(in srgb, var(--accent-operation) 12%, transparent); color: var(--accent-operation); }
+
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stat-policy .stat-num { color: var(--accent-policy); }
+  .stat-operation .stat-num { color: var(--accent-operation); }
+  .stat-context .stat-num { color: var(--accent-context); }
+  .stat-actor .stat-num { color: var(--accent-human); }
+  .stat-info .stat-num { color: var(--accent-info); }
+  .stat-integration .stat-num { color: var(--accent-ctx-external); }
+
+  .ctx-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .ctx-software { background: color-mix(in srgb, var(--accent-ctx-software) 15%, transparent); color: var(--accent-ctx-software); }
+  .ctx-external { background: color-mix(in srgb, var(--accent-ctx-external) 15%, transparent); color: var(--accent-ctx-external); }
+  .ctx-institutional { background: color-mix(in srgb, var(--accent-ctx-institutional) 15%, transparent); color: var(--accent-ctx-institutional); }
+
+  .card-context { border-left-color: var(--accent-context); }
+  .card-integration { border-left-color: var(--accent-ctx-external); }
+
+  .chain-separator {
+    border-left: 2px dashed var(--accent-ctx-external);
+    height: 1.4rem;
+    margin: 0 0.15rem;
+  }
+
+  .integration-arrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface2);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    border-left: 2px solid var(--accent-ctx-external);
+  }
+  .integration-via {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Herbrand System View</h1>
+  <p>Public Library Book Lending</p>
+  <div class="stats">
+    <div class="stat stat-context"><div class="stat-num">3</div><div class="stat-label">Contexts</div></div>
+    <div class="stat stat-policy"><div class="stat-num">2</div><div class="stat-label">Policies</div></div>
+    <div class="stat stat-operation"><div class="stat-num">2</div><div class="stat-label">Operations</div></div>
+    <div class="stat stat-actor"><div class="stat-num">4</div><div class="stat-label">Actors</div></div>
+    <div class="stat stat-info"><div class="stat-num">9</div><div class="stat-label">Info Points</div></div>
+    <div class="stat stat-integration"><div class="stat-num">2</div><div class="stat-label">Integrations</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Reactive Chains</h2>
+  
+  <div class="chain">
+    <span class="chain-step chain-outcome">book.requested</span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-policy">lending-policy<span style="opacity:0.5;margin-left:0.4em;font-size:0.7rem">@ library-desk</span></span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-intent">lend.book</span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-operation">lend-operation<span style="opacity:0.5;margin-left:0.4em;font-size:0.7rem">@ lms</span></span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-outcome">book.lent</span>
+  </div>
+  <div class="chain">
+    <span class="chain-step chain-outcome">book.returned</span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-policy">late-fee-policy<span style="opacity:0.5;margin-left:0.4em;font-size:0.7rem">@ lms</span></span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-intent">apply.late.fee</span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-operation">late-fee-operation<span style="opacity:0.5;margin-left:0.4em;font-size:0.7rem">@ billing-service</span></span><span class="chain-arrow">&#8594;</span><span class="chain-step chain-outcome">late.fee.applied</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Policies</h2>
+  <div class="grid">
+    
+    <div class="card card-policy">
+      <div class="card-title">
+        <code>lending-policy</code>
+        <span class="actor-badge actor-human">&#9823; human</span>
+      </div>
+      <div class="card-desc">When a book is requested, attempt to lend it</div>
+      <div class="card-row">
+        <span class="card-row-label">Context</span>
+        <span class="card-row-value"><span class="ctx-badge ctx-institutional">library-desk</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Activated by</span>
+        <span class="card-row-value"><span class="tag tag-outcome">book.requested</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Emits</span>
+        <span class="card-row-value"><span class="tag tag-intent">lend.book</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Actor</span>
+        <span class="card-row-value">Librarian</span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">View</span>
+        <span class="card-row-value"><span class="tag tag-info">book.exists</span> <span class="tag tag-info">member.exists</span></span>
+      </div>
+      <h3 style="margin-top: 0.75rem">Preconditions</h3>
+      
+      <div class="precondition">
+        The requested book must exist in the catalog<br/>
+        reads: <code>book.exists</code>
+      </div>
+      <div class="precondition">
+        The requesting member must exist<br/>
+        reads: <code>member.exists</code>
+      </div>
+    </div>
+    <div class="card card-policy">
+      <div class="card-title">
+        <code>late-fee-policy</code>
+        <span class="actor-badge actor-llm">&#9881; llm</span>
+      </div>
+      <div class="card-desc">When a book is returned late, apply a late fee</div>
+      <div class="card-row">
+        <span class="card-row-label">Context</span>
+        <span class="card-row-value"><span class="ctx-badge ctx-software">lms</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Activated by</span>
+        <span class="card-row-value"><span class="tag tag-outcome">book.returned</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Emits</span>
+        <span class="card-row-value"><span class="tag tag-intent">apply.late.fee</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Actor</span>
+        <span class="card-row-value">AI assistant for catalog operations</span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">View</span>
+        <span class="card-row-value"><span class="tag tag-info">loan.due.date</span> <span class="tag tag-info">loan.returned.date</span></span>
+      </div>
+      <h3 style="margin-top: 0.75rem">Preconditions</h3>
+      
+      <div class="precondition">
+        The loan must be past its due date<br/>
+        reads: <code>loan.due.date</code>, <code>loan.returned.date</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Operations</h2>
+  <div class="grid">
+    
+    <div class="card card-operation">
+      <div class="card-title">
+        <code>lend-operation</code>
+        <span class="actor-badge actor-machine">&#9881; machine</span>
+      </div>
+      <div class="card-desc">Lend a book to a member</div>
+      <div class="card-row">
+        <span class="card-row-label">Context</span>
+        <span class="card-row-value"><span class="ctx-badge ctx-software">lms</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Activated by</span>
+        <span class="card-row-value"><span class="tag tag-intent">lend.book</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Actor</span>
+        <span class="card-row-value">Deterministic lending transaction processor</span>
+      </div>
+      
+      <h3 style="margin-top: 0.75rem">Constraints</h3>
+      
+      <div class="constraint">
+        Book must be available for lending<br/>
+        reads: <code>book.available</code>
+      </div>
+      <div class="constraint">
+        Member must not be suspended<br/>
+        reads: <code>member.suspended</code>
+      </div>
+      <div class="constraint">
+        Member must not have exceeded their loan limit<br/>
+        reads: <code>member.active.loans</code>, <code>member.max.loans</code>
+      </div>
+      <h3 style="margin-top: 0.75rem">Outcomes</h3>
+      <div class="outcome-block">
+        <span class="outcome-label">book.lent</span><br/>
+        The book has been lent to the member
+        <br/>effects: <span class="tag tag-effect">book.available: Set to false</span> <span class="tag tag-effect">member.active.loans: Incremented by 1</span> <span class="tag tag-effect">loan.due.date: Set to 14 days from now</span>
+      </div>
+      
+      <div class="outcome-block conditional">
+        <span class="outcome-label conditional">if: Member has reached their loan limit after this loan</span><br/>
+        <span class="outcome-label">member.loan.limit.reached</span> — Member has hit their borrowing limit
+      </div>
+    </div>
+    <div class="card card-operation">
+      <div class="card-title">
+        <code>late-fee-operation</code>
+        <span class="actor-badge actor-machine">&#9881; machine</span>
+      </div>
+      <div class="card-desc">Apply a late fee to a member</div>
+      <div class="card-row">
+        <span class="card-row-label">Context</span>
+        <span class="card-row-value"><span class="ctx-badge ctx-external">billing-service</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Activated by</span>
+        <span class="card-row-value"><span class="tag tag-intent">apply.late.fee</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Actor</span>
+        <span class="card-row-value">Deterministic fee calculation engine</span>
+      </div>
+      
+      <h3 style="margin-top: 0.75rem">Outcomes</h3>
+      <div class="outcome-block">
+        <span class="outcome-label">late.fee.applied</span><br/>
+        A late fee has been charged
+        <br/>effects: <span class="tag tag-effect">member.balance: Debited by fee amount</span>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Execution Contexts</h2>
+  <div class="grid">
+    
+    <div class="card card-context">
+      <div class="card-title">
+        <code>library-desk</code>
+        <span class="ctx-badge ctx-institutional">library-desk</span>
+      </div>
+      <div class="card-desc">Front desk where librarians serve members</div>
+      <div class="card-row">
+        <span class="card-row-label">Type</span>
+        <span class="card-row-value">institutional (role-authority)</span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Policies</span>
+        <span class="card-row-value"><span class="tag">lending-policy</span></span>
+      </div>
+      
+    </div>
+    <div class="card card-context">
+      <div class="card-title">
+        <code>lms</code>
+        <span class="ctx-badge ctx-software">lms</span>
+      </div>
+      <div class="card-desc">Library Management System — core lending platform</div>
+      <div class="card-row">
+        <span class="card-row-label">Type</span>
+        <span class="card-row-value">software (internal)</span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Policies</span>
+        <span class="card-row-value"><span class="tag">late-fee-policy</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Operations</span>
+        <span class="card-row-value"><span class="tag">lend-operation</span></span>
+      </div>
+    </div>
+    <div class="card card-context">
+      <div class="card-title">
+        <code>billing-service</code>
+        <span class="ctx-badge ctx-external">billing-service</span>
+      </div>
+      <div class="card-desc">External billing and payments service</div>
+      <div class="card-row">
+        <span class="card-row-label">Type</span>
+        <span class="card-row-value">software (external)</span>
+      </div>
+      
+      <div class="card-row">
+        <span class="card-row-label">Operations</span>
+        <span class="card-row-value"><span class="tag">late-fee-operation</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>Integration Points</h2>
+  
+  <div class="integration-arrow">
+    <span class="ctx-badge ctx-institutional">library-desk</span>
+    <span>lending-policy</span>
+    <span class="chain-arrow">&#8594;</span>
+    <span class="ctx-badge ctx-software">lms</span>
+    <span>lend-operation</span>
+    <span class="integration-via">via <span class="tag tag-intent">lend.book</span></span>
+  </div>
+  <div class="integration-arrow">
+    <span class="ctx-badge ctx-software">lms</span>
+    <span>late-fee-policy</span>
+    <span class="chain-arrow">&#8594;</span>
+    <span class="ctx-badge ctx-external">billing-service</span>
+    <span>late-fee-operation</span>
+    <span class="integration-via">via <span class="tag tag-intent">apply.late.fee</span></span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Actors</h2>
+  <div class="grid">
+    
+    <div class="card card-actor">
+      <div class="card-title">
+        <code>librarian</code>
+        <span class="actor-badge actor-human">&#9823; human</span>
+      </div>
+      <div class="card-desc">Librarian</div>
+      <div class="card-row">
+        <span class="card-row-label">Policies</span>
+        <span class="card-row-value"><span class="tag">lending-policy</span></span>
+      </div>
+      
+      <div class="card-row">
+        <span class="card-row-label">Reads</span>
+        <span class="card-row-value"><span class="tag tag-info">book.exists</span> <span class="tag tag-info">member.exists</span></span>
+      </div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-title">
+        <code>catalog-bot</code>
+        <span class="actor-badge actor-llm">&#9881; llm</span>
+      </div>
+      <div class="card-desc">AI assistant for catalog operations</div>
+      <div class="card-row">
+        <span class="card-row-label">Policies</span>
+        <span class="card-row-value"><span class="tag">late-fee-policy</span></span>
+      </div>
+      
+      <div class="card-row">
+        <span class="card-row-label">Reads</span>
+        <span class="card-row-value"><span class="tag tag-info">loan.due.date</span> <span class="tag tag-info">loan.returned.date</span></span>
+      </div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-title">
+        <code>lending-engine</code>
+        <span class="actor-badge actor-machine">&#9881; machine</span>
+      </div>
+      <div class="card-desc">Deterministic lending transaction processor</div>
+      
+      <div class="card-row">
+        <span class="card-row-label">Operations</span>
+        <span class="card-row-value"><span class="tag">lend-operation</span></span>
+      </div>
+      <div class="card-row">
+        <span class="card-row-label">Reads</span>
+        <span class="card-row-value"><span class="tag tag-info">book.available</span> <span class="tag tag-info">member.suspended</span> <span class="tag tag-info">member.active.loans</span> <span class="tag tag-info">member.max.loans</span></span>
+      </div>
+    </div>
+    <div class="card card-actor">
+      <div class="card-title">
+        <code>fee-engine</code>
+        <span class="actor-badge actor-machine">&#9881; machine</span>
+      </div>
+      <div class="card-desc">Deterministic fee calculation engine</div>
+      
+      <div class="card-row">
+        <span class="card-row-label">Operations</span>
+        <span class="card-row-value"><span class="tag">late-fee-operation</span></span>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Info Universe</h2>
+  <div class="grid">
+    
+    <div class="card card-info">
+      <div class="card-title"><code>book.exists</code></div>
+      <div class="card-desc">Read by precondition "book-exists" of policy "lending-policy"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>member.exists</code></div>
+      <div class="card-desc">Read by precondition "member-exists" of policy "lending-policy"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>loan.due.date</code></div>
+      <div class="card-desc">Read by precondition "loan-is-overdue" of policy "late-fee-policy"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>loan.returned.date</code></div>
+      <div class="card-desc">Read by precondition "loan-is-overdue" of policy "late-fee-policy"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>book.available</code></div>
+      <div class="card-desc">Read by constraint "book-available" of operation "lend-operation"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>member.suspended</code></div>
+      <div class="card-desc">Read by constraint "member-not-suspended" of operation "lend-operation"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>member.active.loans</code></div>
+      <div class="card-desc">Read by constraint "under-loan-limit" of operation "lend-operation"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>member.max.loans</code></div>
+      <div class="card-desc">Read by constraint "under-loan-limit" of operation "lend-operation"</div>
+    </div>
+    <div class="card card-info">
+      <div class="card-title"><code>member.balance</code></div>
+      <div class="card-desc">Produced by outcome "late.fee.applied" of operation "late-fee-operation"</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

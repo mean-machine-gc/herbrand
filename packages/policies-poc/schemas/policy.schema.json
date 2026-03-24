@@ -1,0 +1,91 @@
+{
+  "$ref": "#/definitions/HerbrandPolicy",
+  "definitions": {
+    "HerbrandPolicy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "policy",
+          "description": "Discriminator for YAML file type"
+        },
+        "description": {
+          "type": "string"
+        },
+        "businessGoal": {
+          "type": "string",
+          "description": "The business goal this policy serves"
+        },
+        "context": {
+          "type": "string",
+          "description": "Execution context ID where this policy runs"
+        },
+        "actor": {
+          "type": "string",
+          "description": "Actor ID who executes this policy"
+        },
+        "activatedBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Outcome kinds that activate this policy"
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "reads": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Info points this precondition needs to evaluate"
+              }
+            },
+            "required": [
+              "id",
+              "description",
+              "reads"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Preconditions — ALL must pass"
+        },
+        "emits": {
+          "type": "string",
+          "description": "The intent kind this policy emits on success"
+        },
+        "processes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Business processes this decision participates in"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "description",
+        "context",
+        "activatedBy",
+        "preconditions",
+        "emits"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

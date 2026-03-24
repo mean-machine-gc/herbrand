@@ -1,0 +1,14 @@
+id: late-fee-policy
+type: policy
+description: When a book is returned late, apply a late fee
+businessGoal: overdue accounts are charged appropriately
+context: lms
+actor: catalog-bot
+activatedBy: [book.returned]
+emits: apply.late.fee
+processes: [late-fee-collection]
+
+preconditions:
+  - id: loan-is-overdue
+    description: The loan must be past its due date
+    reads: [loan.due.date, loan.returned.date]

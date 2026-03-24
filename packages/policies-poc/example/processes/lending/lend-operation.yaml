@@ -1,0 +1,40 @@
+id: lend-operation
+type: operation
+description: Lend a book to a member
+context: lms
+actor: lending-engine
+activatedBy: [lend.book]
+processes: [lending]
+
+constraints:
+  - id: book-available
+    description: Book must be available for lending
+    reads: [book.available]
+
+  - id: member-not-suspended
+    description: Member must not be suspended
+    reads: [member.suspended]
+
+  - id: under-loan-limit
+    description: Member must not have exceeded their loan limit
+    reads: [member.active.loans, member.max.loans]
+
+unconditionalOutcome:
+  kind: book.lent
+  description: The book has been lent to the member
+  effects:
+    - point: book.available
+      description: Set to false
+    - point: member.active.loans
+      description: Incremented by 1
+    - point: loan.due.date
+      description: Set to 14 days from now
+
+conditionalOutcomes:
+  - condition:
+      description: Member has reached their loan limit after this loan
+      reads: [member.active.loans, member.max.loans]
+    outcome:
+      kind: member.loan.limit.reached
+      description: Member has hit their borrowing limit
+      effects: []
