@@ -1,0 +1,26 @@
+id: reservation-policy
+type: policy
+description: When a member requests a reservation for an unavailable book, evaluate eligibility
+businessGoal: members can queue for popular books
+context: lms
+actor: catalog-bot
+activatedBy: [reservation.requested]
+emits: place.reservation
+processes: [book-reservation]
+
+preconditions:
+  - id: book-exists-in-catalog
+    description: The book must exist in the library catalog
+    reads: [book.exists]
+
+  - id: book-currently-unavailable
+    description: The book must actually be unavailable (otherwise just lend it)
+    reads: [book.available]
+
+  - id: member-not-suspended
+    description: Suspended members cannot place reservations
+    reads: [member.suspended]
+
+  - id: no-duplicate-reservation
+    description: The member must not already have a reservation for this book
+    reads: [member.reservation.for.book]

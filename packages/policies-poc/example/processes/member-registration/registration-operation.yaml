@@ -1,0 +1,36 @@
+id: registration-operation
+type: operation
+description: Create a new library membership
+context: lms
+actor: registration-engine
+activatedBy: [register.member]
+processes: [member-registration]
+
+constraints:
+  - id: email-unique
+    description: The provided email must not be in use by another member
+    reads: [applicant.email, member.emails]
+
+unconditionalOutcome:
+  kind: member.registered
+  description: A new member account has been created
+  effects:
+    - point: member.exists
+      description: Set to true for this member
+    - point: member.active.loans
+      description: Initialized to 0
+    - point: member.max.loans
+      description: Set to default limit (5)
+    - point: member.suspended
+      description: Set to false
+
+conditionalOutcomes:
+  - condition:
+      description: The member is under 16 years old
+      reads: [applicant.age]
+    outcome:
+      kind: junior.member.registered
+      description: A junior membership was created with parental consent requirements
+      effects:
+        - point: member.max.loans
+          description: Set to reduced limit (3) for junior members

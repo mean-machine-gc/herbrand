@@ -55,6 +55,16 @@ For each insight, ask:
 - "Should we adjust the boundaries?"
 - "Is this bottleneck intentional or a sign of missing decomposition?"
 
+### Example findings (library domain)
+
+**From the graph analysis of the library system:**
+
+- "The lending-engine is a bottleneck — it handles lend-operation, return-operation, and reservation-operation. 75% of the system flows through it. Should we split it into separate services?"
+- "Info points cluster into natural groups: [book.exists, member.exists] (identity), [book.available, member.active.loans, member.max.loans, member.suspended] (lending state), [loan.due.date, loan.returned.date] (loan lifecycle). These suggest three aggregates."
+- "The late-fee-policy and late-fee-operation cluster together but span lms and billing-service — the graph suggests they belong in the same context, but billing is external. This is a real integration boundary."
+- "The critical path from book.requested to book.lent is 4 hops. But the path from book.returned through reservation fulfillment to reservation.fulfilled is 8 hops — that's a long cascade. Is it acceptable?"
+- "daily.check.triggered is an external signal with no producer. This needs to be documented — what generates it? A cron job? A scheduler service?"
+
 ### 5. Act on feedback
 
 If boundaries need adjustment:

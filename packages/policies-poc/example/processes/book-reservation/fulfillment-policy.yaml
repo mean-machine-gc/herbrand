@@ -1,0 +1,14 @@
+id: fulfillment-policy
+type: policy
+description: When a reserved book becomes available, notify the next member in queue
+businessGoal: reserved books reach waiting members promptly
+context: lms
+actor: catalog-bot
+activatedBy: [reserved.book.available]
+emits: fulfill.reservation
+processes: [book-reservation]
+
+preconditions:
+  - id: reservation-queue-not-empty
+    description: There must be at least one member waiting in the reservation queue
+    reads: [book.reservation.queue.size]

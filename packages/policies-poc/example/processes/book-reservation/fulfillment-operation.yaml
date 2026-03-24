@@ -1,0 +1,25 @@
+id: fulfillment-operation
+type: operation
+description: Notify the next member in the reservation queue and hold the book
+context: notification-service
+actor: notification-engine
+activatedBy: [fulfill.reservation]
+processes: [book-reservation]
+
+constraints:
+  - id: member-contactable
+    description: The next member in queue must have valid contact information
+    reads: [member.email, member.contact.valid]
+
+unconditionalOutcome:
+  kind: reservation.fulfilled
+  description: The member has been notified and the book is held for 48 hours
+  effects:
+    - point: book.available
+      description: Set to false (held for the reserving member)
+    - point: book.reservation.queue.size
+      description: Decremented by 1
+    - point: member.reservation.for.book
+      description: Set to false (fulfilled)
+
+conditionalOutcomes: []

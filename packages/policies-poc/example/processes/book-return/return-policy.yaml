@@ -1,0 +1,18 @@
+id: return-policy
+type: policy
+description: When a member brings back a book, the librarian processes the return
+businessGoal: books are returned to circulation promptly
+context: library-desk
+actor: librarian
+activatedBy: [book.returned]
+emits: process.return
+processes: [book-return]
+
+preconditions:
+  - id: loan-exists
+    description: There must be an active loan for this book
+    reads: [loan.exists]
+
+  - id: book-matches-loan
+    description: The physical book matches the loan record
+    reads: [loan.book.id, book.physical.id]

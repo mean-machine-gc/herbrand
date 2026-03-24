@@ -1,0 +1,32 @@
+id: return-operation
+type: operation
+description: Process the book return — close the loan, update availability
+context: lms
+actor: lending-engine
+activatedBy: [process.return]
+processes: [book-return]
+
+constraints:
+  - id: loan-not-already-returned
+    description: The loan must not have been already marked as returned
+    reads: [loan.returned.date]
+
+unconditionalOutcome:
+  kind: book.returned.processed
+  description: The loan is closed and the book is back in circulation
+  effects:
+    - point: book.available
+      description: Set to true
+    - point: member.active.loans
+      description: Decremented by 1
+    - point: loan.returned.date
+      description: Set to today
+
+conditionalOutcomes:
+  - condition:
+      description: The book has an active reservation from another member
+      reads: [book.reservation.exists]
+    outcome:
+      kind: reserved.book.available
+      description: A reserved book has become available — notify the next member in queue
+      effects: []

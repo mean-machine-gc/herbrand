@@ -61,11 +61,27 @@ Write the YAML updates and run `get_lint_results` to validate.
 
 After addressing challenges, call `get_business_view` again and present the updated decision table: "We added N failure paths and M new preconditions. The decision table now covers K scenarios. Are we more confident?"
 
+## Example challenges (library domain)
+
+**Challenging the return process:**
+- "What if the member doesn't have the physical book? They lost it. Is there a 'lost book' path?"
+- "The return-operation checks `loan-not-already-returned` — but what if a staff member accidentally processes the same return twice in quick succession? Is the constraint sufficient?"
+- "When `reserved.book.available` fires, the fulfillment-operation holds the book for 48 hours. What happens if the member doesn't pick it up? Is there a timeout process?"
+
+**Challenging the lending process:**
+- "The lending-policy silently drops if the book doesn't exist. But the member is standing at the desk — shouldn't the librarian get feedback about *why* it dropped? Maybe this should be an operation with explicit failure instead."
+- "What if the member is at exactly their loan limit? The conditional outcome `member.loan.limit.reached` fires — but who does something with it? It's terminal. Should there be a notification?"
+
+**Challenging the overdue notification:**
+- "The overdue-check-policy is triggered by `daily.check.triggered` — where does that come from? It's external. What system produces it? Is it a cron job?"
+- "What if the notification-service is down? The overdue-notification-operation fails — but there's no retry. The member never gets notified. Should there be a retry policy?"
+- "The suspension warning fires for 14+ days overdue — but nothing actually suspends the member. Is there a missing `suspend-member` process?"
+
 ## Common patterns to probe
 
-- **Silent drops without logging** — policies that fail silently might need an audit trail
-- **Operations without failure paths** — no constraints means always succeeds, is that realistic?
-- **Terminal outcomes with no reaction** — is this truly the end, or is there a downstream process?
-- **Cross-context data coupling** — outcomes that update views in other contexts create hidden dependencies
-- **Single points of failure** — bottleneck decisions that everything flows through
-- **Circular side effects** — an outcome updates a view that informs the operation that produced it
+- **Silent drops without logging** — policies that fail silently might need an audit trail. The lending-policy drops silently if the book doesn't exist, but the librarian needs to tell the member why.
+- **Operations without failure paths** — the late-fee-operation has no constraints. It always succeeds. Is that realistic? What if the billing service rejects the charge?
+- **Terminal outcomes with no reaction** — `member.loan.limit.reached` and `overdue.suspension.warning.sent` are terminal. Should something react to them?
+- **Cross-context data coupling** — `book.lent` updates `book.available` which the reservation-policy reads. If the lend happens in LMS but the reservation check also runs in LMS, that's fine — but what if they were in different contexts?
+- **Missing timeout/retry patterns** — reservations are held for 48 hours with no expiry process. Notifications have no retry if the service is down.
+- **Circular side effects** — `book.lent` updates `book.available` and `member.active.loans`, both of which are in `view:lend-operation`. The lint catches this as a warning.

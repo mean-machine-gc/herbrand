@@ -1,0 +1,22 @@
+id: registration-policy
+type: policy
+description: When someone requests a membership, the librarian verifies their eligibility
+businessGoal: eligible residents can access library services
+context: library-desk
+actor: librarian
+activatedBy: [membership.requested]
+emits: register.member
+processes: [member-registration]
+
+preconditions:
+  - id: applicant-has-id
+    description: The applicant must present a valid identification document
+    reads: [applicant.id.verified]
+
+  - id: applicant-is-resident
+    description: The applicant must be a resident of the library's service area
+    reads: [applicant.residency.status]
+
+  - id: not-already-member
+    description: The applicant must not already have an active membership
+    reads: [applicant.existing.membership]

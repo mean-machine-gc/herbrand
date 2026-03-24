@@ -1,0 +1,25 @@
+id: reservation-operation
+type: operation
+description: Place a reservation for the requested book
+context: lms
+actor: lending-engine
+activatedBy: [place.reservation]
+processes: [book-reservation]
+
+constraints:
+  - id: reservation-queue-not-full
+    description: The reservation queue for this book must not exceed the maximum (10)
+    reads: [book.reservation.queue.size]
+
+unconditionalOutcome:
+  kind: reservation.placed
+  description: The member has been added to the reservation queue
+  effects:
+    - point: book.reservation.exists
+      description: Set to true
+    - point: book.reservation.queue.size
+      description: Incremented by 1
+    - point: member.reservation.for.book
+      description: Set to true
+
+conditionalOutcomes: []

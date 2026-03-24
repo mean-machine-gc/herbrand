@@ -6,7 +6,7 @@ context: lms
 actor: catalog-bot
 activatedBy: [book.returned]
 emits: apply.late.fee
-processes: [late-fee-collection]
+processes: [late-fee-collection, book-return]
 
 preconditions:
   - id: loan-is-overdue

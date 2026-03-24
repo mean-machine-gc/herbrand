@@ -56,6 +56,35 @@ Present the documents. Ask:
 
 Adjust prose based on feedback. The structural data doesn't change — only the narrative layer.
 
+## Example prose output (book return process)
+
+Here's how structured data becomes prose:
+
+**Structured (from get_user_story):**
+- Policy: return-policy, actor: librarian, context: library-desk
+- Preconditions: loan-exists (reads: loan.exists), book-matches-loan (reads: loan.book.id, book.physical.id)
+- Constraint: loan-not-already-returned (reads: loan.returned.date)
+- Unconditional outcome: book.returned.processed (effects: book.available, member.active.loans, loan.returned.date)
+- Conditional outcome: reserved.book.available (when book.reservation.exists)
+
+**Prose (what you write):**
+
+> ## Book Return
+>
+> **As a Librarian, I want to process a book return so that books are returned to circulation promptly.**
+>
+> When a member brings a book back to the front desk, the librarian verifies two things: that an active loan exists for this book, and that the physical book in hand matches the loan record. If either check fails — perhaps the book was already returned by a different staff member, or there's a barcode mismatch — the return is simply not processed.
+>
+> Once the librarian confirms the return, the Library Management System closes the loan: the book is marked as available again, the member's active loan count decreases by one, and the return date is recorded.
+>
+> ### What Can Go Wrong
+>
+> The system will reject the return if the loan has already been marked as returned. This guards against duplicate processing — a common scenario when multiple staff members handle returns during a busy period.
+>
+> ### Reservation Trigger
+>
+> If another member has reserved this book, the return automatically triggers the reservation fulfillment process. The next member in the queue is notified, and the book is held for 48 hours. This cross-process handoff happens seamlessly — the librarian doesn't need to check the reservation queue manually.
+
 ## Writing guidelines
 
 - **Write for the domain expert, not for developers.** Use business language.

@@ -1,0 +1,28 @@
+id: overdue-notification-operation
+type: operation
+description: Send an overdue notification to the member
+context: notification-service
+actor: notification-engine
+activatedBy: [send.overdue.notification]
+processes: [overdue-notification]
+
+constraints:
+  - id: member-has-email
+    description: The member must have a valid email address on file
+    reads: [member.email, member.contact.valid]
+
+unconditionalOutcome:
+  kind: overdue.notification.sent
+  description: An overdue reminder has been sent to the member
+  effects:
+    - point: member.last.notification.date
+      description: Set to today
+
+conditionalOutcomes:
+  - condition:
+      description: The loan is more than 14 days overdue
+      reads: [loan.days.overdue]
+    outcome:
+      kind: overdue.suspension.warning.sent
+      description: A suspension warning has been sent — account will be suspended if not resolved
+      effects: []

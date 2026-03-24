@@ -70,68 +70,180 @@ docs/
     {process-name}.md    — enriched process documentation
 ```
 
-### system.yaml example
+### system.yaml example (library domain)
 ```yaml
 contexts:
+  - type: institutional
+    id: library-desk
+    description: Front desk where librarians serve members
+    kind: role-authority
+
   - type: software
-    id: my-system
-    description: The main application
+    id: lms
+    description: Library Management System — core lending platform
     boundary: internal
+
+  - type: software
+    id: notification-service
+    description: External email and SMS notification service
+    boundary: external
 
 actors:
   - type: human
-    id: operator
-    role: System Operator
+    id: librarian
+    role: Librarian
+
+  - type: llm
+    id: catalog-bot
+    description: AI assistant for catalog and member operations
+
+  - type: machine
+    id: lending-engine
+    description: Deterministic lending transaction processor
 
 processes:
-  - id: my-process
-    description: What this process does
-    startsWith: [trigger.event]
-    endsWith: [final.outcome]
+  - id: lending
+    description: A member requests a book and it is lent to them
+    startsWith: [book.requested]
+    endsWith: [book.lent, member.loan.limit.reached]
+
+  - id: book-return
+    description: A member returns a book and the loan is closed
+    startsWith: [book.returned]
+    endsWith: [book.returned.processed, late.fee.applied]
 ```
 
-### Policy YAML
+### Human policy example (librarian evaluates a lending request)
 ```yaml
-id: my-policy
+id: lending-policy
 type: policy
-description: What this policy decides
-businessGoal: Why this matters
-context: my-system
-actor: operator
-activatedBy: [some.outcome]
-emits: my.intent
-processes: [my-process]
+description: When a book is requested, attempt to lend it
+businessGoal: members can borrow books from the library
+context: library-desk
+actor: librarian
+activatedBy: [book.requested]
+emits: lend.book
+processes: [lending]
 
 preconditions:
-  - id: check-something
-    description: What must be true
-    reads: [some.info.point]
+  - id: book-exists
+    description: The requested book must exist in the catalog
+    reads: [book.exists]
+
+  - id: member-exists
+    description: The requesting member must exist
+    reads: [member.exists]
 ```
 
-### Operation YAML
+### Automated policy example (AI detects overdue and triggers notification)
 ```yaml
-id: my-operation
+id: overdue-check-policy
+type: policy
+description: During the daily check, identify members with overdue loans and trigger notifications
+businessGoal: members are reminded before fees accumulate
+context: lms
+actor: catalog-bot
+activatedBy: [daily.check.triggered]
+emits: send.overdue.notification
+processes: [overdue-notification]
+
+preconditions:
+  - id: has-overdue-loans
+    description: There must be at least one loan past its due date
+    reads: [overdue.loan.count]
+
+  - id: not-already-notified-today
+    description: The member must not have already been notified today
+    reads: [member.last.notification.date, current.date]
+```
+
+### Operation example with conditional outcomes (return triggers reservation)
+```yaml
+id: return-operation
 type: operation
-description: What this operation does
-context: my-system
-actor: my-engine
-activatedBy: [my.intent]
-processes: [my-process]
+description: Process the book return — close the loan, update availability
+context: lms
+actor: lending-engine
+activatedBy: [process.return]
+processes: [book-return]
 
 constraints:
-  - id: must-be-valid
-    description: What must hold for success
-    reads: [another.info.point]
+  - id: loan-not-already-returned
+    description: The loan must not have been already marked as returned
+    reads: [loan.returned.date]
 
 unconditionalOutcome:
-  kind: something.happened
-  description: What happened
+  kind: book.returned.processed
+  description: The loan is closed and the book is back in circulation
   effects:
-    - point: some.info.point
-      description: How it changed
+    - point: book.available
+      description: Set to true
+    - point: member.active.loans
+      description: Decremented by 1
+    - point: loan.returned.date
+      description: Set to today
 
-conditionalOutcomes: []
+conditionalOutcomes:
+  - condition:
+      description: The book has an active reservation from another member
+      reads: [book.reservation.exists]
+    outcome:
+      kind: reserved.book.available
+      description: A reserved book has become available — notify the next member in queue
+      effects: []
 ```
+
+### Operation example with multiple constraints (lending)
+```yaml
+id: lend-operation
+type: operation
+description: Lend a book to a member
+context: lms
+actor: lending-engine
+activatedBy: [lend.book]
+processes: [lending]
+
+constraints:
+  - id: book-available
+    description: Book must be available for lending
+    reads: [book.available]
+
+  - id: member-not-suspended
+    description: Member must not be suspended
+    reads: [member.suspended]
+
+  - id: under-loan-limit
+    description: Member must not have exceeded their loan limit
+    reads: [member.active.loans, member.max.loans]
+
+unconditionalOutcome:
+  kind: book.lent
+  description: The book has been lent to the member
+  effects:
+    - point: book.available
+      description: Set to false
+    - point: member.active.loans
+      description: Incremented by 1
+    - point: loan.due.date
+      description: Set to 14 days from now
+
+conditionalOutcomes:
+  - condition:
+      description: Member has reached their loan limit after this loan
+      reads: [member.active.loans, member.max.loans]
+    outcome:
+      kind: member.loan.limit.reached
+      description: Member has hit their borrowing limit
+      effects: []
+```
+
+### Key patterns demonstrated
+- **Human policy** (lending-policy): librarian at institutional context, evaluates with judgment
+- **Automated policy** (overdue-check-policy): AI agent at software context, evaluates programmatically
+- **Conditional outcomes** (return-operation): unconditional outcome always fires, conditional fires when a reservation exists — this creates a **cross-process bridge** (return → reservation fulfillment)
+- **Multiple constraints** (lend-operation): three constraints, each failure produces an explicit OperationFailed
+- **Cross-context chains**: library-desk → lms → notification-service — each boundary is an integration point
+- **Shared signals**: `book.returned` triggers both the return process and the late fee check — a decision can participate in multiple processes
 
 ## Getting started
 

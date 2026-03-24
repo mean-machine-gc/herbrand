@@ -1,0 +1,18 @@
+id: overdue-check-policy
+type: policy
+description: During the daily check, identify members with overdue loans and trigger notifications
+businessGoal: members are reminded before fees accumulate
+context: lms
+actor: catalog-bot
+activatedBy: [daily.check.triggered]
+emits: send.overdue.notification
+processes: [overdue-notification]
+
+preconditions:
+  - id: has-overdue-loans
+    description: There must be at least one loan past its due date
+    reads: [overdue.loan.count]
+
+  - id: not-already-notified-today
+    description: The member must not have already been notified today
+    reads: [member.last.notification.date, current.date]

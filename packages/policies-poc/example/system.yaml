@@ -14,6 +14,11 @@ contexts:
     description: External billing and payments service
     boundary: external
 
+  - type: software
+    id: notification-service
+    description: External email and SMS notification service
+    boundary: external
+
 actors:
   - type: human
     id: librarian
@@ -21,7 +26,7 @@ actors:
 
   - type: llm
     id: catalog-bot
-    description: AI assistant for catalog operations
+    description: AI assistant for catalog and member operations
 
   - type: machine
     id: lending-engine
@@ -31,13 +36,36 @@ actors:
     id: fee-engine
     description: Deterministic fee calculation engine
 
+  - type: machine
+    id: registration-engine
+    description: Deterministic member registration processor
+
+  - type: machine
+    id: notification-engine
+    description: Notification dispatch engine
+
 processes:
   - id: lending
     description: A member requests a book and it is lent to them
     startsWith: [book.requested]
     endsWith: [book.lent, member.loan.limit.reached]
 
-  - id: late-fee-collection
-    description: A book is returned late and a fee is applied
+  - id: book-return
+    description: A member returns a book and the loan is closed
     startsWith: [book.returned]
-    endsWith: [late.fee.applied]
+    endsWith: [book.returned.processed, late.fee.applied]
+
+  - id: member-registration
+    description: A new person registers as a library member
+    startsWith: [membership.requested]
+    endsWith: [member.registered]
+
+  - id: book-reservation
+    description: A member reserves a book that is currently unavailable
+    startsWith: [reservation.requested]
+    endsWith: [reservation.placed, reservation.fulfilled]
+
+  - id: overdue-notification
+    description: The system detects overdue loans and notifies members
+    startsWith: [daily.check.triggered]
+    endsWith: [overdue.notification.sent]
