@@ -1,6 +1,6 @@
 {
   "name": "herbrand-ui",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Herbrand UI — visual companion for decision-first business analysis",
   "type": "module",
   "bin": {
@@ -17,7 +17,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "vendor": "rm -rf vendor && mkdir -p vendor && cp -r ../../packages/core/src vendor/src && cp ../../packages/core/package.json vendor/package.json",
+    "vendor": "rm -rf vendor && mkdir -p vendor && cp -r ../../packages/core/src vendor/src && cp ../../packages/core/package.json vendor/package.json && node -e \"const f=require('fs'),p=JSON.parse(f.readFileSync('package.json','utf8'));delete p.dependencies['@herbrand/core'];f.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n')\"",
+    "postpublish": "node -e \"const f=require('fs'),p=JSON.parse(f.readFileSync('package.json','utf8'));p.dependencies['@herbrand/core']='*';const sorted=Object.fromEntries(Object.entries(p.dependencies).sort());p.dependencies=sorted;f.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n')\" && rm -rf vendor",
     "prepublishOnly": "npm run vendor"
   },
   "dependencies": {
@@ -54,7 +55,13 @@
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.9.3"
   },
-  "keywords": ["herbrand", "business-analysis", "decision-modelling", "ui", "vite"],
+  "keywords": [
+    "herbrand",
+    "business-analysis",
+    "decision-modelling",
+    "ui",
+    "vite"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
