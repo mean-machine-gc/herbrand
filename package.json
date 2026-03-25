@@ -5,7 +5,9 @@
   "scripts": {
     "typecheck": "npm run typecheck -w @herbrand/core",
     "ui": "npm run dev -w herbrand-ui",
+    "ui:folder": "node apps/ui/bin/cli.js --folder",
     "mcp": "npm run start -w herbrand-mcp",
+    "mcp:folder": "npx tsx apps/mcp/src/index.ts",
     "example": "npm run example -w @herbrand/core",
     "publish:mcp": "cd apps/mcp && npm publish",
     "publish:ui": "cd apps/ui && npm publish",
