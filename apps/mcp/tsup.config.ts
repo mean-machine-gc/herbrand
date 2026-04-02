@@ -11,5 +11,5 @@ export default defineConfig({
   // Bundle everything — core workspace package gets inlined
   noExternal: [/@herbrand\/core/],
   // Keep fastmcp as external (it's a runtime dependency)
-  external: ['fastmcp'],
+  external: ['fastmcp', 'yaml'],
 });

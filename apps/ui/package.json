@@ -22,8 +22,8 @@
     "prepublishOnly": "npm run vendor"
   },
   "dependencies": {
-    "@herbrand/core": "*",
     "@dagrejs/dagre": "^1.1.4",
+    "@herbrand/core": "*",
     "@preact/signals-core": "^1.14.0",
     "@radix-ui/react-tabs": "^1.1.13",
     "@tailwindcss/vite": "^4.2.2",

@@ -9,6 +9,7 @@ import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { HerbrandStore } from '@herbrand/core/store';
 import { specLintRules } from '@herbrand/core/lint/spec-rules';
 import { systemLintRules } from '@herbrand/core/lint/system-rules';
@@ -157,7 +158,7 @@ server.addTool({
 
 // ── Skills ──────────────────────────────────────────────────
 
-const skillDir = new URL('./skills', import.meta.url).pathname;
+const skillDir = fileURLToPath(new URL('./skills', import.meta.url));
 
 function loadSkill(filename: string) {
   const content = readFileSync(join(skillDir, filename), 'utf-8');
