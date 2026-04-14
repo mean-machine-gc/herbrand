@@ -84,7 +84,7 @@ export function herbrandSpecsPlugin(): Plugin {
       const watcher = watch(projectFolder, {
         ignoreInitial: true,
         depth: 5,
-        ignored: ['**/node_modules/**', '**/.git/**'],
+        ignored: (path: string) => path.includes('node_modules') || path.includes('.git'),
       });
 
       watcher.on('change', debouncedRefresh);
