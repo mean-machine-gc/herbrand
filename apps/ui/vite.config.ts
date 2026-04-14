@@ -32,6 +32,10 @@ function buildVendorAliases() {
       aliases.push({ find: importPath, replacement });
     }
 
+    // Sort longest-first: Vite uses prefix matching, so "@herbrand/core"
+    // would greedily match "@herbrand/core/graph" before the specific alias.
+    aliases.sort((a, b) => (b.find as string).length - (a.find as string).length);
+
     console.log(`[herbrand] ${aliases.length} vendor aliases registered`);
     return aliases;
   } catch (e) {
