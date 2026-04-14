@@ -14,6 +14,7 @@ const folder = folderIdx !== -1 && process.argv[folderIdx + 1]
   : process.cwd();
 
 process.env.HERBRAND_FOLDER = folder;
+process.env.HERBRAND_UI_ROOT = root;
 
 const server = await createServer({
   root,

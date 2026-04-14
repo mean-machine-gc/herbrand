@@ -6,12 +6,15 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { herbrandSpecsPlugin } from './src/vite-plugin';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = process.env.HERBRAND_UI_ROOT || dirname(fileURLToPath(import.meta.url));
 
 // When published, core is vendored at ./vendor with its own package.json + exports
 // When in monorepo dev, npm workspaces resolve @herbrand/core directly
 const vendorPath = resolve(__dirname, 'vendor');
 const useVendor = existsSync(vendorPath);
+
+console.log(`[herbrand] root: ${__dirname}`);
+console.log(`[herbrand] vendor: ${useVendor ? vendorPath : 'not found (using workspace)'}`);
 
 // The vendor alias needs to map sub-path exports to actual file paths.
 // Core's exports field maps e.g. "./graph" to "./src/graph/graph.ts"
@@ -25,14 +28,14 @@ function buildVendorAliases() {
 
     for (const [key, value] of Object.entries(pkg.exports ?? {})) {
       const importPath = key === '.' ? '@herbrand/core' : `@herbrand/core/${key.slice(2)}`;
-      aliases.push({
-        find: importPath,
-        replacement: resolve(vendorPath, value as string),
-      });
+      const replacement = resolve(vendorPath, value as string).replace(/\\/g, '/');
+      aliases.push({ find: importPath, replacement });
     }
 
+    console.log(`[herbrand] ${aliases.length} vendor aliases registered`);
     return aliases;
-  } catch {
+  } catch (e) {
+    console.error(`[herbrand] failed to build vendor aliases:`, e);
     return [];
   }
 }
