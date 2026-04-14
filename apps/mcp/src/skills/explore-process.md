@@ -34,8 +34,8 @@ Follow the chain with questions:
 ### 3. Write YAML as you go
 
 After discovering each decision, write the YAML file immediately:
-- Policies go in `processes/{process-name}/{policy-name}.yaml`
-- Operations go in `processes/{process-name}/{operation-name}.yaml`
+- Policies go in `processes/{process-name}/{policy-name}.hb.yaml`
+- Operations go in `processes/{process-name}/{operation-name}.hb.yaml`
 
 Use the `type: policy` or `type: operation` discriminator. Always include:
 - `id`, `description`, `context`, `actor`, `activatedBy`, `processes`
@@ -85,14 +85,14 @@ Here's how a process exploration might go:
 
 **Agent:** "Who decides whether they can join? What do they check?"
 **Expert:** "The librarian. They need to see an ID, check the person lives in our area, and make sure they're not already a member."
-**Agent:** → writes `registration-policy.yaml`:
+**Agent:** → writes `registration-policy.hb.yaml`:
 - actor: librarian, context: library-desk
 - preconditions: `applicant.id.verified`, `applicant.residency.status`, `applicant.existing.membership`
 - emits: `register.member`
 
 **Agent:** "What happens when the registration goes through?"
 **Expert:** "We create their account — they start with zero loans, a limit of 5, and they're not suspended obviously."
-**Agent:** → writes `registration-operation.yaml`:
+**Agent:** → writes `registration-operation.hb.yaml`:
 - unconditionalOutcome: `member.registered` with effects on `member.exists`, `member.active.loans`, `member.max.loans`, `member.suspended`
 
 **Agent:** "Are there any special cases?"

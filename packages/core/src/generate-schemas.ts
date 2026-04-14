@@ -2,9 +2,9 @@
  * Generate JSON Schema files from Zod schemas.
  *
  * Output:
- *   schemas/policy.schema.json      — for *.policy.yaml files
- *   schemas/operation.schema.json   — for *.operation.yaml files
- *   schemas/system.schema.json      — for system.yaml files
+ *   schemas/policy.schema.json      — for *.policy.hb.yaml files
+ *   schemas/operation.schema.json   — for *.operation.hb.yaml files
+ *   schemas/system.schema.json      — for system.hb.yaml files
  *
  * These can be used by VS Code YAML extension for validation and autocomplete.
  */

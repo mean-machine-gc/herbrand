@@ -60,17 +60,17 @@ A business process is a **perspective** — a named narrative from an initial tr
 
 The project folder contains:
 ```
-system.yaml              — contexts, actors, process definitions
+system.hb.yaml           — contexts, actors, process definitions
 processes/
   {process-name}/
-    {decision-name}.yaml — one file per decision
+    {decision-name}.hb.yaml — one file per decision
 docs/
   system.md              — enriched system documentation
   processes/
     {process-name}.md    — enriched process documentation
 ```
 
-### system.yaml example (library domain)
+### system.hb.yaml example (library domain)
 ```yaml
 contexts:
   - type: institutional
@@ -261,7 +261,7 @@ Start by understanding the domain with the expert:
 2. **Who makes decisions?** — Identify actors (humans with roles, AI agents, machines)
 3. **What are the main business processes?** — Name the narratives that matter
 
-Write `system.yaml` with the discovered contexts, actors, and process definitions.
+Write `system.hb.yaml` with the discovered contexts, actors, and process definitions.
 
 Then use `get_system_overview` to verify the structure, and `get_lint_results` to catch any issues.
 

@@ -24,7 +24,7 @@ Decisions are specified as `.hb.yaml` files. Herbrand validates them against pro
 
 ```
 my-project/
-  project.hb.yaml          ← streams: outcomes, intents, info, rejects, boundaries
+  system.hb.yaml           ← streams: outcomes, intents, info, rejects, boundaries
   specs/
     create-order.hb.yaml   ← one decision per file
   scratchpad/
@@ -52,7 +52,7 @@ apps/
 
 ## How it works
 
-1. Write `project.hb.yaml` — declare your streams
+1. Write `system.hb.yaml` — declare your streams
 2. Write decision specs as `.hb.yaml` — Herbrand validates against streams via dynamic zod schemas
 3. The reactive pipeline runs automatically: parse → spec-lint → graph → behavior-lint → user stories
 4. The UI shows three views: **Specs** (per-decision detail), **Decision Graph** (BPMN swimlanes), **Business** (user stories with tabs)

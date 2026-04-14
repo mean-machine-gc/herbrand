@@ -12,11 +12,12 @@ export function collectProjectFiles(dir: string, base: string = ''): StoreFile[]
   const files: StoreFile[] = [];
   try {
     for (const entry of readdirSync(dir)) {
+      if (entry === 'node_modules' || entry === '.git') continue;
       const full = join(dir, entry);
       const rel = base ? join(base, entry) : entry;
       if (statSync(full).isDirectory()) {
         files.push(...collectProjectFiles(full, rel));
-      } else if (entry.endsWith('.yaml') || entry.endsWith('.md')) {
+      } else if (entry.endsWith('.hb.yaml') || entry.endsWith('.md')) {
         files.push({ path: rel, content: readFileSync(full, 'utf-8') });
       }
     }

@@ -17,11 +17,12 @@ const exampleDir = resolve(process.cwd(), 'example');
 function collectFiles(dir: string, base: string): StoreFile[] {
   const files: StoreFile[] = [];
   for (const entry of readdirSync(dir)) {
+    if (entry === 'node_modules' || entry === '.git') continue;
     const full = join(dir, entry);
     const rel = join(base, entry);
     if (statSync(full).isDirectory()) {
       files.push(...collectFiles(full, rel));
-    } else if (entry.endsWith('.yaml')) {
+    } else if (entry.endsWith('.hb.yaml')) {
       files.push({ path: rel, content: readFileSync(full, 'utf-8') });
     }
   }

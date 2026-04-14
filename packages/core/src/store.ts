@@ -80,12 +80,12 @@ export class HerbrandStore {
 
     if (files.length === 0) return { violations, systemData, policies, operations };
 
-    const systemFile = files.find(f => f.path.endsWith('/system.yaml') || f.path === 'system.yaml');
-    const decisionFiles = files.filter(f => f !== systemFile && f.path.endsWith('.yaml'));
+    const systemFile = files.find(f => f.path.endsWith('/system.hb.yaml') || f.path === 'system.hb.yaml');
+    const decisionFiles = files.filter(f => f !== systemFile && f.path.endsWith('.hb.yaml'));
 
     if (!systemFile) {
       violations.push({ ruleId: 'schema/system-file-missing', level: 'error',
-        target: 'system.yaml', message: 'system.yaml not found' });
+        target: 'system.hb.yaml', message: 'system.hb.yaml not found' });
     } else {
       try {
         const raw = parseYaml(systemFile.content);
@@ -93,14 +93,14 @@ export class HerbrandStore {
         if (!parsed.success) {
           for (const issue of parsed.error.issues) {
             violations.push({ ruleId: 'schema/system-file', level: 'error',
-              target: `system.yaml:${issue.path.join('.')}`, message: issue.message });
+              target: `system.hb.yaml:${issue.path.join('.')}`, message: issue.message });
           }
         } else {
           systemData = parsed.data;
         }
       } catch (e) {
         violations.push({ ruleId: 'schema/yaml-parse', level: 'error',
-          target: 'system.yaml', message: `YAML parse error: ${e instanceof Error ? e.message : String(e)}` });
+          target: 'system.hb.yaml', message: `YAML parse error: ${e instanceof Error ? e.message : String(e)}` });
       }
     }
 

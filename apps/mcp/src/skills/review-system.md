@@ -69,7 +69,7 @@ For each insight, ask:
 
 If boundaries need adjustment:
 - Move decisions between contexts (update the `context` field in their YAML)
-- Split or merge contexts in `system.yaml`
+- Split or merge contexts in `system.hb.yaml`
 
 If missing decisions are identified:
 - Use `/explore-process` to add them

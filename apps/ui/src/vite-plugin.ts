@@ -1,7 +1,7 @@
 /**
  * Vite plugin: watches YAML spec files and pushes updates to the UI via WebSocket.
  *
- * - Reads all .yaml files from the project folder
+ * - Reads all .hb.yaml files from the project folder
  * - Serves initial data via a virtual module
  * - On file change, re-reads and sends update via Vite's built-in WebSocket
  */
@@ -22,11 +22,12 @@ const RESOLVED_ID = '\0' + VIRTUAL_MODULE_ID;
 function collectProjectFiles(dir: string, base: string = ''): SpecFilePayload[] {
   const files: SpecFilePayload[] = [];
   for (const entry of readdirSync(dir)) {
+    if (entry === 'node_modules' || entry === '.git') continue;
     const full = join(dir, entry);
     const rel = base ? join(base, entry) : entry;
     if (statSync(full).isDirectory()) {
       files.push(...collectProjectFiles(full, rel));
-    } else if (entry.endsWith('.yaml') || entry.endsWith('.md')) {
+    } else if (entry.endsWith('.hb.yaml') || entry.endsWith('.md')) {
       files.push({ path: rel, content: readFileSync(full, 'utf-8') });
     }
   }
