@@ -29,12 +29,11 @@ function buildVendorAliases() {
     for (const [key, value] of Object.entries(pkg.exports ?? {})) {
       const importPath = key === '.' ? '@herbrand/core' : `@herbrand/core/${key.slice(2)}`;
       const replacement = resolve(vendorPath, value as string).replace(/\\/g, '/');
-      aliases.push({ find: importPath, replacement });
+      // Use exact-match regex — string aliases do segment-aware prefix matching
+      // which causes "@herbrand/core" to greedily match "@herbrand/core/graph".
+      const escaped = importPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      aliases.push({ find: new RegExp(`^${escaped}$`), replacement });
     }
-
-    // Sort longest-first: Vite uses prefix matching, so "@herbrand/core"
-    // would greedily match "@herbrand/core/graph" before the specific alias.
-    aliases.sort((a, b) => (b.find as string).length - (a.find as string).length);
 
     console.log(`[herbrand] ${aliases.length} vendor aliases registered`);
     return aliases;
